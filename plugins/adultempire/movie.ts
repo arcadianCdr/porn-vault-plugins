@@ -3,6 +3,9 @@ import { Context } from "../../types/plugin";
 
 interface MyContext extends MovieContext {
   args: {
+    //@todo: Implement whitelist & blacklist
+    whitelist?: string[];
+    blacklist?: string[];
     dry?: boolean;
   };
 }

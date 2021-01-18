@@ -2,8 +2,14 @@ import { ActorContext, ActorOutput } from "../../types/actor";
 
 interface MyContext extends ActorContext {
   args: {
+    whitelist?: string[];
+    blacklist?: string[];
     dry?: boolean;
   };
+}
+
+function lowercase(str: string): string {
+  return str.toLowerCase();
 }
 
 export default async function (ctx: MyContext): Promise<ActorOutput> {
@@ -14,6 +20,21 @@ export default async function (ctx: MyContext): Promise<ActorOutput> {
     .replace(/\s{2,}/g, " ")
     .trim();
   $logger.info(`Scraping actor info for '${name}', dry mode: ${args?.dry || false}...`);
+
+  const blacklist = (args.blacklist || []).map(lowercase);
+  if (!args.blacklist) $logger.verbose("No blacklist defined, returning everything...");
+  if (blacklist.length) $logger.verbose(`Blacklist defined, will ignore: ${blacklist.join(", ")}`);
+
+  const whitelist = (args.whitelist || []).map(lowercase);
+  if (whitelist.length)
+    $logger.verbose(`Whitelist defined, will only return: ${whitelist.join(", ")}...`);
+
+  function isBlacklisted(prop): boolean {
+    if (whitelist.length) {
+      return !whitelist.includes(lowercase(prop));
+    }
+    return blacklist.includes(lowercase(prop));
+  }
 
   const url = `https://www.adultempire.com/allsearch/search?q=${name}`;
   const html = (await $axios.get(url)).data;
@@ -28,43 +49,77 @@ export default async function (ctx: MyContext): Promise<ActorOutput> {
     const $ = $cheerio.load(html);
 
     let avatar: string | undefined;
+    let avatarUrl;
 
-    const firstImageResult = $(`a.fancy`).toArray()[0];
-    const avatarUrl = $(firstImageResult).attr("href");
+    if (!isBlacklisted("avatar")) {
+      const firstImageResult = $(`a.fancy`).toArray()[0];
+      avatarUrl = $(firstImageResult).attr("href");
 
-    if (avatarUrl) {
-      avatar = await $createImage(avatarUrl, `${actorName} (avatar)`);
-    }
+      if (avatarUrl) {
+        avatar = await $createImage(avatarUrl, `${actorName} (avatar)`);
+      }
+    } 
 
     let hero;
+    let heroUrl;
 
-    const secondImageResult = $(`a.fancy`).toArray()[1];
-    const heroUrl = $(secondImageResult).attr("href");
+    if (!isBlacklisted("hero")) {
+      const secondImageResult = $(`a.fancy`).toArray()[1];
+      heroUrl = $(secondImageResult).attr("href");
 
-    if (heroUrl) {
-      hero = await $createImage(heroUrl, `${actorName} (hero image)`);
+      if (heroUrl) {
+        hero = await $createImage(heroUrl, `${actorName} (hero image)`);
+      }
     }
 
     let description;
 
-    const descEl = $("#content .row aside");
-    if (descEl) {
-      description = descEl.text().trim();
+    if (!isBlacklisted("description")) {
+      const descEl = $(".text-md");
+      if (descEl) {
+        description = descEl.children().remove().end().text().trim();
+      }
     }
 
     let aliases;
+    
+    if (!isBlacklisted("aliases")) {
+      const aliasEl = $("#content .row .col-sm-5 .m-b-1");
 
-    const aliasEl = $("#content .row .col-sm-5 .m-b-1");
-
-    if (aliasEl) {
-      const text = aliasEl.text();
-      aliases = text
-        .replace("Alias: ", "")
-        .split(",")
-        .map((s) => s.trim());
+      if (aliasEl) {
+        const text = aliasEl.text();
+        aliases = text
+          .replace("Alias: ", "")
+          .split(",")
+          .map((s) => s.trim());
+      }
     }
 
-    const result = { avatar, $ae_avatar: avatarUrl, hero, $ae_hero: heroUrl, aliases, description };
+    let rating;
+
+    if (!isBlacklisted("rating")) {
+      const ratingResult = $(`.performer-info-control strong`).toArray()[0];
+
+      if (ratingResult) {
+        const ratingValue = parseFloat($(ratingResult).text().slice(0,-2));
+        if (typeof ratingValue === "number" && ratingValue >= 0 && ratingValue <= 5) {
+          //Converts decimal 0-5 AdultEmpire rating to integer 0-10 scale, also correcting distribution biais
+          //(AdultEmpire artificially favors the higher end of the scale).
+          rating = Math.round(Math.pow(ratingValue, 2.75) / 8.4);
+          $logger.debug(`Converted AdultEmpire rating ${ratingValue} to ${rating}`);
+        }
+      }
+    }
+
+    const result = {
+      avatar,
+      $ae_avatar: avatarUrl,
+      hero,
+      $ae_hero: heroUrl,
+      aliases,
+      rating,
+      description,
+    };
 
     if (args?.dry) {
       $logger.info(`Would have returned ${$formatMessage(result)}`);
