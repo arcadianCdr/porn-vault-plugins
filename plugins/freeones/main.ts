@@ -263,8 +263,7 @@ module.exports = async (ctx: MyContext): Promise<ActorOutput> => {
 
   async function getAvatar(): Promise<Partial<{ avatar: string; thumbnail: string }>> {
     if (args.dry) return {};
-    if (isBlacklisted("avatar")) return {};
-    $logger.verbose("Getting avatar...");
+    $logger.verbose("Getting avatar (and/or thumbnail)...");
 
     const imgEl = $(`.dashboard-header img.img-fluid`);
     if (!imgEl) return {};
@@ -276,8 +275,10 @@ module.exports = async (ctx: MyContext): Promise<ActorOutput> => {
     const imgId = await $createImage(url, `${actorName} (avatar)`);
 
     if (!useAvatarAsThumbnail) {
+      if (isBlacklisted("avatar")) return {};
       return { avatar: imgId };
     } else {
+      if (isBlacklisted("avatar")) return { thumbnail: imgId };
       return {
         avatar: imgId,
         thumbnail: imgId,
