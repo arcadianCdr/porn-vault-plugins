@@ -1,0 +1,79 @@
+{
+  "name": "PromisedScene",
+  "version": "0.3.0",
+  "authors": ["Ch00nassid a.k.a: DGs.Ch00", "leadwolf"],
+  "description": "Ask questions and make sure scene parsing is correct",
+  "pluginEvents": ["sceneCreated", "sceneCustom"],
+  "arguments": [
+    {
+      "name": "useTitleInSearch",
+      "type": "Boolean",
+      "required": false,
+      "default": false,
+      "description": "When searching TPDB: in auto search, if should use existing scene title. In manual user search, if should prompt user for title and use in search"
+    },
+    {
+      "name": "alwaysUseSingleResult",
+      "type": "Boolean",
+      "required": false,
+      "default": false,
+      "description": "When searching TPDB, if there is **only** 1 result, even if its title **doesn't** match the searched title, if should return that data"
+    },
+    {
+      "name": "parseActor",
+      "type": "Boolean",
+      "required": true,
+      "default": true,
+      "description": "Try to find the Actor name in your database within the scenePath string"
+    },
+    {
+      "name": "parseStudio",
+      "type": "Boolean",
+      "required": true,
+      "default": true,
+      "description": "Try to find the Studio name in your database within the scenePath string"
+    },
+    {
+      "name": "parseDate",
+      "type": "Boolean",
+      "required": true,
+      "default": true,
+      "description": "Try to find the date within the scenePath string"
+    },
+    {
+      "name": "manualTouch",
+      "type": "Boolean",
+      "required": true,
+      "default": true,
+      "description": "If true, will allow you to answer questions to manually enter scene data, manually search TPDB, confirm the final result"
+    },
+    {
+      "name": "sceneDuplicationCheck",
+      "type": "Boolean",
+      "required": true,
+      "default": true,
+      "description": "Will notify you of a possible duplicate title that is being imported.  Will not currently stop / correct anything"
+    },
+    {
+      "name": "source_settings.actors",
+      "type": "String",
+      "required": true,
+      "default": "./library/actors.db",
+      "description": "finds the DB file for Actors to determine which actors are currently in your collection"
+    },
+    {
+      "name": "source_settings.studios",
+      "type": "String",
+      "required": true,
+      "default": "./library/studios.db",
+      "description": "finds the DB file for Studios to determine which Studios are currently in your collection"
+    },
+    {
+      "name": "source_settings.scenes",
+      "type": "String",
+      "required": true,
+      "default": "./library/scenes.db",
+      "description": "finds the DB file for Scenes to determine which Scenes are currently in your collection"
+    }
+  ]
+}

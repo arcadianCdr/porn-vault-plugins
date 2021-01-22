@@ -23,23 +23,25 @@ describe("freeones", () => {
       "hair color": "Brown",
       "eye color": "Brown",
       ethnicity: "Caucasian",
-      height: 168,
-      weight: 57,
-      birthplace: "Addison, IL, IL",
-      zodiac: "Virgo",
-      measurements: "34C-26-36",
-      "waist size": 26,
-      "hip size": 36,
-      "cup size": "C",
+      height: 163,
+      weight: 50,
+      birthplace: "San Francisco, CA",
+      zodiac: "Scorpio",
+      measurements: "34D-24-35",
+      "waist size": 24,
+      "hip size": 35,
+      "cup size": "D",
       "bust size": 34,
-      "bra size": "34C",
+      "bra size": "34D",
       gender: "Female",
       sex: "Female",
-      piercings: "Navel",
+      piercings: "Left Nostril; Clitoris",
+      tattoos:
+        'Small Stars Behind Right Ear; 2 Red Flowers With Leaves Upper Back; Large Design Of Flames, Wings And 6 Red Roses Lower Back; "La Bella Vita" Left Side Of Torso; Traces Of Removed Floral Right Hip; Cherries, Hearts And Stars Above Of Pubes; Nautical Motif',
     });
     expect(result.nationality).to.equal("US");
     expect(result.bornOn).to.be.a("number");
-    expect(result.avatar).to.be.equal(undefined);
+    expect(result.avatar).to.be.a("string");
     expect(result.thumbnail).to.be.undefined;
     expect(result.labels).to.have.length.greaterThan(0);
     expect(result.labels).to.contain("Brown Hair");
@@ -47,7 +49,7 @@ describe("freeones", () => {
     expect(result.labels).to.contain("Caucasian");
     expect(result.labels).to.contain("Female");
     expect(result.labels).to.contain("Piercings");
-    expect(result.labels).to.not.contain("Tattoos");
+    expect(result.labels).to.contain("Tattoos");
   });
 
   it("Search 'Gia DiMarco' without measurements", async () => {
@@ -61,17 +63,19 @@ describe("freeones", () => {
       "hair color": "Brown",
       "eye color": "Brown",
       ethnicity: "Caucasian",
-      height: 168,
-      weight: 57,
-      birthplace: "Addison, IL, IL",
-      zodiac: "Virgo",
+      height: 163,
+      weight: 50,
+      birthplace: "San Francisco, CA",
+      zodiac: "Scorpio",
       gender: "Female",
       sex: "Female",
-      piercings: "Navel",
+      piercings: "Left Nostril; Clitoris",
+      tattoos:
+        'Small Stars Behind Right Ear; 2 Red Flowers With Leaves Upper Back; Large Design Of Flames, Wings And 6 Red Roses Lower Back; "La Bella Vita" Left Side Of Torso; Traces Of Removed Floral Right Hip; Cherries, Hearts And Stars Above Of Pubes; Nautical Motif',
     });
     expect(result.nationality).to.equal("US");
     expect(result.bornOn).to.be.a("number");
-    expect(result.avatar).to.be.equal(undefined);
+    expect(result.avatar).to.be.a("string");
     expect(result.thumbnail).to.be.undefined;
     expect(result.labels).to.have.length.greaterThan(0);
     expect(result.labels).to.contain("Brown Hair");
@@ -79,6 +83,6 @@ describe("freeones", () => {
     expect(result.labels).to.contain("Caucasian");
     expect(result.labels).to.contain("Female");
     expect(result.labels).to.contain("Piercings");
-    expect(result.labels).to.not.contain("Tattoos");
+    expect(result.labels).to.contain("Tattoos");
   });
 });

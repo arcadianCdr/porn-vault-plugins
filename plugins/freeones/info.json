@@ -1,6 +1,6 @@
 {
   "name": "freeones",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "authors": ["boi123212321", "john4valor", "pizzajohnny", "leadwolf"],
   "description": "Scrape data from freeones.com. Custom fields can only be named as follows (not case sensitive): Hair Color, Eye Color, Ethnicity, Height, Weight, Birthplace, Zodiac, Measurements, Chest Size, Waist Size, Hip Size, Cup Size, Bra Size, Bust Size",
   "pluginEvents": ["actorCreated", "actorCustom"],
@@ -25,6 +25,13 @@
       "required": false,
       "default": [],
       "description": "Array of data fields to omit (for values see whitelist)"
+    },
+    {
+      "name": "searchResultsSort",
+      "type": "String",
+      "required": false,
+      "default": "relevance",
+      "description": "Specify the search result sort order key to use. Advanced setting: use only if you know what you are doing. Possible values are 'relevance', 'rank.currentRank', 'followerCount', 'profileCompleted' or 'views'"
     },
     {
       "name": "useImperial",

@@ -33,7 +33,7 @@ describe("pics", () => {
           }
         }
 
-        expect(errored).to.equal(!!fixture.errored);
+        expect(errored).to.equal(Boolean(fixture.errored));
       });
     });
   });
@@ -62,7 +62,7 @@ describe("pics", () => {
             }
           }
 
-          expect(errored).to.equal(!!fixture.errored);
+          expect(errored).to.equal(Boolean(fixture.errored));
 
           if (fixture.result) {
             expect(result).to.be.an("object");
@@ -96,7 +96,7 @@ describe("pics", () => {
             }
           }
 
-          expect(errored).to.equal(!!fixture.errored);
+          expect(errored).to.equal(Boolean(fixture.errored));
 
           if (fixture.result) {
             expect(result).to.be.an("object");
@@ -132,7 +132,7 @@ describe("pics", () => {
             }
           }
 
-          expect(errored).to.equal(!!fixture.errored);
+          expect(errored).to.equal(Boolean(fixture.errored));
 
           if (fixture.result) {
             expect(result).to.be.an("object");
@@ -167,7 +167,7 @@ describe("pics", () => {
             }
           }
 
-          expect(errored).to.equal(!!fixture.errored);
+          expect(errored).to.equal(Boolean(fixture.errored));
 
           if (fixture.result) {
             expect(result).to.be.an("object");
@@ -202,7 +202,7 @@ describe("pics", () => {
             }
           }
 
-          expect(errored).to.equal(!!fixture.errored);
+          expect(errored).to.equal(Boolean(fixture.errored));
 
           if (fixture.result) {
             expect(result).to.be.an("object");
