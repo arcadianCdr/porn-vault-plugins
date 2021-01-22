@@ -19,7 +19,8 @@ describe("adultempire", () => {
   describe("Actors", () => {
     it("Should fetch info", async () => {
       const result = await runPlugin({
-        actorName: "Avi love",
+        //@todo test with "Sofia Cucci" that has no rating
+        actorName: "Sofia Cucci",
         args: {},
       });
       expect(result.avatar).to.be.a("string");

@@ -77,8 +77,17 @@ export default async function (ctx: MyContext): Promise<ActorOutput> {
     if (!isBlacklisted("description")) {
       const descEl = $(".text-md");
       if (descEl) {
-        description = descEl.children().remove().end().text().trim();
+        description = descEl.children().remove("div").end().text().replace("Biography Text ©Adult DVD Empire","").trim();
       }
+    }
+
+    let thumbnail;
+
+    const thirdImageResult = $(`.performer-image-container img`).toArray()[0];
+    const thumbnailUrl = $(thirdImageResult).attr("src");
+
+    if (thumbnailUrl) {
+      thumbnail = await $createImage(thumbnailUrl, `${actorName} (thumbnail)`);
     }
 
     let aliases;
@@ -105,13 +114,14 @@ export default async function (ctx: MyContext): Promise<ActorOutput> {
         if (typeof ratingValue === "number" && ratingValue >= 0 && ratingValue <= 5) {
           //Converts decimal 0-5 AdultEmpire rating to integer 0-10 scale, also correcting distribution biais
           //(AdultEmpire artificially favors the higher end of the scale).
-          rating = Math.round(Math.pow(ratingValue, 2.75) / 8.4);
+          rating = Math.round(Math.pow(ratingValue, 4) / 62.5);
           $logger.debug(`Converted AdultEmpire rating ${ratingValue} to ${rating}`);
         }
       }
     }
 
     const result = {
+      thumbnail,
       avatar,
       $ae_avatar: avatarUrl,
       hero,
