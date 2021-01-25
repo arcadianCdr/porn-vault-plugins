@@ -20,6 +20,7 @@ describe("adultempire", () => {
     it("Should fetch info", async () => {
       const result = await runPlugin({
         //@todo test with "Sofia Cucci" that has no rating
+        //@todo check Sophee Dee's full description.
         actorName: "Sofia Cucci",
         args: {},
       });

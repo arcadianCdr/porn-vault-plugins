@@ -114,7 +114,7 @@ export default async function (ctx: MyContext): Promise<ActorOutput> {
         if (typeof ratingValue === "number" && ratingValue >= 0 && ratingValue <= 5) {
           //Converts decimal 0-5 AdultEmpire rating to integer 0-10 scale, also correcting distribution biais
           //(AdultEmpire artificially favors the higher end of the scale).
-          rating = Math.round(Math.pow(ratingValue, 4) / 62.5);
+          rating = Math.round((ratingValue ** 4) / 62.5);
           $logger.debug(`Converted AdultEmpire rating ${ratingValue} to ${rating}`);
         }
       }
