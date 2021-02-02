@@ -1,0 +1,5 @@
+---
+actorsMatcher:
+  regex: '(?<= - ).+?$'
+  regexFlags: "gi"
+  splitter: ','
