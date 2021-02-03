@@ -11,7 +11,7 @@ Used in combination with web scraping plug-ins, it is possible to fully automate
 ### How?
 
 The plugin works by recognizing patterns in your files:
-- a built-in pattern identifies dates and work "out-of-the-box". 
+- a built-in pattern identifies dates and works "out-of-the-box". 
 - for custom patterns (like studio, actors or movie) that are specific to your naming convention, a little bit of configuration is needed to "tell the plugin" how to recognize the right patterns.
 
 fileparser uses the "regular expression" standard to match patterns (regex). If you don't know the regex syntax, there are many details and examples below that can be reused with little to no understanding of regex.
@@ -24,7 +24,7 @@ A configuration file applies to all files and subdirectories below it: the same 
 
 Config files can also be nested. In this case, the deepest and most specific config is always used. 
 
-Configs are searched and loaded dynamically when the plug-in is executed. They can be added, modified or removed while pv is running (I would advise against config modifications in the middle of a scan for new files). You can modify a config and (re)run the plug-in manually. Any config change will immediately be taken into account.
+Configs are searched and loaded dynamically when the plug-in is executed. They can be added, modified or removed while pv is running (I would advise against config modifications in the middle of a folder scan). You can modify a config and (re)run the plug-in manually. Any config change will immediately be taken into account.
 
 Time to [setup the plugin](#Example-installation-with-default-arguments) and [start your first `parserconfig` file](#`parserconfig`-examples)!
 
@@ -35,7 +35,7 @@ Since most of the customisation is done within `parserconfig` files, the plug-in
 | Name       | Type    | Required | Description                            |
 | ---------- | ------- | -------- | -------------------------------------- |
 | dry        | boolean | false    | Whether to commit data changes.        |
-| parseDate  | boolean | false    | whether to parse release dates. Defaults to true       |
+| parseDate  | boolean | false    | whether to parse release dates. Defaults to true.       |
 
 ### Example installation with default arguments
 
@@ -81,7 +81,7 @@ plugins:
 
 ### `parserconfig` file structure
 
-configuration files consist of a series of matcher for each of the supported scene attributes, all of which are optional. 
+Configuration files consist of a serie of matchers for each of the supported scene attribute, all of which are optional. 
 
 | Name           | Type      | Required |
 | -------------- | --------- | -------- | 
@@ -95,16 +95,16 @@ The basic structure of a matcher  is always the same and has only one mandatory 
 
 | Name          | Type      | Required | Description                            |
 | ------------- | --------- | -------- | -------------------------------------- |
-| scopeDirname  | string    | false    | Whether the regex is applied to the directory's full path (excluding the trailing path separator) or to the base name of the scene file (the filename without the ending dot and the extension). . If omitted or false, the filename is used.          |
+| scopeDirname  | string    | false    | Whether the regex is applied to the directory's full path (excluding the trailing path separator) or to the base name of the scene file (the filename without the ending dot and the extension). If omitted or false, the filename is used.          |
 | regex         | string    | true     | A regular expression (regex). Regex can be easily previewed and tested via [https://regex101.com/](https://regex101.com/)           |
-| regexFlags    | string    | false    | regex flags: as per spec, like `g`: `g`lobal, `ì`: case `i`nsensitive,... Defaults to `g` that is mandatory along any other flag you may want to set. Flags can be combined (ex: `gi`).        |
-| matchesToUse  | number[]  | false     | Specifies which match to use in the result. If omitted, all matches are used. Match indexes starts at 0.           |
-| groupsToUse   | number[]  | flase     | If your regexp returns results split in groups, you can use this attribute to control which groups to use in the result. If omitted, all groups are used. Group indexes starts at 0.          |
+| regexFlags    | string    | false    | regex flags: as per spec, like `g`: global, `ì`: case insensitive,... Defaults to `g` that is mandatory along any other flag you may want to set. Flags can be combined (ex: `gi`).        |
+| matchesToUse  | number[]  | false     | Specifies which match to use in the result. If omitted, all matches are used. Match indexes start at 0.           |
+| groupsToUse   | number[]  | flase     | If your regexp returns results split in groups, you can use this attribute to control which groups to use in the result. If omitted, all groups are used. Group indexes start at 0.          |
 | splitter      | string    | false     | When the regxp match represents a collection (array of values), the splitter can be used to break the string in individual items (the most frequent use case being a list of actors or labels).           |
 
 ### `parserconfig` examples
 
-The full config structure has many options. In most cases only a fraction of them is needed and the same regex structure is reusable. Once you get your first config setup, it becomes quite straightforward.
+The full config structure has several options. In most cases only a fraction of them is needed and the same regex structure is reusable. Once you get your first config setup, it becomes quite straightforward.
 
 Before diving into an example, let's assume the following directory and file structure:
 
@@ -124,11 +124,10 @@ We can use two regex:
   - Get the list of actors: match at index 1, further split into individual actor by using a `","` splitter on the match.
 - `(?![\\s\\S]*\/)(.*)$` that matches everything from the last separator to the end of the string. By setting `scopeDirname: true`, the pattern is applied on the full path, which is perfect to get the movie name (that in our example is always the deepest directory in the path). 
 
-Some useful regex can be (replace `DELIM` with text of your choice):
+Some useful regex can be (replace `DELIM` with your delimiter of choice):
 - `(.+?)(?:DELIM|$)`: break a string into a match for each part of the string delimited by the given separator. Can be used on path to split folders with `'/'`as delimiter or on file name to split the file components according to your separator of choice.
 - `(?<=DELIM).+?(?=DELIM)`: match everything between two separators (that can be different from each other).
 - `(?![\\s\\S]*DELIM)(.*)$`: match everything after the last delimiter of its kind (until end of the string).
-
 
 `parserconfig.json` (remember: to be placed in your library)
 ```json
