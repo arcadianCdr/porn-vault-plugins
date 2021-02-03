@@ -5,6 +5,8 @@ const { expect } = require("chai");
 
 const runPlugin = createPluginRunner("fileparser", plugin);
 
+// @todo Config files can also be nested. In this case, the deepest and most specific config is always used.
+
 describe("fileparser", () => {
   it("Should fail", async () => {
     let errord = false;

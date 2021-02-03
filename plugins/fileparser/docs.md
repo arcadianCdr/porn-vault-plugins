@@ -1,11 +1,3 @@
-## fileparser 0.1.2
-
-by arcadianCdr
-
-Automatically extracts scene details from your library's file and directory structure. The following data can be parsed: `release date`, `studio`, `name`, `actors`, `movie` and `labels`.
-
-### Documentation
-
 #### How?
 
 The plugin works by recognizing patterns in your files:
@@ -130,60 +122,4 @@ movieMatcher:
   regex: "(?![\\s\\S]*\/)(.*)$"
   matchesToUse:
   - 0
-```
-
-
-### Arguments
-
-| Name      | Type    | Required | Description                                       |
-| --------- | ------- | -------- | ------------------------------------------------- |
-| dry       | Boolean | false    | Whether to commit data changes.                   |
-| parseDate | Boolean | false    | whether to parse release dates. Defaults to true. |
-
-### Example installation with default arguments
-
-`config.json`
-```json
----
-{
-  "plugins": {
-    "register": {
-      "fileparser": {
-        "path": "./plugins/fileparser/main.ts",
-        "args": {
-          "dry": false,
-          "parseDate": true
-        }
-      }
-    },
-    "events": {
-      "sceneCreated": [
-        "fileparser"
-      ],
-      "sceneCustom": [
-        "fileparser"
-      ]
-    }
-  }
-}
----
-```
-
-`config.yaml`
-```yaml
----
-plugins:
-  register:
-    fileparser:
-      path: ./plugins/fileparser/main.ts
-      args:
-        dry: false
-        parseDate: true
-  events:
-    sceneCreated:
-      - fileparser
-    sceneCustom:
-      - fileparser
-
----
 ```
