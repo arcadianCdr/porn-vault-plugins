@@ -130,7 +130,7 @@ Some useful regex can be (replace `DELIM` with text of your choice):
 - `(?![\\s\\S]*DELIM)(.*)$`: match everything after the last delimiter of its kind (until end of the string).
 
 
-`parserconfig.json` (remember: to be placed it in your library)
+`parserconfig.json` (remember: to be placed in your library)
 ```json
 {
   "studioMatcher": {
@@ -157,7 +157,7 @@ Some useful regex can be (replace `DELIM` with text of your choice):
 }
 ```
 
-`parserconfig.yaml` (remember: to be placed it in your library)
+`parserconfig.yaml` (remember: to be placed in your library)
 ```yaml
 ---
 studioMatcher:
