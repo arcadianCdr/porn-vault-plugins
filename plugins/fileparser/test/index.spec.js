@@ -87,6 +87,21 @@ describe("fileparser", () => {
     expect(result.movie).to.be.undefined;
     expect(result.labels).to.be.be.undefined;
   });
+  it("Invalid config (JSON config)", async () => {
+    const base = "Studio name ~ first1 last1 , first2 last2 ~ Scene title ~ 2017_12_31";
+    const result = await runPlugin({
+      scenePath: `./plugins/fileparser/test/fixtures/invalidJsonConfig/movies/movie series/Movie Name 17/${base}.mp4`,
+      sceneName: base,
+      args: {},
+      $library: "/",
+    });
+    expect(result.releaseDate).to.equal(moment("2017-12-31", "YYYY-MM-DD").valueOf());
+    expect(result.studio).to.be.undefined;
+    expect(result.name).to.be.undefined;
+    expect(result.actors).to.be.undefined;
+    expect(result.movie).to.be.undefined;
+    expect(result.labels).to.be.be.undefined;
+  });
   it("Empty config", async () => {
     const base = "Studio name ~ first1 last1 , first2 last2 ~ Scene title ~ 2017_12_31";
     const result = await runPlugin({

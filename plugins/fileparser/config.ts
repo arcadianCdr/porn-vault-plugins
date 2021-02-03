@@ -14,19 +14,27 @@ export async function findAndLoadSceneConfig(
   const configFile = findConfig(ctx, $path.dirname(scenePath || "/"));
 
   if (configFile) {
-    $logger.info(`Loading parser config from: ${configFile}`);
+    $logger.info(`Parsing scene '${scenePath}' using config '${configFile}'`);
 
     let loadedConfig: IFileParserConfig;
-    if ($path.extname(configFile).toLowerCase() === ".yaml") {
-      loadedConfig = $yaml.parse($fs.readFileSync(configFile, "utf-8")) as IFileParserConfig;
-    } else {
-      loadedConfig = JSON.parse($fs.readFileSync(configFile, "utf-8")) as IFileParserConfig;
+    try {
+      if ($path.extname(configFile).toLowerCase() === ".yaml") {
+        loadedConfig = $yaml.parse($fs.readFileSync(configFile, "utf-8")) as IFileParserConfig;
+      } else {
+        loadedConfig = JSON.parse($fs.readFileSync(configFile, "utf-8")) as IFileParserConfig;
+      }
+    } catch (error) {
+      $logger.warn(
+        `Invalid config schema. Unable to parse "${configFile}". Double check your config and retry.`
+      );
+      $logger.error(error);
+      return;
     }
 
     const validationError = isValidConfig(ctx, loadedConfig);
     if (validationError !== true) {
       $logger.warn(
-        `Invalid config schema in "${validationError.location}". Double check your config and retry.`
+        `Invalid config schema. Unable to validate content near "${validationError.location}". Double check your config and retry.`
       );
       $logger.error(validationError.error.message);
       return;
