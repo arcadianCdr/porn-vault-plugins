@@ -7,10 +7,10 @@ import movieHandler from "./movie";
 module.exports = async (
   ctx: (MovieContext | ActorContext) & { args: { dry?: boolean } }
 ): Promise<ActorOutput | MovieOutput | undefined> => {
-  if (ctx["movieName"]) {
+  if ((ctx as MovieContext).movieName) {
     return movieHandler(ctx as MovieContext & { args: any });
   }
-  if (ctx["actorName"]) {
+  if ((ctx as ActorContext).actorName) {
     return actorHandler(ctx as ActorContext & { args: any });
   }
   ctx.$throw("Uh oh. You shouldn't use the plugin for this type of event");

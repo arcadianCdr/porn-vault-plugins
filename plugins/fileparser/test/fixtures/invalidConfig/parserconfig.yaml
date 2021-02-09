@@ -1,7 +1,6 @@
 ---
 studioMatcher:
-  regex: "(.+?)(?: ~ |$)"
-  regexFlags: "mi"
+  regexp: "(.+?)(?: ~ |$)"
   matchesToUse:
   - 0
   groupsToUse:

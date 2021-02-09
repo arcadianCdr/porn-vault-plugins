@@ -1,5 +1,5 @@
 ---
 actorsMatcher:
   regex: '(.+?)(?: - |$)'
-  groupsToUse:
-  - 1
+  matchesToUse:
+  - 0

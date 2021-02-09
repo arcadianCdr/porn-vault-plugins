@@ -6,18 +6,19 @@ import { findAndLoadSceneConfig } from "./config";
 module.exports = async (ctx: MySceneContext): Promise<SceneOutput> => {
   const { args, sceneName, scenePath, $logger, $throw } = ctx;
 
-  if (!sceneName) $throw("Uh oh. You shouldn't use the plugin for this type of event");
+  if (!scenePath) $throw("Uh oh. You shouldn't use the plugin for this type of event");
 
   $logger.verbose(`Parsing scene: ${scenePath}`);
 
   const cfg = await findAndLoadSceneConfig(ctx);
-  if (!cfg)
+  if (!cfg) {
     $logger.warn(
       `No configuration found in the scene directory or a parent => only 'release date' will be parsed.`
     );
+  }
 
   function parseReleaseDate(): Partial<{ releaseDate: number }> {
-    if (args.parseDate == false) return {};
+    if (args.parseDate === false) return {};
 
     $logger.verbose("Parsing release date...");
     const dateFromName = dateToTimestamp(ctx, sceneName);

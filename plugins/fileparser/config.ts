@@ -1,6 +1,5 @@
-import { Context, DeepPartial } from "../../types/plugin";
-import { MySceneContext } from "./types";
-import { IFileParserConfig } from "./types";
+import { Context } from "../../types/plugin";
+import { IFileParserConfig, MySceneContext } from "./types";
 
 const configFilename = "parserconfig";
 
@@ -10,7 +9,7 @@ const configJSONFilename = `${configFilename}.json`;
 export async function findAndLoadSceneConfig(
   ctx: MySceneContext
 ): Promise<IFileParserConfig | undefined> {
-  const { $fs, $logger, $path, scenePath, $yaml} = ctx;
+  const { $fs, $logger, $path, scenePath, $yaml } = ctx;
   const configFile = findConfig(ctx, $path.dirname(scenePath || "/"));
 
   if (configFile) {
@@ -39,12 +38,8 @@ export async function findAndLoadSceneConfig(
       $logger.error(validationError.error.message);
       return;
     }
-
     return loadedConfig;
   }
-
-  // No config found
-  return;
 }
 
 // Lookikng for a config file, starting from dirPath and going up the parents chain until the base library path is reached.
@@ -74,75 +69,37 @@ const findConfig = (ctx: Context, dirName: string): string | undefined => {
     }
   } catch (error) {
     $logger.error(`Error finding config file: ${error}. Stopped looking.`);
-    return;
   }
 };
 
-export function isValidConfig(ctx: Context, val: unknown): true | { location: string; error: Error } {
+export function isValidConfig(
+  ctx: Context,
+  val: unknown
+): true | { location: string; error: Error } {
   const { $zod } = ctx;
   let generalError: Error | null = null;
-  let location: string = "root";
+  const location: string = "root";
 
   const fileParserSchemaElem = $zod.object({
     scopeDirname: $zod.boolean().optional(),
     regex: $zod.string(),
-    regexFlags: $zod.string().optional(),
     matchesToUse: $zod.array($zod.number()).optional(),
     groupsToUse: $zod.array($zod.number()).optional(),
     splitter: $zod.string().optional(),
   });
-  
+
   const configSchema = $zod.object({
     studioMatcher: fileParserSchemaElem.optional(),
     nameMatcher: fileParserSchemaElem.optional(),
     actorsMatcher: fileParserSchemaElem.optional(),
     movieMatcher: fileParserSchemaElem.optional(),
     labelsMatcher: fileParserSchemaElem.optional(),
-  });  
+  });
 
   try {
     configSchema.parse(val);
   } catch (err) {
     generalError = err as Error;
-  }
-
-  const config = val as DeepPartial<IFileParserConfig>;
-  try {
-    location = "actorsMatcher";
-    if (config?.actorsMatcher?.regexFlags && !config?.actorsMatcher?.regexFlags.includes("g")) {
-      throw new Error(
-        "Incorrect regexFlags value: it must contain the 'g' flag that is mandatory for the plugin to work."
-      );
-    }
-    location = "nameMatcher";
-    if (config?.nameMatcher?.regexFlags && !config?.nameMatcher?.regexFlags.includes("g")) {
-      throw new Error(
-        "Incorrect regexFlags value: it must contain the 'g' flag that is mandatory for the plugin to work."
-      );
-    }
-    location = "movieMatcher";
-    if (config?.movieMatcher?.regexFlags && !config?.movieMatcher?.regexFlags.includes("g")) {
-      throw new Error(
-        "Incorrect regexFlags value: it must contain the 'g' flag that is mandatory for the plugin to work."
-      );
-    }
-    location = "studioMatcher";
-    if (config?.studioMatcher?.regexFlags && !config?.studioMatcher?.regexFlags.includes("g")) {
-      throw new Error(
-        "Incorrect regexFlags value: it must contain the 'g' flag that is mandatory for the plugin to work."
-      );
-    }
-    location = "labelsMatcher";
-    if (config?.labelsMatcher?.regexFlags && !config?.labelsMatcher?.regexFlags.includes("g")) {
-      throw new Error(
-        "Incorrect regexFlags value: it must contain the 'g' flag that is mandatory for the plugin to work."
-      );
-    }
-  } catch (err) {
-    return {
-      location: location,
-      error: err as Error,
-    };
   }
 
   return generalError ? { location: location, error: generalError } : true;

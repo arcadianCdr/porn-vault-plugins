@@ -5,8 +5,6 @@ const { expect } = require("chai");
 
 const runPlugin = createPluginRunner("fileparser", plugin);
 
-// @todo Config files can also be nested. In this case, the deepest and most specific config is always used.
-
 describe("fileparser", () => {
   it("Should fail", async () => {
     let errord = false;
@@ -19,44 +17,79 @@ describe("fileparser", () => {
     expect(errord).to.be.true;
   });
   it("Parsing YYYY dates...", async () => {
-    const result = await runPlugin({ sceneName: "dummy scene name (2019)", args: {} });
+    const result = await runPlugin({
+      sceneName: "dummy scene name (2019)",
+      scenePath: "/",
+      args: {},
+    });
     expect(result.releaseDate).to.equal(moment("2019", "YYYY").valueOf());
   });
   it("Parsing YYYY-MM dates...", async () => {
-    const result = await runPlugin({ sceneName: "dummy scene 1984_03 name", args: {} });
+    const result = await runPlugin({
+      sceneName: "dummy scene 1984_03 name",
+      scenePath: "/",
+      args: {},
+    });
     expect(result.releaseDate).to.equal(moment("1984-03", "YYYY-MM").valueOf());
   });
   it("Parsing MM-YYYY dates...", async () => {
-    const result = await runPlugin({ sceneName: "dummy scene name 03-1984", args: {} });
+    const result = await runPlugin({
+      sceneName: "dummy scene name 03-1984",
+      scenePath: "/",
+      args: {},
+    });
     expect(result.releaseDate).to.equal(moment("1984-03", "YYYY-MM").valueOf());
   });
   it("Parsing YYYY-MM-DD dates variant 1...", async () => {
-    const result = await runPlugin({ sceneName: "1984.03.17 dummy scene name", args: {} });
+    const result = await runPlugin({
+      sceneName: "1984.03.17 dummy scene name",
+      scenePath: "/",
+      args: {},
+    });
     expect(result.releaseDate).to.equal(moment("1984-03-17", "YYYY-MM-DD").valueOf());
   });
   it("Parsing YYYY-MM-DD dates variant 2...", async () => {
-    const result = await runPlugin({ sceneName: "1984.12.07 dummy scene name", args: {} });
+    const result = await runPlugin({
+      sceneName: "1984.12.07 dummy scene name",
+      scenePath: "/",
+      args: {},
+    });
     expect(result.releaseDate).to.equal(moment("1984-12-07", "YYYY-MM-DD").valueOf());
   });
   it("Parsing YY-MM-DD dates...", async () => {
-    const result = await runPlugin({ sceneName: "dummy scene _84_03_07_ name", args: {} });
+    const result = await runPlugin({
+      sceneName: "dummy scene _84_03_07_ name",
+      scenePath: "/",
+      args: {},
+    });
     expect(result.releaseDate).to.equal(moment("1984-03-07", "YYYY-MM-DD").valueOf());
   });
   it("Parsing DD-MM-YY dates...", async () => {
-    const result = await runPlugin({ sceneName: "dummy scene 27 03-84 name", args: {} });
+    const result = await runPlugin({
+      sceneName: "dummy scene 27 03-84 name",
+      scenePath: "/",
+      args: {},
+    });
     expect(result.releaseDate).to.equal(moment("1984-03-27", "YYYY-MM-DD").valueOf());
   });
   it("Parsing DD-MM-YYYY dates variant 1...", async () => {
-    const result = await runPlugin({ sceneName: "_30_12.1984_ dummy scene name", args: {} });
+    const result = await runPlugin({
+      sceneName: "_30_12.1984_ dummy scene name",
+      scenePath: "/",
+      args: {},
+    });
     expect(result.releaseDate).to.equal(moment("1984-12-30", "YYYY-MM-DD").valueOf());
   });
   it("Parsing DD-MM-YYYY dates variant 2...", async () => {
-    const result = await runPlugin({ sceneName: "07/03/1984 dummy scene name", args: {} });
+    const result = await runPlugin({
+      sceneName: "07/03/1984 dummy scene name",
+      scenePath: "/",
+      args: {},
+    });
     expect(result.releaseDate).to.equal(moment("1984-03-07", "YYYY-MM-DD").valueOf());
   });
   it("Matching all properties: releaseDate, name, studio, actors, movie and labels (JSON config)", async () => {
     const base = "Studio name ~ first1 last1 , first2 last2 ~ Scene title ~ 2017-12-31";
-    // @todo test should fail: stop recurse before config is reached.
     const result = await runPlugin({
       scenePath: `./plugins/fileparser/test/fixtures/completeMultiMatch/movies/movie series/Movie Name 17/${base}.mp4`,
       sceneName: base,

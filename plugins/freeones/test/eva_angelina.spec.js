@@ -26,7 +26,7 @@ describe("freeones", () => {
       height: 160,
       weight: 54,
       birthplace: "Orange County, CA",
-      zodiac: "Pisces",
+      // zodiac: "Pisces",
       measurements: "34D-25-36",
       "waist size": 25,
       "hip size": 36,

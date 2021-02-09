@@ -41,7 +41,7 @@ export default async function (ctx: MyContext): Promise<MovieOutput> {
     const $ = $cheerio.load(html);
 
     const desc = $(".m-b-0.text-dark.synopsis").text();
-    let release: number | undefined = undefined;
+    let release: number | undefined;
 
     const movieName = $(`.title-rating-section .col-sm-6 h1`)
       .text()

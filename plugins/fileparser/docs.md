@@ -1,5 +1,3 @@
-#### How?
-
 The plugin works by recognizing patterns in your files:
 - a built-in pattern identifies dates and works "out-of-the-box". 
 - for custom patterns (like studio, actors or movie) that are specific to your naming convention, a little bit of configuration is needed to "tell the plugin" how to recognize the right patterns.
@@ -34,12 +32,11 @@ The basic structure of a matcher  is always the same and has only one mandatory 
 
 | Name          | Type      | Required | Description                            |
 | ------------- | --------- | -------- | -------------------------------------- |
-| scopeDirname  | string    | false    | Whether the regex is applied to the directory's full path (excluding the trailing path separator) or to the base name of the scene file (the filename without the ending dot and the extension). If omitted or false, the filename is used.          |
-| regex         | string    | true     | A regular expression (regex). Regex can be easily previewed and tested via [https://regex101.com/](https://regex101.com/)           |
-| regexFlags    | string    | false    | regex flags: as per spec, like `g`: global, `ì`: case insensitive,... Defaults to `g` that is mandatory along any other flag you may want to set. Flags can be combined (ex: `gi`).        |
-| matchesToUse  | number[]  | false     | Specifies which match to use in the result. If omitted, all matches are used. Match indexes start at 0.           |
-| groupsToUse   | number[]  | flase     | If your regexp returns results split in groups, you can use this attribute to control which groups to use in the result. If omitted, all groups are used. Group indexes start at 0.          |
-| splitter      | string    | false     | When the regxp match represents a collection (array of values), the splitter can be used to break the string in individual items (the most frequent use case being a list of actors or labels).           |
+| regex         | string    | true     | A regular expression (regex). Regex can be easily learned, previewed and tested via [https://regex101.com/](https://regex101.com/)           |
+| scopeDirname  | string    | false    | Whether the regex is applied to the scene's path (directories excluding the trailing path separator) or to the scene's file name (excluding the ending dot and the extension). If omitted or false, the file name is used.          |
+| matchesToUse  | number[]  | false     | If your regexp returns more than one match, use this parameter to control which match is used in the result. If omitted, the first (or only) match is used. Match indexes start at 1. Use 0 to use all matches.           |
+| groupsToUse   | number[]  | flase     | If each match is divided in groups (you used brackets in your regex), use this attribute to filter which groups to use in the result. If omitted, the first group is used. Group indexes start at 1. Use 0 to use all groups.          |
+| splitter      | string    | false     | Can be used as an option to further split the matched string into an array of strings (the most frequent use case being a list of actors or labels).           |
 
 #### `parserconfig` examples
 
@@ -58,9 +55,9 @@ We want to identify the following patterns:
 
 We can use two regex:
 - `(.+?)(?: ~ |$)` that breaks a string into matches for each part delimited by the `' ~ '` separator:
-  - Get the studio: match at index 0
-  - Get the scene name: match at index 2
-  - Get the list of actors: match at index 1, further split into individual actor by using a `","` splitter on the match.
+  - Get the studio: match at index 1
+  - Get the scene name: match at index 3
+  - Get the list of actors: match at index 2, further split into individual actor by using a `","` splitter on the match.
 - `(?![\\s\\S]*\/)(.*)$` that matches everything from the last separator to the end of the string. By setting `scopeDirname: true`, the pattern is applied on the full path, which is perfect to get the movie name (that in our example is always the deepest directory in the path). 
 
 Some useful regex can be (replace `DELIM` with your delimiter of choice):
@@ -73,24 +70,20 @@ Some useful regex can be (replace `DELIM` with your delimiter of choice):
 {
   "studioMatcher": {
     "regex": "(.+?)(?: ~ |$)",
-    "matchesToUse": [0], 
-    "groupsToUse": [1]
+    "matchesToUse": [1]
   },
   "nameMatcher": {
     "regex": "(.+?)(?: ~ |$)",
-    "matchesToUse": [2], 
-    "groupsToUse": [1]
+    "matchesToUse": [3]
   },
   "actorsMatcher": {
     "regex": "(.+?)(?: ~ |$)",
-    "matchesToUse": [1], 
-    "groupsToUse": [1],
+    "matchesToUse": [2], 
     "splitter": ","
   },
   "movieMatcher": {
     "scopeDirname": true,
     "regex": "(?![\\s\\S]*\/)(.*)$",
-    "matchesToUse": [0]
   }
 }
 ```
@@ -101,25 +94,17 @@ Some useful regex can be (replace `DELIM` with your delimiter of choice):
 studioMatcher:
   regex: "(.+?)(?: ~ |$)"
   matchesToUse:
-  - 0
-  groupsToUse:
   - 1
 nameMatcher:
   regex: "(.+?)(?: ~ |$)"
   matchesToUse:
-  - 2
-  groupsToUse:
-  - 1
+  - 3
 actorsMatcher:
   regex: "(.+?)(?: ~ |$)"
   matchesToUse:
-  - 1
-  groupsToUse:
-  - 1
+  - 2
   splitter: ","
 movieMatcher:
   scopeDirname: true
   regex: "(?![\\s\\S]*\/)(.*)$"
-  matchesToUse:
-  - 0
 ```
