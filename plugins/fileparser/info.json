@@ -4,7 +4,7 @@
   "authors": [
     "arcadianCdr"
   ],
-  "description": "Automatically extracts scene details from your library's file and directory structure. The following data can be parsed: `release date`, `studio`, `name`, `actors`, `movie` and `labels`.",
+  "description": "Automatically extracts scene details from your library's file and directory structure. Supported properties: release date, studio, name, actors, movie and labels.",
   "pluginEvents": ["sceneCreated", "sceneCustom"],
   "arguments": [
     {

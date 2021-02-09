@@ -1,8 +1,8 @@
-## fileparser 0.1.2
+## fileparser 0.1.3
 
 by arcadianCdr
 
-Automatically extracts scene details from your library's file and directory structure. The following data can be parsed: `release date`, `studio`, `name`, `actors`, `movie` and `labels`.
+Automatically extracts scene details from your library's file and directory structure. Supported properties: release date, studio, name, actors, movie and labels.
 
 ### Documentation
 
@@ -10,19 +10,17 @@ The plugin works by recognizing patterns in your files:
 - a built-in pattern identifies dates and works "out-of-the-box". 
 - for custom patterns (like studio, actors or movie) that are specific to your naming convention, a little bit of configuration is needed to "tell the plugin" how to recognize the right patterns.
 
-fileparser uses the "regular expression" standard to match patterns (regex). If you don't know the regex syntax, there are many details and examples below that can be reused with little to no understanding of regex.
-
-Used in combination with web scraping plug-ins, it is possible to fully automate your library creation!
+fileparser uses the "regular expression" standard to match patterns (regex). There are details and examples below.
 
 #### Configuration - not your typical plugin
 
 A consistent and uniform naming convention across a whole media library is extremely unlikely. Therefore, fileparser supports not one, but multiple `parserconfig` files. They are placed alongside your media files, directly into the library. 
 
-A configuration file applies to all files and subdirectories below it: the same directory or anything deeper in the dir structure. 
+A configuration file applies to all files and subdirectories below it. 
 
 Config files can also be nested. In this case, the deepest and most specific config is always used. 
 
-Configs are searched and loaded dynamically when the plug-in is executed. They can be added, modified or removed while pv is running (I would advise against config modifications in the middle of a folder scan). You can modify a config and (re)run the plug-in manually. Any config change will immediately be taken into account.
+Configs are searched and loaded dynamically when the plug-in is executed. They can be added, modified or removed while pv is running.
 
 #### `parserconfig` file structure
 
@@ -48,9 +46,7 @@ The basic structure of a matcher  is always the same and has only one mandatory 
 
 #### `parserconfig` examples
 
-The full config structure has several options. In most cases only a fraction of them is needed and the same regex structure is reusable. Once you get your first config setup, it becomes quite straightforward.
-
-Before diving into an example, let's assume the following directory and file structure:
+Let's assume the following directory and file structure:
 
 `/movies/movie series/Movie Name 17/Studio name ~ first1 last1, first2 last2 ~ Scene title ~ 2017-12-31.mp4`
 
@@ -63,15 +59,10 @@ We want to identify the following patterns:
 
 We can use two regex:
 - `(.+?)(?: ~ |$)` that breaks a string into matches for each part delimited by the `' ~ '` separator:
-  - Get the studio: match at index 1
-  - Get the scene name: match at index 3
-  - Get the list of actors: match at index 2, further split into individual actor by using a `","` splitter on the match.
+  - Get the studio: first match
+  - Get the scene name: third match
+  - Get the list of actors: second match, further split into individual actor by using a `","` splitter on the match.
 - `(?![\\s\\S]*\/)(.*)$` that matches everything from the last separator to the end of the string. By setting `scopeDirname: true`, the pattern is applied on the full path, which is perfect to get the movie name (that in our example is always the deepest directory in the path). 
-
-Some useful regex can be (replace `DELIM` with your delimiter of choice):
-- `(.+?)(?:DELIM|$)`: break a string into a match for each part of the string delimited by the given separator. Can be used on path to split folders with `'/'`as delimiter or on file name to split the file components according to your separator of choice.
-- `(?<=DELIM).+?(?=DELIM)`: match everything between two separators (that can be different from each other).
-- `(?![\\s\\S]*DELIM)(.*)$`: match everything after the last delimiter of its kind (until end of the string).
 
 `parserconfig.json` (remember: to be placed in your library)
 ```json
@@ -91,7 +82,7 @@ Some useful regex can be (replace `DELIM` with your delimiter of choice):
   },
   "movieMatcher": {
     "scopeDirname": true,
-    "regex": "(?![\\s\\S]*\/)(.*)$",
+    "regex": "(?![\\s\\S]*\/)(.*)$"
   }
 }
 ```
@@ -116,6 +107,11 @@ movieMatcher:
   scopeDirname: true
   regex: "(?![\\s\\S]*\/)(.*)$"
 ```
+
+Some useful regex to reuse (replace `DELIM` with your delimiter of choice):
+- `(.+?)(?:DELIM|$)`: break a string into a match for each part of the string delimited by the given separator. Can be used on path to split folders with `'/'`as delimiter or on file name to split the file components according to your separator of choice.
+- `(?<=DELIM).+?(?=DELIM)`: match everything between two separators (that can be different from each other).
+- `(?![\\s\\S]*DELIM)(.*)$`: match everything after the last delimiter of its kind (until end of the string).
 
 
 ### Arguments
