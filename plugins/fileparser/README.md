@@ -10,7 +10,7 @@ The plugin works by recognizing patterns in your files:
 - a built-in pattern identifies dates and works "out-of-the-box". 
 - for custom patterns (like studio, actors or movie) that are specific to your naming convention, a little bit of configuration is needed to "tell the plugin" how to recognize the right patterns.
 
-fileparser uses the "regular expression" standard to match patterns (regex). There are details and examples below.
+fileparser uses the "regular expression" standard to match patterns (regex).
 
 #### Configuration - not your typical plugin
 
@@ -20,7 +20,7 @@ A configuration file applies to all files and subdirectories below it.
 
 Config files can also be nested. In this case, the deepest and most specific config is always used. 
 
-Configs are searched and loaded dynamically when the plug-in is executed. They can be added, modified or removed while pv is running.
+Configs are searched and loaded when the plug-in is executed. They can be added, modified or removed while pv is running.
 
 #### `parserconfig` file structure
 
@@ -44,7 +44,7 @@ The basic structure of a matcher  is always the same and has only one mandatory 
 | groupsToUse   | number[]  | flase     | If each match is divided in groups (you used brackets in your regex), use this attribute to filter which groups to use in the result. If omitted, the first group is used. Group indexes start at 1. Use 0 to use all groups.          |
 | splitter      | string    | false     | Can be used as an option to further split the matched string into an array of strings (the most frequent use case being a list of actors or labels).           |
 
-#### `parserconfig` examples
+#### `parserconfig` example
 
 Let's assume the following directory and file structure:
 
@@ -113,6 +113,7 @@ Some useful regex to reuse (replace `DELIM` with your delimiter of choice):
 - `(?<=DELIM).+?(?=DELIM)`: match everything between two separators (that can be different from each other).
 - `(?![\\s\\S]*DELIM)(.*)$`: match everything after the last delimiter of its kind (until end of the string).
 
+In addition to the parserconfig file(s), fileparser must be registered and configured in pv's main config file like any other plugin:
 
 ### Arguments
 

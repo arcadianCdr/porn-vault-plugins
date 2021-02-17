@@ -10,7 +10,7 @@ export async function findAndLoadSceneConfig(
   ctx: MySceneContext
 ): Promise<IFileParserConfig | undefined> {
   const { $fs, $logger, $path, scenePath, $yaml } = ctx;
-  const configFile = findConfig(ctx, $path.dirname(scenePath || "/"));
+  const configFile = findConfig(ctx, $path.dirname(scenePath));
 
   if (configFile) {
     $logger.info(`Parsing scene '${scenePath}' using config '${configFile}'`);
@@ -59,7 +59,7 @@ const findConfig = (ctx: Context, dirName: string): string | undefined => {
       return configFileJSON;
     }
 
-    if (dirName === $library || dirName === "/") {
+    if (dirName === $library || dirName === $path.parse(dirName).root) {
       $logger.verbose(`Could not find a config file in the library.`);
       return;
     } else {

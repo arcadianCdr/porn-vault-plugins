@@ -19,6 +19,6 @@
   "labelsMatcher": {
     "scopeDirname": true,
     "regex": "(.+?)(?:\/|$)",
-    "matchesToUse": [7,8]
+    "matchesToUse": [7, 8]
   }
 }
