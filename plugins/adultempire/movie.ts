@@ -12,7 +12,7 @@ async function searchForMovie(
   name: string
 ): Promise<string | false> {
   const url = `https://www.adultempire.com/allsearch/search?q=${name}`;
-  const html = (await $axios.get(url)).data;
+  const html = (await $axios.get<string>(url)).data;
   const $ = $cheerio.load(html);
 
   const firstResult = $(".boxcover").toArray()[0];
@@ -21,10 +21,11 @@ async function searchForMovie(
   if (!href) {
     return false;
   }
-  return "https://adultempire.com" + href;
+  return `https://adultempire.com${href}`;
 }
 
 export default async function (ctx: MyContext): Promise<MovieOutput> {
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   const { args, $moment, $axios, $cheerio, $logger, $formatMessage, movieName, $createImage } = ctx;
 
   const name = movieName
@@ -37,7 +38,7 @@ export default async function (ctx: MyContext): Promise<MovieOutput> {
 
   if (url) {
     const movieUrl = url;
-    const html = (await $axios.get(movieUrl)).data;
+    const html = (await $axios.get<string>(movieUrl)).data;
     const $ = $cheerio.load(html);
 
     const desc = $(".m-b-0.text-dark.synopsis").text();

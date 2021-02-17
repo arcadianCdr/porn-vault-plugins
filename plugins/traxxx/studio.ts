@@ -219,6 +219,7 @@ export class ChannelExtractor {
 }
 
 export default async (initialContext: MyStudioContext): Promise<StudioOutput> => {
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   const { $logger, $formatMessage, $throw, studioName } = initialContext;
 
   try {

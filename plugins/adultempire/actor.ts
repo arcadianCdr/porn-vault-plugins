@@ -7,6 +7,7 @@ interface MyContext extends ActorContext {
 }
 
 export default async function (ctx: MyContext): Promise<ActorOutput> {
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   const { args, $axios, $cheerio, $logger, $formatMessage, actorName, $createImage } = ctx;
 
   const name = actorName
@@ -23,8 +24,8 @@ export default async function (ctx: MyContext): Promise<ActorOutput> {
   const href = $(firstResult).attr("href");
 
   if (href) {
-    const actorUrl = "https://adultempire.com" + href;
-    const html = (await $axios.get(actorUrl)).data;
+    const actorUrl = `https://adultempire.com${href}`;
+    const html = (await $axios.get<string>(actorUrl)).data;
     const $ = $cheerio.load(html);
 
     let avatar: string | undefined;
@@ -52,7 +53,7 @@ export default async function (ctx: MyContext): Promise<ActorOutput> {
       description = descEl.text().trim();
     }
 
-    let aliases;
+    let aliases: string[] = [];
 
     const aliasEl = $("#content .row .col-sm-5 .m-b-1");
 

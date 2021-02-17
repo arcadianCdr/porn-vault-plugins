@@ -38,10 +38,10 @@ module.exports = {
     "@typescript-eslint/no-unsafe-call": "warn",
     "@typescript-eslint/no-unsafe-member-access": "warn",
     "@typescript-eslint/no-unsafe-assignment": "warn",
-    "@typescript-eslint/require-await": "warn",
     "prefer-template": "warn",
-    curly: "warn",
+    curly: "error",
 
+    "@typescript-eslint/require-await": "off",
     "no-unused-vars": "off",
     /* "mocha/no-mocha-arrows": "off", */
     // Disable the default rule
