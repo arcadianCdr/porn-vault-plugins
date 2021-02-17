@@ -15,7 +15,7 @@ describe("freeones", () => {
   it("Search 'Gia DiMarco'", async () => {
     const result = await search({
       dry: false,
-      blacklist: [],
+      blacklist: ["avatar"],
       useImperial: false,
       useAvatarAsThumbnail: false,
     });
@@ -26,7 +26,7 @@ describe("freeones", () => {
       height: 163,
       weight: 50,
       birthplace: "San Francisco, CA",
-      // zodiac: "Scorpio",
+      zodiac: "Scorpio",
       measurements: "34D-24-35",
       "waist size": 24,
       "hip size": 35,
@@ -41,7 +41,7 @@ describe("freeones", () => {
     });
     expect(result.nationality).to.equal("US");
     expect(result.bornOn).to.be.a("number");
-    expect(result.avatar).to.be.a("string");
+    expect(result.avatar).to.be.undefined;
     expect(result.thumbnail).to.be.undefined;
     expect(result.labels).to.have.length.greaterThan(0);
     expect(result.labels).to.contain("Brown Hair");
@@ -55,9 +55,9 @@ describe("freeones", () => {
   it("Search 'Gia DiMarco' without measurements", async () => {
     const result = await search({
       dry: false,
-      blacklist: ["measurements"],
+      blacklist: ["measurements", "avatar"],
       useImperial: false,
-      useAvatarAsThumbnail: false,
+      useAvatarAsThumbnail: true,
     });
     expect(result.custom).to.deep.equal({
       "hair color": "Brown",
@@ -66,7 +66,7 @@ describe("freeones", () => {
       height: 163,
       weight: 50,
       birthplace: "San Francisco, CA",
-      // zodiac: "Scorpio",
+      zodiac: "Scorpio",
       gender: "Female",
       sex: "Female",
       piercings: "Left Nostril; Clitoris",
@@ -75,8 +75,8 @@ describe("freeones", () => {
     });
     expect(result.nationality).to.equal("US");
     expect(result.bornOn).to.be.a("number");
-    expect(result.avatar).to.be.a("string");
-    expect(result.thumbnail).to.be.undefined;
+    expect(result.avatar).to.be.undefined;
+    expect(result.thumbnail).to.be.a("string");
     expect(result.labels).to.have.length.greaterThan(0);
     expect(result.labels).to.contain("Brown Hair");
     expect(result.labels).to.contain("Brown Eyes");

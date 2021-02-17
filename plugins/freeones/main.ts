@@ -211,16 +211,52 @@ module.exports = async (ctx: MyContext): Promise<ActorOutput> => {
     return { weight: kgToLbs(weight) };
   }
 
-  /* function getZodiac(): Partial<{ zodiac: string }> {
-    if (isBlacklisted("zodiac")) return {};
-    $logger.verbose("Getting zodiac sign...");
+  function computeZodiac(timestamp: number): string | undefined {
+    const inputDate = $moment(timestamp);
+    if (!inputDate.isValid()) return;
 
-    const selector = $('[data-test="link_zodiac"] .text-underline-always');
-    if (!selector) return {};
-    const zodiacText = $(selector).text();
-    const zodiac = zodiacText.split(" (")[0];
-    return { zodiac };
-  } */
+    const day = inputDate.date();
+    const month = inputDate.month();
+    // signSwitchDay[i] gives the boundary day between two signs, for the month at index 'i' (according to Britannica Encyclopedia)
+    const signSwitchDay = [20, 19, 21, 20, 21, 22, 23, 23, 23, 24, 22, 22];
+    const signAtMonthStart = [
+      "Capricorn",
+      "Aquarius",
+      "Pisces",
+      "Aries",
+      "Taurus",
+      "Gemini",
+      "Cancer",
+      "Leo",
+      "Virgo",
+      "Libra",
+      "Scorpio",
+      "Sagittarius",
+    ];
+
+    // signSwitchDay[0] gives 20, meaning any day less than 20 at month index 0 (january) is the sign at the start of that month index (capricorn),
+    // and any day greater than 20 is the sign at the start of the next month: i+1 (aquarius)
+    const isBeforeSwithchDay = day <= signSwitchDay[month];
+
+    // Mod 12 allows us to cycle between 0-11, so if the day is past the boundary day of month index 11 (december), we'll get index 0 (january)
+    return signAtMonthStart[isBeforeSwithchDay ? month : (month + 1) % 12];
+  }
+
+  function getZodiac(): Partial<{ zodiac: string }> {
+    if (isBlacklisted("zodiac")) return {};
+
+    const bornOn = getAge().bornOn;
+    if (!bornOn) {
+      $logger.verbose("No birth date found => zodiac will be empty.");
+      return {};
+    }
+    const computedZodiac = computeZodiac(bornOn.valueOf());
+    $logger.verbose(
+      `Computed zodiac sign for: ${new Date(bornOn).toLocaleDateString()}: ${computedZodiac}`
+    );
+
+    return { zodiac: computedZodiac };
+  }
 
   function getBirthplace(): Partial<{ birthplace: string }> {
     if (isBlacklisted("birthplace")) return {};
@@ -264,6 +300,10 @@ module.exports = async (ctx: MyContext): Promise<ActorOutput> => {
 
   async function getAvatar(): Promise<Partial<{ avatar: string; thumbnail: string }>> {
     if (args.dry) return {};
+    if (isBlacklisted("avatar") && !useAvatarAsThumbnail) {
+      // If not using either avatar or thumbnail, return nothing
+      return {};
+    }
     $logger.verbose("Getting avatar (and/or thumbnail)...");
 
     const imgEl = $(`.dashboard-header img.img-fluid`);
@@ -274,17 +314,16 @@ module.exports = async (ctx: MyContext): Promise<ActorOutput> => {
     if (!url) return {};
 
     const imgId = await $createImage(url, `${actorName} (avatar)`);
+    const result: Partial<{ avatar: string; thumbnail: string }> = {};
 
-    if (!useAvatarAsThumbnail) {
-      if (isBlacklisted("avatar")) return {};
-      return { avatar: imgId };
-    } else {
-      if (isBlacklisted("avatar")) return { thumbnail: imgId };
-      return {
-        avatar: imgId,
-        thumbnail: imgId,
-      };
+    if (!isBlacklisted("avatar")) {
+      result.avatar = imgId;
     }
+    if (useAvatarAsThumbnail) {
+      result.thumbnail = imgId;
+    }
+
+    return result;
   }
 
   function getAge(): Partial<{ bornOn: number }> {
@@ -432,7 +471,7 @@ module.exports = async (ctx: MyContext): Promise<ActorOutput> => {
     ...getHipSize(),
     ...getBraSize(),
     ...getBirthplace(),
-    /* ...getZodiac(), */
+    ...getZodiac(),
     ...getGender(),
     ...getTattoos(),
     ...getPiercings(),

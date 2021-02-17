@@ -1,0 +1,30 @@
+{
+  "name": "legalporno",
+  "version": "0.2.0",
+  "authors": ["boi123212321"],
+  "description": "Scrape Legalporno/Analvids scene data",
+  "pluginEvents": ["sceneCreated", "sceneCustom"],
+  "arguments": [
+    {
+      "name": "deep",
+      "type": "Boolean",
+      "required": false,
+      "default": true,
+      "description": "Fetch scene details"
+    },
+    {
+      "name": "dry",
+      "type": "Boolean",
+      "required": false,
+      "default": false,
+      "description": "Whether to commit data changes"
+    },
+    {
+      "name": "useSceneId",
+      "type": "Boolean",
+      "required": false,
+      "default": false,
+      "description": "Whether to set scene name to found shoot ID"
+    }
+  ]
+}
