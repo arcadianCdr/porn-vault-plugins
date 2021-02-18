@@ -1,6 +1,6 @@
-import { ActorContext } from '../../types/actor';
-import { SceneContext } from '../../types/scene';
-import { StudioContext } from '../../types/studio';
+import { ActorContext } from "../../types/actor";
+import { SceneContext } from "../../types/scene";
+import { StudioContext } from "../../types/studio";
 
 interface MyContext {
   args: {
@@ -15,14 +15,20 @@ module.exports = ({ args, data }: (ActorContext | SceneContext | StudioContext) 
   const whitelist = (args.whitelist || []).map(lower);
   const blacklist = (args.blacklist || []).map(lower);
 
-  if (!data.labels) return {};
+  if (!data.labels) {
+    return {};
+  }
 
-  if (!whitelist.length && !blacklist.length) return {};
+  if (!whitelist.length && !blacklist.length) {
+    return {};
+  }
 
   return {
     labels: data.labels.filter((label) => {
       const lowercased = lower(label);
-      if (whitelist.length && !whitelist.includes(label)) return false;
+      if (whitelist.length && !whitelist.includes(label)) {
+        return false;
+      }
       return blacklist.every((blacklisted) => blacklisted !== lowercased);
     }),
   };

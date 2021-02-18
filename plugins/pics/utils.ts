@@ -147,7 +147,7 @@ export async function executeScape(
   query: string,
   scrapeDefinitions: ScrapeDefinition[]
 ): Promise<ScrapeResult> {
-  let result: ScrapeResult = { extra: [] };
+  const result: ScrapeResult = { extra: [] };
 
   const scrapePromises = scrapeDefinitions.map((definition) =>
     scanFolder(ctx, query, definition)

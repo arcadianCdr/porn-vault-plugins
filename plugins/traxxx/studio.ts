@@ -211,14 +211,15 @@ export class ChannelExtractor {
 
   getCustom(): Partial<{ "Traxxx Slug": string; "Traxxx Type": string; Homepage: string }> {
     return {
-      ["Traxxx Slug"]: this.preferredEntity?.entity?.slug,
-      ["Traxxx Type"]: this.preferredEntity?.entity?.type,
+      "Traxxx Slug": this.preferredEntity?.entity?.slug,
+      "Traxxx Type": this.preferredEntity?.entity?.type,
       Homepage: this.preferredEntity?.entity?.url,
     };
   }
 }
 
 export default async (initialContext: MyStudioContext): Promise<StudioOutput> => {
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   const { $logger, $formatMessage, $throw, studioName } = initialContext;
 
   try {
