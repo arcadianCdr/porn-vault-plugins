@@ -111,7 +111,7 @@ export default async function (ctx: MySceneContext): Promise<SceneOutput> {
           `Found scene: ${sceneName} based on movie '${movie}' and scene number: ${sceneIndex + 1}`
         );
 
-        let actorsFound: string[] = [];
+        const actorsFound: string[] = [];
         $(".col-sm-6.text-right.text-left-xs.m-b-1 > div")
           .eq(sceneIndex)
           .each(function (i, elm) {
