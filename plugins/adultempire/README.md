@@ -1,4 +1,4 @@
-## adultempire 0.4.1
+## adultempire 0.5.0
 
 by boi123212321
 
@@ -6,9 +6,11 @@ Scrape data from adultempire
 
 ### Arguments
 
-| Name | Type    | Required | Description                    |
-| ---- | ------- | -------- | ------------------------------ |
-| dry  | Boolean | false    | Whether to commit data changes |
+| Name      | Type     | Required | Description                                                                                          |
+| --------- | -------- | -------- | ---------------------------------------------------------------------------------------------------- |
+| whitelist | String[] | false    | Array of data fields to pick (possible values: 'avatar', 'hero', 'aliases', 'rating', 'description') |
+| blacklist | String[] | false    | Array of data fields to omit (for values see whitelist)                                              |
+| dry       | Boolean  | false    | Whether to commit data changes                                                                       |
 
 ### Example installation with default arguments
 
@@ -21,6 +23,8 @@ Scrape data from adultempire
       "adultempire": {
         "path": "./plugins/adultempire/main.ts",
         "args": {
+          "whitelist": [],
+          "blacklist": [],
           "dry": false
         }
       }
@@ -46,6 +50,8 @@ plugins:
     adultempire:
       path: ./plugins/adultempire/main.ts
       args:
+        whitelist: []
+        blacklist: []
         dry: false
   events:
     movieCreated:
