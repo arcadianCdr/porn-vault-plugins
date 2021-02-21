@@ -29,7 +29,7 @@ export default async function (ctx: MySceneContext): Promise<SceneOutput> {
 
   if (!scenePath) $throw("Uh oh. You shouldn't use the plugin for this type of event");
 
-  $logger.info(`Scraping scene: ${sceneName} with input data: ${data}`);
+  $logger.info(`Scraping scene: ${sceneName} with input data: name: '${data.name}', actors: ${JSON.stringify(data.actors)}`);
 
   const searchActors: string[] | undefined = data.actors;
   const searchMovie: string | undefined = data.movie;
@@ -150,7 +150,7 @@ export default async function (ctx: MySceneContext): Promise<SceneOutput> {
   };
 
   if (args.dry === true) {
-    $logger.info(`dry mode. Would have returned: ${sceneOutput}`);
+    $logger.info(`dry mode. Would have returned: ${JSON.stringify(sceneOutput)}`);
     return {};
   } else {
     return sceneOutput;
