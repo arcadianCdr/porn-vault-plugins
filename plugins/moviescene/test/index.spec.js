@@ -33,9 +33,9 @@ describe("moviescene", () => {
     });
     it("Should fetch scene details based on actors match", async () => {
       const result = await runPlugin({
-        sceneName: "Big Wet Asses 12 Eva",
-        scenePath: "/Big Wet Asses 12 Eva.mp4",
-        data: { movie: "Big Wet Asses 12", actors: ["Eva Angelina"] },
+        sceneName: "Big Wet Asses Eva",
+        scenePath: "/Big Wet Asses Eva.mp4",
+        data: { movie: "Big Wet Asses 12", actors: ["Eva Angelina", "Michael Stefano"] },
         args: {},
       });
       expect(result).to.be.an("object");

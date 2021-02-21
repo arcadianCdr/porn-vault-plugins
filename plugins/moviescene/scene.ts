@@ -29,6 +29,7 @@ export default async function (ctx: MySceneContext): Promise<SceneOutput> {
 
   if (!scenePath) $throw("Uh oh. You shouldn't use the plugin for this type of event");
 
+  $logger.warn(`Piped data: ${JSON.stringify(ctx.data, null, "\t")}`); // @todo: delete
   $logger.info(`Scraping scene: ${sceneName} with input data: name: '${data.name}', actors: ${JSON.stringify(data.actors)}`);
 
   const searchActors: string[] | undefined = data.actors;
@@ -107,15 +108,15 @@ export default async function (ctx: MySceneContext): Promise<SceneOutput> {
       );
     }
 
-    // Scrapes scene details based on matched scene index (actor match always takes precedence on number match from the name)
-    const sceneIndex = sceneIndexBestActorsMatch ?? sceneIndexMatchedFromName;
+    // Scrapes scene details based on matched scene index (name/number match always takes precedence on actor match)
+    const sceneIndex = sceneIndexMatchedFromName ?? sceneIndexBestActorsMatch;
     if (sceneIndex !== undefined && sceneIndex > -1) {
       name = $(".col-sm-6 > .m-b-1").eq(sceneIndex).text().trim();
       if (name.match(/Scene \d+/)) {
         name = `${movieName} - ${name}`;
       }
       $logger.info(
-        `Found scene: ${sceneName} based on movie '${movie}' and scene number: ${sceneIndex + 1}`
+        `Found scene: ${name} based on movie '${movie}' and scene index: ${sceneIndex}`
       );
 
       const actorsFound: string[] = [];
