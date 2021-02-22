@@ -75,7 +75,7 @@ module.exports = async (ctx: MySceneContext): Promise<SceneOutput> => {
       $logger.verbose(`Matched movie: ${matched}`);
       return { movie: matched.toString().trim() };
     }
-    
+
     $logger.verbose(`Found no movie.`);
     return {};
   }
@@ -108,9 +108,9 @@ module.exports = async (ctx: MySceneContext): Promise<SceneOutput> => {
     return {};
   } else {
     if (Object.keys(sceneOutput).length) {
-      $logger.info(`Successfully matched scene: ${sceneOutput.name}`)
+      $logger.info(`Successfully matched scene: ${sceneOutput.name}`);
     } else {
-      $logger.info(`Could not match anything for scene: ${sceneName}`)
+      $logger.info(`Could not match anything for scene: ${sceneName}`);
     }
     return sceneOutput;
   }
