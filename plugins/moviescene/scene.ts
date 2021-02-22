@@ -29,9 +29,8 @@ export default async function (ctx: MySceneContext): Promise<SceneOutput> {
 
   if (!scenePath) $throw("Uh oh. You shouldn't use the plugin for this type of event");
 
-  $logger.warn(`Piped data: ${JSON.stringify(ctx.data, null, "\t")}`); // @todo: delete
-  $logger.info(`Scraping scene: ${sceneName} with input data: name: '${data.name}', actors: ${JSON.stringify(data.actors)}`);
-
+  // Piped date take precedence when they exist
+  const searchName: string | undefined = data.name ?? sceneName;
   const searchActors: string[] | undefined = data.actors;
   const searchMovie: string | undefined = data.movie;
 
@@ -42,6 +41,9 @@ export default async function (ctx: MySceneContext): Promise<SceneOutput> {
   let releaseDate: number | undefined;
   let url: string | false = false;
   let movieName: string = "";
+
+  $logger.warn(`Piped data: ${JSON.stringify(ctx.data, null, "\t")}`); // @todo: delete
+  $logger.info(`Scraping scene: ${sceneName} with input data: scene name: '${searchName}', movie: '${searchMovie}', actors: ${JSON.stringify(searchActors)}`);
 
   if (searchMovie) {
     movieName = searchMovie
@@ -66,15 +68,11 @@ export default async function (ctx: MySceneContext): Promise<SceneOutput> {
       .replace(/- On Sale!.*/i, "")
       .trim();
 
-    $logger.verbose(
-      `Looking up scene number for movie '${movie}' based on scene name: ${sceneName} and actors: ${JSON.stringify(
-        searchActors
-      )}`
-    );
+    $logger.verbose(`Looking up scene number for found movie: '${movie}'`);
 
     // Find the index of the best matching scene based scene number matching in the scene's name (assumes cleaned-up scene names where the only digits represents the scene number)
     let sceneIndexMatchedFromName: number | undefined;
-    const matchedSceneNumber = sceneName.match(/\d{1,2}/);
+    const matchedSceneNumber = searchName.match(/\d{1,2}/);
     if (matchedSceneNumber) {
       sceneIndexMatchedFromName = Number(matchedSceneNumber[0]) - 1;
       $logger.verbose(

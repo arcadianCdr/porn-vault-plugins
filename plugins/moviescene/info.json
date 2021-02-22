@@ -1,10 +1,10 @@
 {
   "name": "moviescene",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "authors": [
     "arcadianCdr, boi123212321 (for some adultempire movie scraping code I reused)"
   ],
-  "description": "Scrape scene details from adultempire. Does not work by itself. It needs to be piped (chained) with another plugin that will parse the movie, actors ro scene name (like fileparser).",
+  "description": "Scrape scene details from adultempire. Does not work by itself. It needs to be piped (chained) with another plugin that will parse the movie, actors or scene name (like fileparser).",
   "pluginEvents": ["sceneCreated"],
   "arguments": [
     {
