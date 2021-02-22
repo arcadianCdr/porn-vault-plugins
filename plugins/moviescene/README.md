@@ -1,8 +1,8 @@
-## moviescene 0.1.0
+## moviescene 0.1.1
 
 by arcadianCdr, boi123212321 (for some adultempire movie scraping code I reused)
 
-Scrape scene details from adultempire. Does not work by itself. It needs to be piped (chained) with another plugin that will parse the movie, actors ro scene name (like fileparser).
+Scrape scene details from adultempire. Does not work by itself. It needs to be piped (chained) with another plugin that will parse the movie, actors or scene name (like fileparser).
 
 ### Arguments
 
