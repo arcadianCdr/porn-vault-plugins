@@ -7,6 +7,8 @@ export const dateToTimestamp = (ctx: Context, textToParse: string): number | und
 
   if (!textToParse || textToParse === "") return;
 
+  $logger.debug(`Attempting a date match in: ${textToParse}`);
+
   // '_' replacement are needed for proper boundaries detection by the regex
   const dateStr = textToParse.replace(/_/g, "-");
 
@@ -22,59 +24,57 @@ export const dateToTimestamp = (ctx: Context, textToParse: string): number | und
   const mmyyyy = /(\b1[012]|0[1-9])[- /.](\b(?:19|20)\d\d)/.exec(dateStr);
   const yyyy = /(\b(?:19|20)\d\d)/.exec(dateStr);
 
-  $logger.verbose(`Converting date ${JSON.stringify(dateStr)} to timestamp`);
-
   if (yyyymmdd && yyyymmdd.length) {
     const date = yyyymmdd[0].replace(/[- /.]/g, "-");
 
-    $logger.verbose("\tSUCCESS: Found => yyyymmdd");
+    $logger.debug("\tSUCCESS: Found => yyyymmdd");
 
     return $moment(date, "YYYY-MM-DD").valueOf();
   }
   if (ddmmyyyy && ddmmyyyy.length) {
     const date = ddmmyyyy[0].replace(/[- /.]/g, "-");
 
-    $logger.verbose("\tSUCCESS: Found => ddmmyyyy");
+    $logger.debug("\tSUCCESS: Found => ddmmyyyy");
 
     return $moment(date, "DD-MM-YYYY").valueOf();
   }
   if (yymmdd && yymmdd.length) {
     const date = yymmdd[0].replace(/[- /.]/g, "-");
 
-    $logger.verbose("\tSUCCESS: Found => yymmdd");
+    $logger.debug("\tSUCCESS: Found => yymmdd");
 
     return $moment(date, "YY-MM-DD").valueOf();
   }
   if (ddmmyy && ddmmyy.length) {
     const date = ddmmyy[0].replace(/[- /.]/g, "-");
 
-    $logger.verbose("\tSUCCESS: Found => ddmmyy");
+    $logger.debug("\tSUCCESS: Found => ddmmyy");
 
     return $moment(date, "DD-MM-YY").valueOf();
   }
   if (yyyymm && yyyymm.length) {
     const date = yyyymm[0].replace(/[- /.]/g, "-");
 
-    $logger.verbose("\tSUCCESS: Found => yyyymm");
+    $logger.debug("\tSUCCESS: Found => yyyymm");
 
     return $moment(date, "YYYY-MM").valueOf();
   }
   if (mmyyyy && mmyyyy.length) {
     const date = mmyyyy[0].replace(/[- /.]/g, "-");
 
-    $logger.verbose("\tSUCCESS: Found => mmyyyy");
+    $logger.debug("\tSUCCESS: Found => mmyyyy");
 
     return $moment(date, "MM-YYYY").valueOf();
   }
   if (yyyy && yyyy.length) {
     const date = yyyy[0];
 
-    $logger.verbose("\tSUCCESS: Found => yyyy");
+    $logger.debug("\tSUCCESS: Found => yyyy");
 
     return $moment(date, "YYYY").valueOf();
   }
 
-  $logger.verbose("\tFAILED: Could not find a date");
+  $logger.debug("\tFAILED: Could not find a date");
 };
 
 export function matchElement(
@@ -108,7 +108,7 @@ export function matchElement(
 
   matches.forEach((match, i) => {
     if (!useAllMatches && !matchesToUse.includes(i + 1)) {
-      $logger.verbose(`Skipping match not to be used: [${i + 1}] ${JSON.stringify(match)}`);
+      $logger.debug(`Skipping match not to be used: [${i + 1}] ${JSON.stringify(match)}`);
       return;
     }
 
@@ -116,13 +116,13 @@ export function matchElement(
     let groups: string[] = match;
     if (!useAllGroups && groups.length > 1) {
       groups = match.filter((group, j) => groupsToUse.includes(j + 1));
-      $logger.verbose(`Using group(s) ${groupsToUse}: ${JSON.stringify(groups)}`);
+      $logger.debug(`Using group(s) ${groupsToUse}: ${JSON.stringify(groups)}`);
     }
 
     matchedResult.push(...getSplitResults(groups.join(" "), matcher.splitter));
   });
 
-  $logger.verbose(`Final matched result: "${JSON.stringify(matchedResult)}"`);
+  $logger.debug(`Final matched result: "${JSON.stringify(matchedResult)}"`);
   return matchedResult;
 }
 
