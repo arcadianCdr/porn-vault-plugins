@@ -9,6 +9,7 @@ interface MyContext extends ActorContext {
     useImperial?: boolean;
     searchResultsSort?: "string";
     useAvatarAsThumbnail?: boolean;
+    exactNameMatch?: boolean;
     piercingsType?: "string" | "array";
     tattoosType?: "string" | "array";
   };
@@ -154,6 +155,16 @@ module.exports = async (ctx: MyContext): Promise<ActorOutput> => {
     return {}; // return for type compatibility
   }
   const $ = $cheerio.load(html || "");
+
+  // Enforces exact match (or fails)
+  let name: string | undefined;
+  if (args.exactNameMatch) {
+    name = $(".h1.d-flex.align-items-center.mb-1.mb-md-0.font-weight-bold").text().trim().replace(" Bio","");
+    if (name.localeCompare(actorName, undefined, {sensitivity: "base"}) !== 0) {
+      $logger.warn(`Stopped scraping as actor name is not an exact match: found: '${name}', expected: '${actorName}'`)
+      return {};
+    }
+  }
 
   function getNationality(): Partial<{ nationality: string }> {
     if (isBlacklisted("nationality")) return {};
@@ -482,6 +493,7 @@ module.exports = async (ctx: MyContext): Promise<ActorOutput> => {
   }
 
   const data: ActorOutput = {
+    name,
     ...getNationality(),
     ...getAge(),
     ...getAlias(),

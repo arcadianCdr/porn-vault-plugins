@@ -48,6 +48,13 @@
       "description": "Use the discovered Actor Avatar as the Actor Thumbnail image"
     },
     {
+      "name": "exactNameMatch",
+      "type": "Boolean",
+      "required": false,
+      "default": false,
+      "description": "Returns data only if the actor's name on freeones is the same as the name being looked up"
+    },
+    {
       "name": "piercingsType",
       "type": "'string' | 'array'",
       "required": false,
