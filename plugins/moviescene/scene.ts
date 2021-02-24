@@ -43,7 +43,11 @@ export default async function (ctx: MySceneContext): Promise<SceneOutput> {
   let movieName: string = "";
 
   $logger.warn(`Piped data: ${JSON.stringify(ctx.data, null, "\t")}`); // @todo: delete
-  $logger.info(`Scraping scene: ${sceneName} with input data: scene name: '${searchName}', movie: '${searchMovie}', actors: ${JSON.stringify(searchActors)}`);
+  $logger.info(
+    `Scraping scene: ${sceneName} with input data: scene name: '${searchName}', movie: '${searchMovie}', actors: ${JSON.stringify(
+      searchActors
+    )}`
+  );
 
   if (searchMovie) {
     movieName = searchMovie
@@ -72,7 +76,7 @@ export default async function (ctx: MySceneContext): Promise<SceneOutput> {
 
     // Find the index of the best matching scene based scene number matching in the scene's name (assumes cleaned-up scene names where the only digits represents the scene number)
     let sceneIndexMatchedFromName: number | undefined;
-    const matchedSceneNumber = searchName.match(/\d{1,2}/);
+    const matchedSceneNumber = /\d{1,2}/.exec(searchName);
     if (matchedSceneNumber) {
       sceneIndexMatchedFromName = Number(matchedSceneNumber[0]) - 1;
       $logger.verbose(
@@ -110,12 +114,10 @@ export default async function (ctx: MySceneContext): Promise<SceneOutput> {
     const sceneIndex = sceneIndexMatchedFromName ?? sceneIndexBestActorsMatch;
     if (sceneIndex !== undefined && sceneIndex > -1) {
       name = $(".col-sm-6 > .m-b-1").eq(sceneIndex).text().trim();
-      if (name.match(/Scene \d+/)) {
+      if (/Scene \d+/.exec(name)) {
         name = `${movieName} - ${name}`;
       }
-      $logger.info(
-        `Found scene: ${name} based on movie '${movie}' and scene index: ${sceneIndex}`
-      );
+      $logger.info(`Found scene: ${name} based on movie '${movie}' and scene index: ${sceneIndex}`);
 
       const actorsFound: string[] = [];
       $(".col-sm-6.text-right.text-left-xs.m-b-1 > div")
