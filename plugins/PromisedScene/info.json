@@ -20,6 +20,13 @@
       "description": "When searching TPDB, if there is **only** 1 result, even if its title **doesn't** match the searched title, if should return that data"
     },
     {
+      "name": "usePipedInputInSearch",
+      "type": "Boolean",
+      "required": false,
+      "default": true,
+      "description": "This option is only relevant when PromisedScene is chained from another plugin (piped data are set). If true, the piped data take precedence for the search. If false, the piped data are ignored."
+    },
+    {
       "name": "parseActor",
       "type": "Boolean",
       "required": true,

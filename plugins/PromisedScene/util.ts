@@ -226,6 +226,103 @@ export const matchSceneResultToSearch = (
 };
 
 /**
+ * Tries to find a scene that matches the piped data, either by scene title or by a combination of actors, date and studios.
+ *   - Scene title match: TPDB results cleanup kept unchanged from matchSceneResultToSearch.
+ *   - Scene match on actors/date/studio specific to piped data use case.
+ *
+ * @param ctx - plugin context
+ * @param sceneList - list of scenes to try to match
+ * @returns the matches scene or null
+ */
+export const matchSceneResultToPipedData = (
+  ctx: MyContext,
+  sceneList: SceneResult.SceneData[]
+): SceneResult.SceneData | null => {
+  const { data, $moment } = ctx;
+  ctx.$logger.verbose(`MATCH PIPED: ${sceneList.length} results found`);
+
+  for (const scene of sceneList) {
+    ctx.$logger.verbose(
+      `MATCH PIPED:\tTrying to match TPD title: ${scene.title} --with--> ${data.name}`
+    );
+
+    let searchedTitle = data.name?.trim();
+    let matchTitle = stripStr(scene.title || "").toLowerCase();
+
+    // lets remove the actors from the scenename and the searched title -- We should already know this
+    if (data.actors) {
+      for (const actor of data.actors) {
+        matchTitle = matchTitle.replace(actor.toLowerCase(), "");
+      }
+    }
+
+    // lets remove the Studio from the scenename and the searched title -- We should already know this
+    if (data.studio) {
+      matchTitle = matchTitle.replace(data.studio.toLowerCase(), "");
+    }
+
+    matchTitle = matchTitle.trim();
+    if (matchTitle) {
+      const matchTitleRegex = new RegExp(matchTitle, "i");
+
+      if (searchedTitle !== undefined) {
+        if (matchTitleRegex.test(searchedTitle)) {
+          ctx.$logger.verbose(
+            `MATCH PIPED:\t\tSUCCESS: Title match: ${searchedTitle} do match ${matchTitle}`
+          );
+          return scene;
+        } else {
+          ctx.$logger.verbose(
+            `MATCH PIPED:\t\tFAILURE: Title match: ${searchedTitle} do not match ${matchTitle}`
+          );
+        }
+      }
+    }
+
+    if (data.actors?.length && data.releaseDate) {
+      ctx.$logger.verbose(
+        `MATCH PIPED:\tTrying to match TPD actors, studio and date: ${JSON.stringify(
+          scene.performers
+        )} on ${scene.date} from ${scene.site?.name} --with--> ${JSON.stringify(data.actors)} on ${
+          data.releaseDate
+        } from ${data.studio}`
+      );
+
+      const isActorsMatch: boolean = data.actors.every((actor) =>
+        scene.performers.filter(
+          ({ name }) => name.localeCompare(actor, undefined, { sensitivity: "base" }) === 0
+        )
+      );
+
+      const isDateMatch: boolean = $moment(scene.date, "YYYY-MM-DD").valueOf() === data.releaseDate;
+
+      // Assume a studio match if some data for the check are missing (actors / date are considered enough in this case)
+      let isStudioMatch: boolean = true;
+      if (scene.site?.name && data.studio) {
+        const cleanupRegex = /[\s"'.,-\/#!$%\^&*;:{}=\-_`~()\\\[\]@+|?><]/g;
+        isStudioMatch =
+          scene.site.name
+            .replace(cleanupRegex, "")
+            .localeCompare(data.studio.replace(cleanupRegex, ""), undefined, {
+              sensitivity: "base",
+            }) === 0;
+      }
+
+      if (isActorsMatch && isDateMatch && isStudioMatch) {
+        ctx.$logger.verbose(`MATCH PIPED:\t\tSUCCESS: matched on actors and date`);
+        return scene;
+      } else {
+        ctx.$logger.verbose(`MATCH PIPED:\t\tFAILURE: no match on actors and date`);
+      }
+    }
+  }
+
+  ctx.$logger.error(`MATCH PIPED:\tERR: did not find any match`);
+
+  return null;
+};
+
+/**
  * @param sceneData - tpdb scene data
  * @returns the data in a plugin scene output form
  */

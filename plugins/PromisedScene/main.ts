@@ -8,6 +8,7 @@ import {
   dateToTimestamp,
   isPositiveAnswer,
   manualTouchChoices,
+  matchSceneResultToPipedData,
   matchSceneResultToSearch,
   normalizeSceneResultData,
   timestampToString,
@@ -25,6 +26,7 @@ module.exports = async (ctx: MyContext): Promise<SceneOutput> => {
     args,
     $inquirer,
     $createImage,
+    data,
   } = ctx;
 
   /**
@@ -38,6 +40,10 @@ module.exports = async (ctx: MyContext): Promise<SceneOutput> => {
   }
 
   // Checking all of the arguments are set in the plugin
+
+  if (!Object.hasOwnProperty.call(args, "usePipedInputInSearch")) {
+    args.usePipedInputInSearch = false;
+  }
 
   if (!Object.hasOwnProperty.call(args, "useTitleInSearch")) {
     $logger.warn("Missing useTitleInSearch in plugin args!");
@@ -87,6 +93,17 @@ module.exports = async (ctx: MyContext): Promise<SceneOutput> => {
   let searchTimestamp: number | undefined = parsedTimestamp ?? undefined;
   let userMovie: string | undefined;
   let extra: string | undefined;
+
+  if (args.usePipedInputInSearch && Object.keys(data).length) {
+    $logger.verbose(
+      `The following piped data take precedence for the search: ${JSON.stringify(data)}`
+    );
+    searchTitle = data.name ?? data.movie ?? searchTitle;
+    searchActors = data.actors ?? searchActors;
+    searchStudio = data.studio ?? searchStudio;
+    searchTimestamp = data.releaseDate ?? searchTimestamp;
+    userMovie = data.movie ?? userMovie;
+  }
 
   const gotResultOrExit = false;
   do {
@@ -561,7 +578,14 @@ module.exports = async (ctx: MyContext): Promise<SceneOutput> => {
       return null;
     }
 
-    const matchedScene = matchSceneResultToSearch(ctx, sceneList, searchActors, searchStudio);
+    let matchedScene: SceneResult.SceneData | null;
+    if (args.usePipedInputInSearch && Object.keys(data).length) {
+      // Match results against piped data
+      matchedScene = matchSceneResultToPipedData(ctx, sceneList);
+    } else {
+      // Normal filename based result matching
+      matchedScene = matchSceneResultToSearch(ctx, sceneList, searchActors, searchStudio);
+    }
 
     if (matchedScene) {
       return mergeSearchResult(matchedScene);
