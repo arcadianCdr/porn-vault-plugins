@@ -299,7 +299,7 @@ export const matchSceneResultToPipedData = (
       // Assume a studio match if some data for the check are missing (actors / date are considered enough in this case)
       let isStudioMatch: boolean = true;
       if (scene.site?.name && data.studio) {
-        const cleanupRegex = /[\s"'.,-/#!$%^&*;:{}=\-_`~()\\[]@+|?><]/g;
+        const cleanupRegex = /[\s"'.,-/#!$%^&*;:{}=\-_`~()\\[\]@+|?><]/g;
         isStudioMatch =
           scene.site.name
             .replace(cleanupRegex, "")

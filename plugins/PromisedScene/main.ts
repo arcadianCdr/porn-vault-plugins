@@ -96,7 +96,7 @@ module.exports = async (ctx: MyContext): Promise<SceneOutput> => {
 
   if (args.usePipedInputInSearch && Object.keys(data).length) {
     $logger.verbose(`The context contains piped data: ${JSON.stringify(data)}`);
-    searchTitle = data.name ?? data.movie ?? searchTitle;
+    searchTitle = data.name ?? data.movie;
     searchActors = data.actors ?? searchActors;
     searchStudio = data.studio ?? searchStudio;
     searchTimestamp = data.releaseDate ?? searchTimestamp;
