@@ -1201,104 +1201,104 @@ describe("PromisedScene", () => {
       expect(result.actors).to.be.a("Array");
       expect(result.studio).to.equal("New Sensations");
     });
+  });
 
-    describe("When piped data exist...", () => {
-      it("Should use piped data when they exist and are enabled through config", async () => {
-        const result = await runPlugin({
-          ...mockContext,
-          event: "sceneCreated",
-          args: {
-            manualTouch: false,
-            sceneDuplicationCheck: true,
-            parseActor: true,
-            parseStudio: true,
-            parseDate: true,
-            usePipedInputInSearch: true,
-            alwaysUseSingleResult: true,
-            source_settings: {
-              actors: "./plugins/PromisedScene/test/fixtures/actorsPopulated.db",
-              scenes: "./plugins/PromisedScene/test/fixtures/scenesPopulated.db",
-              studios: "./plugins/PromisedScene/test/fixtures/studiosPopulated.db",
-            },
+  describe("When piped data exist...", () => {
+    it("Should use piped data when they exist and are enabled through config", async () => {
+      const result = await runPlugin({
+        ...mockContext,
+        event: "sceneCreated",
+        args: {
+          manualTouch: false,
+          sceneDuplicationCheck: true,
+          parseActor: true,
+          parseStudio: true,
+          parseDate: true,
+          usePipedInputInSearch: true,
+          alwaysUseSingleResult: true,
+          source_settings: {
+            actors: "./plugins/PromisedScene/test/fixtures/actorsPopulated.db",
+            scenes: "./plugins/PromisedScene/test/fixtures/scenesPopulated.db",
+            studios: "./plugins/PromisedScene/test/fixtures/studiosPopulated.db",
           },
-          // File data that should be ignored
-          sceneName:
-            "[TrickyOldTeacher] Clary (Busty brunette babe serves her boyfriend and tutor at once) (2017-11-20) [HEVC 720p]",
-          scenePath:
-            "Z:\\Keep\\test\\[TrickyOldTeacher] Clary (Busty brunette babe serves her boyfriend and tutor at once) (2017-11-20) [HEVC 720p].mp4",
-          // Piped data that should take precedence
-          data: {
-            actors: ["Mia Malkova"],
-            studio: "NEW SENSATIONS",
-            releaseDate: 1381356000000, // 2013.10.10
-            movie: "So Young So Sexy P.O.V. #8",
+        },
+        // File data that should be ignored
+        sceneName:
+          "[TrickyOldTeacher] Clary (Busty brunette babe serves her boyfriend and tutor at once) (2017-11-20) [HEVC 720p]",
+        scenePath:
+          "Z:\\Keep\\test\\[TrickyOldTeacher] Clary (Busty brunette babe serves her boyfriend and tutor at once) (2017-11-20) [HEVC 720p].mp4",
+        // Piped data that should take precedence
+        data: {
+          actors: ["Mia Malkova"],
+          studio: "NEW SENSATIONS",
+          releaseDate: 1381356000000, // 2013.10.10
+          movie: "So Young So Sexy P.O.V. #8",
+        },
+        testMode: {
+          correctImportInfo: "y",
+          testSiteUnavailable: false,
+          status: true,
+        },
+      });
+      expect(result).to.be.an("object");
+      expect(result.description).to.equal(
+        "Mia Malkova's back and more flexible more than ever. She is looking fine and is extremely horny for some sweet stud lovin'. Cum watch Mia Malkova work this hard cock to explosion of warm man chowder all across her face!"
+      );
+      expect(result.releaseDate).to.be.a("number");
+      expect(result.thumbnail).to.equal(IMAGE_ID);
+      expect(result.actors).to.be.a("Array");
+      expect(result.actors).to.contain("Mia Malkova");
+      expect(result.actors).to.contain("Mike Adriano");
+      expect(result.studio).to.equal("NEW SENSATIONS");
+    });
+    it("Should ignore piped data when they exist and are disabled through config", async () => {
+      const result = await runPlugin({
+        ...mockContext,
+        event: "sceneCreated",
+        args: {
+          manualTouch: false,
+          sceneDuplicationCheck: true,
+          parseActor: false,
+          parseStudio: false,
+          parseDate: true,
+          useTitleInSearch: true,
+          alwaysUseSingleResult: true,
+          source_settings: {
+            actors: "./plugins/PromisedScene/test/fixtures/actorsPopulated.db",
+            scenes: "./plugins/PromisedScene/test/fixtures/scenesPopulated.db",
+            studios: "./plugins/PromisedScene/test/fixtures/studiosPopulated.db",
           },
-          testMode: {
-            correctImportInfo: "y",
-            testSiteUnavailable: false,
-            status: true,
-          },
-        });
-        expect(result).to.be.an("object");
-        expect(result.description).to.equal(
-          "Mia Malkova's back and more flexible more than ever. She is looking fine and is extremely horny for some sweet stud lovin'. Cum watch Mia Malkova work this hard cock to explosion of warm man chowder all across her face!"
+        },
+        // File data that should be used
+        sceneName: "Valentina Nappi - Honey Im Home - 2018-03-23",
+        scenePath: "Z:\\Keep\\test\\Valentina Nappi - Honey Im Home - 2018-03-23.mp4",
+        // Piped data that should be ignored
+        data: {
+          actors: ["Mia Malkova"],
+          studio: "NEW SENSATIONS",
+          releaseDate: 1381356000000, // 2013.10.10
+          movie: "So Young So Sexy P.O.V. #8",
+        },
+        testMode: {
+          correctImportInfo: "y",
+          testSiteUnavailable: false,
+          status: true,
+        },
+      });
+      expect(result).to.be.an("object");
+      expect(result.description)
+        .to.be.a("string")
+        .and.satisfy((desc) =>
+          desc.startsWith(
+            "Alex Legend and Valentina Nappi are dressed in their evening best as they lock lips in the hallway."
+          )
         );
-        expect(result.releaseDate).to.be.a("number");
-        expect(result.thumbnail).to.equal(IMAGE_ID);
-        expect(result.actors).to.be.a("Array");
-        expect(result.actors).to.contain("Mia Malkova");
-        expect(result.actors).to.contain("Mike Adriano");
-        expect(result.studio).to.equal("NEW SENSATIONS");
-      });
-      it("Should ignore piped data when they exist and are disabled through config", async () => {
-        const result = await runPlugin({
-          ...mockContext,
-          event: "sceneCreated",
-          args: {
-            manualTouch: false,
-            sceneDuplicationCheck: true,
-            parseActor: false,
-            parseStudio: false,
-            parseDate: true,
-            useTitleInSearch: true,
-            alwaysUseSingleResult: true,
-            source_settings: {
-              actors: "./plugins/PromisedScene/test/fixtures/actorsPopulated.db",
-              scenes: "./plugins/PromisedScene/test/fixtures/scenesPopulated.db",
-              studios: "./plugins/PromisedScene/test/fixtures/studiosPopulated.db",
-            },
-          },
-          // File data that should be used
-          sceneName: "Valentina Nappi - Honey Im Home - 2018-03-23",
-          scenePath: "Z:\\Keep\\test\\Valentina Nappi - Honey Im Home - 2018-03-23.mp4",
-          // Piped data that should be ignored
-          data: {
-            actors: ["Mia Malkova"],
-            studio: "NEW SENSATIONS",
-            releaseDate: 1381356000000, // 2013.10.10
-            movie: "So Young So Sexy P.O.V. #8",
-          },
-          testMode: {
-            correctImportInfo: "y",
-            testSiteUnavailable: false,
-            status: true,
-          },
-        });
-        expect(result).to.be.an("object");
-        expect(result.description)
-          .to.be.a("string")
-          .and.satisfy((desc) =>
-            desc.startsWith(
-              "Alex Legend and Valentina Nappi are dressed in their evening best as they lock lips in the hallway."
-            )
-          );
-        expect(result.releaseDate).to.be.a("number");
-        expect(result.thumbnail).to.equal(IMAGE_ID);
-        expect(result.actors).to.be.a("Array");
-        expect(result.actors).to.contain("Valentina Nappi");
-        expect(result.actors).to.contain("Alex Legend");
-        expect(result.studio).to.equal("NF Busty");
-      });
+      expect(result.releaseDate).to.be.a("number");
+      expect(result.thumbnail).to.equal(IMAGE_ID);
+      expect(result.actors).to.be.a("Array");
+      expect(result.actors).to.contain("Valentina Nappi");
+      expect(result.actors).to.contain("Alex Legend");
+      expect(result.studio).to.equal("NF Busty");
     });
   });
 });
