@@ -1231,7 +1231,7 @@ describe("PromisedScene", () => {
         data: {
           actors: ["Mia Malkova"],
           studio: "NEW SENSATIONS",
-          releaseDate: 1381356000000, // 2013.10.10
+          releaseDate: new Date(2013, 9, 10).valueOf(),
           movie: "So Young So Sexy P.O.V. #8",
         },
         testMode: {

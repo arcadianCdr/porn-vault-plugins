@@ -102,9 +102,9 @@ module.exports = async (ctx: MyContext): Promise<SceneOutput> => {
     searchTimestamp = data.releaseDate ?? searchTimestamp;
     userMovie = data.movie ?? userMovie;
     $logger.info(
-      `Piped data take precedence for the search: searchTitle: '${searchTitle}', searchActors: '${searchActors}', searchStudio: '${searchStudio}', searchTimestamp: '${searchTimestamp ? timestampToString(
-        searchTimestamp 
-      ) : ""}', userMovie: '${userMovie}', `
+      `Piped data take precedence for the search: searchTitle: '${searchTitle}', searchActors: '${searchActors}', searchStudio: '${searchStudio}', searchTimestamp: '${
+        searchTimestamp ? timestampToString(searchTimestamp) : ""
+      }', userMovie: '${userMovie}', `
     );
   }
 

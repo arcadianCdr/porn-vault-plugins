@@ -264,7 +264,7 @@ function checkStudioMatch(site: SceneResult.Site, studio: string | undefined): b
  *
  * @param ctx - plugin context
  * @param sceneList - list of scenes to try to match
- * @returns the matches scene or null
+ * @returns the matched scene or null
  */
 export const matchSceneResultToPipedData = (
   ctx: MyContext,
@@ -280,7 +280,7 @@ export const matchSceneResultToPipedData = (
     ctx.$logger.verbose(
       `MATCH PIPED:\tTrying to match TPD scene title/movie and actors: '${matchTitle}' starring ${JSON.stringify(
         scene.performers?.map((performer) => performer.name)
-      )}  --with--> ${searchedTitle} starring ${JSON.stringify(data.actors)}`
+      )}  --with--> '${searchedTitle}' starring ${JSON.stringify(data.actors)}`
     );
     const isTitleMatch =
       matchTitle.localeCompare(searchedTitle, undefined, { sensitivity: "base" }) === 0;

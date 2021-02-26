@@ -1,6 +1,6 @@
 {
   "name": "PromisedScene",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "authors": ["Ch00nassid a.k.a: DGs.Ch00", "leadwolf"],
   "description": "Ask questions and make sure scene parsing is correct",
   "pluginEvents": ["sceneCreated", "sceneCustom"],
@@ -23,7 +23,7 @@
       "name": "usePipedInputInSearch",
       "type": "Boolean",
       "required": false,
-      "default": true,
+      "default": false,
       "description": "This option is only relevant when PromisedScene is chained from another plugin (piped data are set). If true, the piped data take precedence for the search. If false, the piped data are ignored."
     },
     {
