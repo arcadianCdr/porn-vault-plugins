@@ -95,16 +95,23 @@ module.exports = async (ctx: MyContext): Promise<SceneOutput> => {
   let extra: string | undefined;
 
   if (args.usePipedInputInSearch && Object.keys(data).length) {
-    $logger.verbose(`The context contains piped data: ${JSON.stringify(data)}`);
     searchTitle = data.name ?? data.movie;
     searchActors = data.actors ?? searchActors;
     searchStudio = data.studio ?? searchStudio;
     searchTimestamp = data.releaseDate ?? searchTimestamp;
     userMovie = data.movie ?? userMovie;
     $logger.info(
-      `Piped data take precedence for the search: searchTitle: '${searchTitle}', searchActors: '${searchActors}', searchStudio: '${searchStudio}', searchTimestamp: '${
-        searchTimestamp ? timestampToString(searchTimestamp) : ""
-      }', userMovie: '${userMovie}', `
+      `Piped data takes precedence for the search: ${JSON.stringify(
+        {
+          searchTitle: searchTitle,
+          searchActors: searchActors,
+          searchStudio: searchStudio,
+          searchTimestamp: ctx.$moment(searchTimestamp).format("YYYY-MM-DD"),
+          userMovie: userMovie,
+        },
+        null,
+        "  "
+      )}`
     );
   }
 

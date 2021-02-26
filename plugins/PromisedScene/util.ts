@@ -274,28 +274,6 @@ export const matchSceneResultToPipedData = (
     const foundTitle = stripStr(scene.title || "").trim();
     const searchedTitle = stripStr(data.name ?? data.movie ?? "").trim();
 
-    ctx.$logger.verbose(
-      `MATCH PIPED:\tTrying to match TPD scene title/movie and actors: ${JSON.stringify(
-        {
-          studio: scene.site?.name,
-          title: foundTitle,
-          actors: scene.performers?.map((performer) => performer.name),
-          releaseDate: scene.date,
-        },
-        null,
-        "  "
-      )} --with--> ${JSON.stringify(
-        {
-          studio: data.studio,
-          title: searchedTitle,
-          actors: data.actors,
-          releaseDate: data.releaseDate,
-        },
-        null,
-        "  "
-      )}`
-    );
-
     const isTitleMatch =
       foundTitle.localeCompare(searchedTitle, undefined, { sensitivity: "base" }) === 0;
     const isActorsMatch = checkActorMatch(scene.performers, data.actors);
@@ -313,23 +291,25 @@ export const matchSceneResultToPipedData = (
       confidenceScore = 0.3;
     }
     sceneMatchingScores.push(confidenceScore);
+
+    ctx.$logger.verbose(
+      `MATCH PIPED: Trying to match TPD scene:\n${JSON.stringify(
+        {
+          studio: scene.site?.name,
+          title: foundTitle,
+          actors: scene.performers?.map((performer) => performer.name),
+          releaseDate: scene.date,
+        },
+        null,
+        "  "
+      )}\nConfidence score for this scene: ${confidenceScore}`
+    );
   }
 
   const indexOfMax = sceneMatchingScores.indexOf(Math.max(...sceneMatchingScores));
   if (sceneMatchingScores[indexOfMax] > 0) {
     ctx.$logger.verbose(
-      `MATCH PIPED:\t\tSUCCESS: matched with a confidence score of ${
-        sceneMatchingScores[indexOfMax]
-      } to TPDB scene: ${JSON.stringify(
-        {
-          studio: sceneList[indexOfMax].site?.name,
-          title: sceneList[indexOfMax].title,
-          actors: sceneList[indexOfMax].performers?.map((performer) => performer.name),
-          releaseDate: sceneList[indexOfMax].date,
-        },
-        null,
-        "  "
-      )}`
+      `MATCH PIPED: SUCCESS: matched with a confidence score of ${sceneMatchingScores[indexOfMax]} to TPDB scene: ${sceneList[indexOfMax].title}`
     );
     return sceneList[indexOfMax];
   }
