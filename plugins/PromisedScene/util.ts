@@ -231,8 +231,7 @@ function checkActorMatch(
   performers: SceneResult.Performer[],
   actors: string[] | undefined
 ): boolean {
-  // Assume a positive actor check if some data are missing
-  let isActorsMatch: boolean = true;
+  let isActorsMatch: boolean = false;
   if (performers?.length && actors?.length) {
     isActorsMatch = actors.every((actor) =>
       performers.filter(
@@ -244,8 +243,7 @@ function checkActorMatch(
 }
 
 function checkStudioMatch(site: SceneResult.Site, studio: string | undefined): boolean {
-  // Assume a positive studio check if some data are missing
-  let isStudioMatch: boolean = true;
+  let isStudioMatch: boolean = false;
   if (site?.name && studio) {
     isStudioMatch =
       site.name
@@ -258,9 +256,7 @@ function checkStudioMatch(site: SceneResult.Site, studio: string | undefined): b
 }
 
 /**
- * Tries to find a scene that matches a combination of piped data. Are considered valid matches:
- *   - a combination of scene title/movie and actors
- *   - a combination of actors, date and studios
+ * Tries to find a scene that matches a combination of piped data.
  *
  * @param ctx - plugin context
  * @param sceneList - list of scenes to try to match
@@ -273,45 +269,72 @@ export const matchSceneResultToPipedData = (
   const { data, $moment } = ctx;
   ctx.$logger.verbose(`MATCH PIPED: ${sceneList.length} results found`);
 
+  const sceneMatchingScores: number[] = [];
   for (const scene of sceneList) {
+    const foundTitle = stripStr(scene.title || "").trim();
     const searchedTitle = stripStr(data.name ?? data.movie ?? "").trim();
-    const matchTitle = stripStr(scene.title || "").trim();
 
     ctx.$logger.verbose(
-      `MATCH PIPED:\tTrying to match TPD scene title/movie and actors: '${matchTitle}' starring ${JSON.stringify(
-        scene.performers?.map((performer) => performer.name)
-      )}  --with--> '${searchedTitle}' starring ${JSON.stringify(data.actors)}`
+      `MATCH PIPED:\tTrying to match TPD scene title/movie and actors: ${JSON.stringify(
+        {
+          studio: scene.site?.name,
+          title: foundTitle,
+          actors: scene.performers?.map((performer) => performer.name),
+          releaseDate: scene.date,
+        },
+        null,
+        "  "
+      )} --with--> ${JSON.stringify(
+        {
+          studio: data.studio,
+          title: searchedTitle,
+          actors: data.actors,
+          releaseDate: data.releaseDate,
+        },
+        null,
+        "  "
+      )}`
     );
+
     const isTitleMatch =
-      matchTitle.localeCompare(searchedTitle, undefined, { sensitivity: "base" }) === 0;
+      foundTitle.localeCompare(searchedTitle, undefined, { sensitivity: "base" }) === 0;
     const isActorsMatch = checkActorMatch(scene.performers, data.actors);
+    const isDateMatch = $moment(scene.date, "YYYY-MM-DD").valueOf() === data.releaseDate;
+    const isStudioMatch = checkStudioMatch(scene.site, data.studio);
 
+    let confidenceScore: number = 0.0;
     if (isTitleMatch && isActorsMatch) {
-      ctx.$logger.verbose("MATCH PIPED:\t\tSUCCESS: matched on title and actors.");
-      return scene;
+      confidenceScore = 1.0;
+    } else if (isTitleMatch) {
+      confidenceScore = 0.8;
+    } else if (isActorsMatch && isDateMatch && isStudioMatch) {
+      confidenceScore = 0.7;
+    } else if (isActorsMatch && isDateMatch) {
+      confidenceScore = 0.3;
     }
+    sceneMatchingScores.push(confidenceScore);
+  }
 
-    if (data.actors?.length && data.releaseDate) {
-      ctx.$logger.verbose(
-        `MATCH PIPED:\tTrying to match TPD actors, date and studio: ${JSON.stringify(
-          scene.performers.map((performer) => performer.name)
-        )} on ${scene.date} from ${scene.site?.name} --with--> ${JSON.stringify(
-          data.actors
-        )} on ${timestampToString(data.releaseDate)} from ${data.studio}`
-      );
-      const isActorsMatch = checkActorMatch(scene.performers, data.actors);
-      const isDateMatch = $moment(scene.date, "YYYY-MM-DD").valueOf() === data.releaseDate;
-      const isStudioMatch = checkStudioMatch(scene.site, data.studio);
-
-      if (isActorsMatch && isDateMatch && isStudioMatch) {
-        ctx.$logger.verbose(`MATCH PIPED:\t\tSUCCESS: matched on actors, date and studio`);
-        return scene;
-      }
-    }
+  const indexOfMax = sceneMatchingScores.indexOf(Math.max(...sceneMatchingScores));
+  if (sceneMatchingScores[indexOfMax] > 0) {
+    ctx.$logger.verbose(
+      `MATCH PIPED:\t\tSUCCESS: matched with a confidence score of ${
+        sceneMatchingScores[indexOfMax]
+      } to TPDB scene: ${JSON.stringify(
+        {
+          studio: sceneList[indexOfMax].site?.name,
+          title: sceneList[indexOfMax].title,
+          actors: sceneList[indexOfMax].performers?.map((performer) => performer.name),
+          releaseDate: sceneList[indexOfMax].date,
+        },
+        null,
+        "  "
+      )}`
+    );
+    return sceneList[indexOfMax];
   }
 
   ctx.$logger.error(`MATCH PIPED:\tERR: did not find any match`);
-
   return null;
 };
 

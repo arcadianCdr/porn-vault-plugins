@@ -1204,7 +1204,51 @@ describe("PromisedScene", () => {
   });
 
   describe("When piped data exist...", () => {
-    it("Should use piped data when they exist and are enabled through config", async () => {
+    it("Should use and match studio, date and actor(s) piped data (when they exist and are enabled through config)", async () => {
+      const result = await runPlugin({
+        ...mockContext,
+        event: "sceneCreated",
+        args: {
+          manualTouch: false,
+          sceneDuplicationCheck: true,
+          parseActor: true,
+          parseStudio: true,
+          parseDate: true,
+          usePipedInputInSearch: true,
+          alwaysUseSingleResult: true,
+          source_settings: {
+            actors: "./plugins/PromisedScene/test/fixtures/actorsPopulated.db",
+            scenes: "./plugins/PromisedScene/test/fixtures/scenesPopulated.db",
+            studios: "./plugins/PromisedScene/test/fixtures/studiosPopulated.db",
+          },
+        },
+        // File data that should be ignored
+        sceneName:
+          "[TrickyOldTeacher] Clary (Busty brunette babe serves her boyfriend and tutor at once) (2017-11-20) [HEVC 720p]",
+        scenePath:
+          "Z:\\Keep\\test\\[TrickyOldTeacher] Clary (Busty brunette babe serves her boyfriend and tutor at once) (2017-11-20) [HEVC 720p].mp4",
+        // Piped data that should take precedence
+        data: {
+          actors: ["Abella Danger"],
+          studio: "Blacked",
+          releaseDate: new Date(2014, 9, 20).valueOf(),
+        },
+        testMode: {
+          correctImportInfo: "y",
+          testSiteUnavailable: false,
+          status: true,
+        },
+      });
+      expect(result).to.be.an("object");
+      expect(result.name).to.equal("Big Booty Girl Worships Big Black Cock");
+      expect(result.releaseDate).to.be.a("number");
+      expect(result.thumbnail).to.equal(IMAGE_ID);
+      expect(result.actors).to.be.a("Array");
+      expect(result.actors).to.contain("Abella Danger");
+      expect(result.actors).to.contain("Rob Piper");
+      expect(result.studio).to.equal("Blacked");
+    });
+    it("Should use and match movie/actor(s) piped data (when they exist and are enabled through config)", async () => {
       const result = await runPlugin({
         ...mockContext,
         event: "sceneCreated",
