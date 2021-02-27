@@ -225,7 +225,10 @@ export const matchSceneResultToSearch = (
   return null;
 };
 
-const cleanupRegex = /[\s"'.,-/#!$%^&*;:{}=\-_`~()\\[\]@+|?><]/g;
+// Removes anything except letters and digits from a string
+function cleanup(text: string): string {
+  return text.replace(/[^\w\d]/g, "");
+}
 
 function checkActorMatch(
   performers: SceneResult.Performer[],
@@ -246,11 +249,7 @@ function checkStudioMatch(site: SceneResult.Site, studio: string | undefined): b
   let isStudioMatch: boolean = false;
   if (site?.name && studio) {
     isStudioMatch =
-      site.name
-        .replace(cleanupRegex, "")
-        .localeCompare(studio.replace(cleanupRegex, ""), undefined, {
-          sensitivity: "base",
-        }) === 0;
+      cleanup(site.name).localeCompare(cleanup(studio), undefined, { sensitivity: "base" }) === 0;
   }
   return isStudioMatch;
 }
@@ -266,7 +265,7 @@ export const matchSceneResultToPipedData = (
   ctx: MyContext,
   sceneList: SceneResult.SceneData[]
 ): SceneResult.SceneData | null => {
-  const { data, $moment } = ctx;
+  const { data, $formatMessage, $moment } = ctx;
   ctx.$logger.verbose(`MATCH PIPED: ${sceneList.length} results found`);
 
   const sceneMatchingScores: number[] = [];
@@ -293,16 +292,12 @@ export const matchSceneResultToPipedData = (
     sceneMatchingScores.push(confidenceScore);
 
     ctx.$logger.verbose(
-      `MATCH PIPED: Trying to match TPD scene:\n${JSON.stringify(
-        {
-          studio: scene.site?.name,
-          title: foundTitle,
-          actors: scene.performers?.map((performer) => performer.name),
-          releaseDate: scene.date,
-        },
-        null,
-        "  "
-      )}\nConfidence score for this scene: ${confidenceScore}`
+      `MATCH PIPED: Trying to match TPD scene:\n${$formatMessage({
+        studio: scene.site?.name,
+        title: foundTitle,
+        actors: scene.performers?.map((performer) => performer.name),
+        releaseDate: scene.date,
+      })}\nConfidence score for this scene: ${confidenceScore}`
     );
   }
 

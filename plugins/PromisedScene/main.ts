@@ -81,38 +81,37 @@ module.exports = async (ctx: MyContext): Promise<SceneOutput> => {
 
   $logger.info(`STARTING to analyze scene: ${JSON.stringify(scenePath)}`);
 
-  const parsedDbActor = parseSceneActor(ctx);
-  const parsedDbStudio = parseSceneStudio(ctx);
-  const parsedTimestamp = parseSceneTimestamp(ctx);
-
-  // After everything has completed parsing, I run a function that will perform all of the lookups against TPDB
-
-  let searchTitle: string | undefined = sceneName;
-  let searchActors = parsedDbActor ? [parsedDbActor] : [];
-  let searchStudio = parsedDbStudio ?? undefined;
-  let searchTimestamp: number | undefined = parsedTimestamp ?? undefined;
+  let searchTitle: string | undefined;
+  let searchActors: string[] = [];
+  let searchStudio: string | undefined;
+  let searchTimestamp: number | undefined;
   let userMovie: string | undefined;
   let extra: string | undefined;
 
   if (args.usePipedInputInSearch && Object.keys(data).length) {
     searchTitle = data.name ?? data.movie;
-    searchActors = data.actors ?? searchActors;
-    searchStudio = data.studio ?? searchStudio;
+    searchActors = data.actors ?? [];
+    searchStudio = data.studio;
     searchTimestamp = data.releaseDate ?? searchTimestamp;
     userMovie = data.movie ?? userMovie;
     $logger.info(
-      `Piped data takes precedence for the search: ${JSON.stringify(
-        {
-          searchTitle: searchTitle,
-          searchActors: searchActors,
-          searchStudio: searchStudio,
-          searchTimestamp: ctx.$moment(searchTimestamp).format("YYYY-MM-DD"),
-          userMovie: userMovie,
-        },
-        null,
-        "  "
-      )}`
+      `Piped data takes precedence for the search: ${$formatMessage({
+        searchTitle: searchTitle,
+        searchActors: searchActors,
+        searchStudio: searchStudio,
+        searchTimestamp: ctx.$moment(searchTimestamp).format("YYYY-MM-DD"),
+        userMovie: userMovie,
+      })}`
     );
+  }
+
+  // Assign or parse only it the value is still undefined (there were no piped data for it)
+  searchTitle ??= sceneName;
+  searchTimestamp ??= parseSceneTimestamp(ctx) ?? undefined;
+  searchStudio ??= parseSceneStudio(ctx) ?? undefined;
+  if (!searchActors.length) {
+    const parsedDbActor = parseSceneActor(ctx);
+    searchActors = parsedDbActor ? [parsedDbActor] : [];
   }
 
   const gotResultOrExit = false;
