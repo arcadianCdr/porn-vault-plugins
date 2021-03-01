@@ -81,11 +81,11 @@ export function matchElement(
   ctx: MySceneContext,
   matcher: IFileParserConfigElem
 ): string[] | undefined {
-  const { $logger, $path, sceneName, scenePath } = ctx;
+  const { $logger, $path, scenePath } = ctx;
 
   if (!matcher) return;
 
-  const toMatch = matcher.scopeDirname ? $path.dirname(scenePath) : sceneName;
+  const toMatch = matcher.scopeDirname ? $path.dirname(scenePath) : $path.parse(scenePath).name;
   const regex = new RegExp(matcher.regex, "gm");
   const matchesIterable = toMatch.matchAll(regex);
   const matchedResult: string[] = [];

@@ -18,81 +18,72 @@ describe("fileparser", () => {
   });
   it("Parsing YYYY dates...", async () => {
     const result = await runPlugin({
-      sceneName: "dummy scene name (2019)",
-      scenePath: "/",
+      scenePath: "/dummy scene name (2019).mp4",
       args: {},
     });
     expect(result.releaseDate).to.equal(moment("2019", "YYYY").valueOf());
   });
   it("Parsing YYYY-MM dates...", async () => {
     const result = await runPlugin({
-      sceneName: "dummy scene 1984_03 name",
-      scenePath: "/",
+      scenePath: "/dummy scene 1984_03 name.mp4",
       args: {},
     });
     expect(result.releaseDate).to.equal(moment("1984-03", "YYYY-MM").valueOf());
   });
   it("Parsing MM-YYYY dates...", async () => {
     const result = await runPlugin({
-      sceneName: "dummy scene name 03-1984",
-      scenePath: "/",
+      scenePath: "/dummy scene name 03-1984.mp4",
       args: {},
     });
     expect(result.releaseDate).to.equal(moment("1984-03", "YYYY-MM").valueOf());
   });
   it("Parsing YYYY-MM-DD dates variant 1...", async () => {
     const result = await runPlugin({
-      sceneName: "1984.03.17 dummy scene name",
-      scenePath: "/",
+      scenePath: "/1984.03.17 dummy scene name.mp4",
       args: {},
     });
     expect(result.releaseDate).to.equal(moment("1984-03-17", "YYYY-MM-DD").valueOf());
   });
   it("Parsing YYYY-MM-DD dates variant 2...", async () => {
     const result = await runPlugin({
-      sceneName: "1984.12.07 dummy scene name",
-      scenePath: "/",
+      scenePath: "/1984.12.07 dummy scene name.mp4",
       args: {},
     });
     expect(result.releaseDate).to.equal(moment("1984-12-07", "YYYY-MM-DD").valueOf());
   });
   it("Parsing YY-MM-DD dates...", async () => {
     const result = await runPlugin({
-      sceneName: "dummy scene _84_03_07_ name",
-      scenePath: "/",
+      scenePath: "/dummy scene _84_03_07_ name.mp4",
       args: {},
     });
     expect(result.releaseDate).to.equal(moment("1984-03-07", "YYYY-MM-DD").valueOf());
   });
   it("Parsing DD-MM-YY dates...", async () => {
     const result = await runPlugin({
-      sceneName: "dummy scene 27 03-84 name",
-      scenePath: "/",
+      scenePath: "/dummy scene 27 03-84 name.mp4",
       args: {},
     });
     expect(result.releaseDate).to.equal(moment("1984-03-27", "YYYY-MM-DD").valueOf());
   });
   it("Parsing DD-MM-YYYY dates variant 1...", async () => {
     const result = await runPlugin({
-      sceneName: "_30_12.1984_ dummy scene name",
-      scenePath: "/",
+      scenePath: "/_30_12.1984_ dummy scene name.mp4",
       args: {},
     });
     expect(result.releaseDate).to.equal(moment("1984-12-30", "YYYY-MM-DD").valueOf());
   });
   it("Parsing DD-MM-YYYY dates variant 2...", async () => {
     const result = await runPlugin({
-      sceneName: "07/03/1984 dummy scene name",
-      scenePath: "/",
+      scenePath: "07-03-1984 dummy scene name.mp4",
       args: {},
     });
     expect(result.releaseDate).to.equal(moment("1984-03-07", "YYYY-MM-DD").valueOf());
   });
-  it("Matching all properties: releaseDate, name, studio, actors, movie and labels (JSON config)", async () => {
+  it("Matching all properties: releaseDate, name, studio, actors, movie and labels (JSON config, sceneName does not match actual file name)", async () => {
     const base = "Studio name ~ first1 last1 , first2 last2 ~ Scene title ~ 2017-12-31";
     const result = await runPlugin({
       scenePath: `./plugins/fileparser/test/fixtures/completeMultiMatch/movies/movie series/Movie Name 17/${base}.mp4`,
-      sceneName: base,
+      sceneName: "Should not be used...",
       args: {},
       $library: "./plugins/fileparser/test/fixtures/completeMultiMatch/movies/",
     });
@@ -111,7 +102,6 @@ describe("fileparser", () => {
     const base = "Studio name ~ first1 last1 , first2 last2 ~ Scene title ~ 2017_12_31";
     const result = await runPlugin({
       scenePath: `./plugins/fileparser/test/fixtures/invalidConfig/movies/movie series/Movie Name 17/${base}.mp4`,
-      sceneName: base,
       args: {},
       $library: "/",
     });
@@ -126,7 +116,6 @@ describe("fileparser", () => {
     const base = "Studio name ~ first1 last1 , first2 last2 ~ Scene title ~ 2017_12_31";
     const result = await runPlugin({
       scenePath: `./plugins/fileparser/test/fixtures/invalidJsonConfig/movies/movie series/Movie Name 17/${base}.mp4`,
-      sceneName: base,
       args: {},
       $library: "/",
     });
@@ -141,7 +130,6 @@ describe("fileparser", () => {
     const base = "Studio name ~ first1 last1 , first2 last2 ~ Scene title ~ 2017_12_31";
     const result = await runPlugin({
       scenePath: `./plugins/fileparser/test/fixtures/emptyConfig/movies/movie series/Movie Name 17/${base}.mp4`,
-      sceneName: base,
       args: {},
       $library: "/",
     });
@@ -156,7 +144,6 @@ describe("fileparser", () => {
     const base = "2017.02.09 - first1 last1 , first2 last2,  first3 last3 ";
     const result = await runPlugin({
       scenePath: `./plugins/fileparser/test/fixtures/fullMatch/${base}.mp4`,
-      sceneName: base,
       args: {},
       $library: "/",
     });
@@ -170,7 +157,6 @@ describe("fileparser", () => {
     const base = "first matched group - second matched group - third matched group";
     const result = await runPlugin({
       scenePath: `./plugins/fileparser/test/fixtures/groupsMatch/${base}.mp4`,
-      sceneName: base,
       args: {},
       $library: "/",
     });
@@ -183,7 +169,6 @@ describe("fileparser", () => {
     const base = "single match here";
     const result = await runPlugin({
       scenePath: `./plugins/fileparser/test/fixtures/groupsMatch/${base}.mp4`,
-      sceneName: base,
       args: {},
       $library: "/",
     });

@@ -4,9 +4,11 @@ import { dateToTimestamp, matchElement } from "./utils";
 import { findAndLoadSceneConfig } from "./config";
 
 module.exports = async (ctx: MySceneContext): Promise<SceneOutput> => {
-  const { args, sceneName, scenePath, $logger, $throw } = ctx;
+  const { args, scenePath, $logger, $path, $throw } = ctx;
 
   if (!scenePath) $throw("Uh oh. You shouldn't use the plugin for this type of event");
+
+  const sceneName = $path.parse(scenePath).name;
 
   const cfg = await findAndLoadSceneConfig(ctx);
   if (!cfg) {
