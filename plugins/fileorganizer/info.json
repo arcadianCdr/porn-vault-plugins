@@ -10,42 +10,42 @@
       "type": "Boolean",
       "required": false,
       "default": false,
-      "description": "Whether to perform the rename/copy operation"
+      "description": "Whether to perform the rename/move operation"
     },
     {
       "name": "fileStructure",
       "type": "String",
       "required": true,
       "default": "",
-      "description": "The pattern for the new name. Variables are delimited with `<>`. Blocks are delimited with `{}`. All other characters are considered fixed text. If a fixed text is within a block, it will be used only if at least one block variable is defined (not empty). Fixed text outside of blocks is always used. For a list of allowed variables, please refer to the documentation above. Leave empty to not modify the file structure. Example: `{<studio>}{ - <releaseDate>}{ - <actors>}{ - <name>}`"
+      "description": "The template for the new name. Blocks are delimited with `{}`. Iside blocks, variables are delimited with `<>`.  All other characters are considered fixed text. If a fixed text is within a block, it will be used only if at least one block variable is defined (not empty). Fixed text outside of blocks is always used. For a list of allowed variables, please refer to the documentation above. Leave empty to not modify the file structure. Example: `{<studio>}{ - <releaseDate>}{ - <actors>}{ - <name>}`"
     },
     {
       "name": "folderStructure",
       "type": "String",
       "required": false,
       "default": "",
-      "description": "The pattern for the folder name. Variables are delimited with `<>`. Blocks are delimited with `{}`. `/` or `\\` can be used indifferently as path separator. The structure is relative to your library path that is considered the 'base' folder. Leave empty to not modify the folder structure. Example: '{<studio>}{/<movie.name>}'"
+      "description": "The template for the folder names. Blocks are delimited with `{}`. Variables are delimited with `<>`. `/` or `\\` can be used indifferently as path separator. The structure is relative to the library path that is considered the 'base' folder. Leave empty to not modify the folder structure. Example: `{<studio>}{/<movie.name>}`"
     },
     {
       "name": "normalizeAccents",
       "type": "Boolean",
       "required": false,
       "default": false,
-      "description": "Normalize file names and path to unaccented unicode"
+      "description": "Whether to normalize file names and path to unaccented unicode"
     },
     {
       "name": "normalizeMultipleSpaces",
       "type": "Boolean",
       "required": false,
       "default": true,
-      "description": "Replace multiple spaces with a single space"
+      "description": "Whether to replace multiple spaces with a single space"
     },
     {
       "name": "nameConflictHandling",
       "type": "String",
       "required": true,
       "default": "rename",
-      "description": "Behavior in case of name conflicts. Possible values are: 'rename', 'overwrite' and 'skip'. For 'rename', the new filename will be suffixed with a number so that it does not conflict with an existing name anymore. For 'overwrite', the existing file will be overriden by the new one. For 'skip', the rename operation is cancelled."
+      "description": "Behavior in case of name conflicts. Possible values are: `rename`, `overwrite` and `skip`. For 'rename', the new filename will be suffixed with a number so that it does not conflict with an existing name anymore. For 'overwrite', the existing file will be overriden by the new one. For 'skip', the rename operation is cancelled."
     },
     {
       "name": "multipleValuesSeparator",
@@ -59,7 +59,7 @@
       "type": "String[]",
       "required": false,
       "default": "",
-      "description": "By default, characters that are invalid in a filename are removed. Alternatively, this argument can be used to use a substitute instead of a pure deletion. Supported invalid characters are: `\"`, `/`, `*`, `<`, `?`, `>`, `:` and `|`)."
+      "description": "By default, characters that are invalid in a filename are removed. Alternatively, this argument can be used to use a substitute instead of a pure deletion. Supported invalid characters are: `\"`, `/`, `*`, `<`, `?`, `>`, `:` and `\\|`)."
     },
     {
       "name": "filesBlacklist",
