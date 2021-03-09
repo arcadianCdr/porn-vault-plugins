@@ -91,6 +91,7 @@ For instance, if you want to replace all spaces by underscores, you can use (in 
 There is also a limitation to the filename's length (255 characters). You will get a warning that the file rename was not performed when the new name exceeds 255 characters.
 
 
+
 ### Arguments
 
 | Name                    | Type     | Required | Description                                                                                                                                                                                                                                                                                                                          |
