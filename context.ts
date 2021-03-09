@@ -180,8 +180,8 @@ function createPluginLogger(name: string): winston.Logger {
 }
 
 function warnServerFunc(functionName: string) {
-  console.error(
-    `Warning: the call to ${functionName} returned an empty result. Your test should implement ${functionName} as server functions are not available when running Mocha tests...`
+  throw new Error(
+    `Your test should implement ${functionName} as server functions are not available when running Mocha tests...`
   );
 }
 

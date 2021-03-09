@@ -1,75 +1,84 @@
-Templates is what you use to tell fileorganizer how you want your new filenames to look like. Only the filename can be changed. The directories and the extensions are never modified.
+Templates is what you use to tell fileorganizer how you want your new file names to look like.
 
-A template is a succession of __blocks__ that each can contain:
-- a `prefix` (fixed text part)
-- a `field` (data from pv's scene)
-- a `suffix` (fixed text part)
+Templates only change file names. The directories and the extensions are never modified.
 
-Blocks are delimited with `{}`. Inside blocks, fields are delimited with `<>`. All other characters are considered fixed text. 
+A template is a succession of __blocks__.
 
-Example of a block: 
+Block syntax: `{prefix<fieldname(args)>suffix}`:
+
+- a `prefix`: your custom fixed text
+- a `fieldname`: indicates which porn-vault's data to use in the block
+- optional `args`: to modify the field's behavior. See below for args details.  
+- a `suffix`: your custom fixed text
+
+Example of a block:
+
 ```html
-{<videoHeight>p}
+{ <videoHeight>p}
 ```
+
 This group has
-- no prefix
+
+- a `space` as prefix
 - a field that references the scene's video height
+- no args
 - the letter "p" as suffix
 
-For a scene with a video height of 2160 pixels, this block would output "2160p" to the renamed file.
+For a scene with a video height of 2160 pixels, this block would output `" 2160p"` to the renamed file.
 
-### Blocks: key characteristics 
+Example of a complete rename template (sucession of blocks):
 
-- Blocks are "all or nothing". If the field has a value (it is not empty), the prefix/suffix fixed text and the field value are output in the new filename. If the field value is empty, the whole block is ignored, including the fixed text.
-- Each block can contain only one field. If you need more fields, use more blocks.
-- The template only process a succession of blocks. Everything that is not within a block is ignored.
+```
+{<studio!>}{ - <releaseDate>}{ - <actors>}{ - <name!>}{ - <movies1>}{ (<videoHeight>p)}
+```
 
 ### Supported fields
 
-The following scene data can be used as fields in templates:
-| Field               | Comment                |
+| Field name          | Comment                |
 | ------------------- | ------------------- |
-| `actors`            | multi-values |
-| `labels`            | multi-values |
-| `movies`            | multi-values |
-| `name`              | |
-| `rating`            | |
-| `releaseDate`       | see args below to specify the date format |
+| `actors`            | multi-value |
+| `labels`            | multi-value |
+| `movies`            | multi-value |
+| `name`              | a.k.a. scene's title |
+| `rating`            | number between 0 and 10 |
+| `releaseDate`       | see `dateFormat` below to customize the output format |
 | `studio`            | |
 | `videoDuration`     | HH:MM or HH:MM:SS depending on the duration |
-| `videoHeight`       | |
-| `videoWidth`        | |
+| `videoHeight`       | number of pixels |
+| `videoWidth`        | number of pixels |
 
-### Fields: key characteristics 
+### Blocks: key characteristics
+
+- Blocks are "all or nothing". If the field has a value (it is not empty), the prefix/suffix fixed text and the field value are output in the new filename. If the field value is empty, the whole block is ignored, including the fixed text.
+- Each block can contain only one field. If you need more fields, use more blocks.
+- The template only processes what is __inside__ the blocks. Don't put anything between the blocks, it will be ignored (if you want, you can put spaces to improve readability. It will not break anything, but will have no effect on the file name output). 
+
+### Fields: key characteristics
+
 - Field names are __not__ case sensitive.
-- You can indicate you consider a field to be mandatory by adding a `'!'` after the field name like this: `<field!>`. When a mandatory field returns no data, the whole rename template is ignored. In other words a mandatory field means "I'd rather not rename this file at all if the field is not present in porn-vault's data".
-- For multi-value fields, the default behavior is to output all values into the new filename. It is possible to use only one of the values, by specifying its index next to the field name. 
+- Fields can contain optional `args`: an `index` or `!` (or both). 
+- For multi-value fields, the default behavior is to output all values into the new filename (eg: `<movies>` outputs "all movies"; see `multiValuesSeparator` below to customize the separator used between each value). It is possible to use only one of the values, by specifying its index as argument, directly after the field name (ex: `<movies1>` outputs only the first movie). An index can range from 1 to 99.
+- You can indicate you consider a field to be mandatory by adding a `'!'` argument directly after the field name: `<movies!>`. When a mandatory field returns no data, the whole rename template is ignored. In other words a mandatory field means "I'd rather not rename this file at all if the field is not present in porn-vault's data".
+- Arguments can be combined. `<movies>`, `<movies!>`, `<movies1>` and `<movies1!>` are all valid fields.
 
-Examples: 
-- `<movies>` will insert all movies into the file name. 
-- `<movies1>` will insert only the first movie into the file name (or none if there are no movies defined at all).
+### File name constraints
 
-### Full template example
-```
-{<studio!>}{ - <releaseDate>}{ - <actors>}{ - <name!>}{ - <movie1>}{ (<videoHeight>p)}
-``` 
+In filenames, there are some illegal and reserved characters like `"`, `/`, `*`, `<`, `?`, `>`, `:` and `|`.  By default, characters that are invalid in a filename are removed.
 
-Which will generate file names like:
-- `Studio - 2019-03-27 - Best scene ever (720p).mp4'
-- `Studio - Eva Evil, John Doe - Best scene ever (2160p).mp4'
-- `Studio - Best scene ever (1080p).mp4'
-- `Studio - Scene 1 - Best movie ever (540p).mp4'
+Alternatively, you can use the `characterReplacement` argument to indicate a list of replacement characters you would like to substitute in the new filename. 
 
-depending on what data exist for each scene.
-
-### file name constraints
-
-In filenames, there are some illegal and reserved characters like `"`, `/`, `*`, `<`, `?`, `>`, `:` and `|`.  By default, characters that are invalid in a filename are removed. 
-
-Alternatively, you can use the `characterReplacement` argument to indicate a list of replacement characters you would like to substitute in the filename. 
+This is not limited to illegal characters, Any string can be replaced by another one through `characterReplacement` config.
 
 For instance, if you want to replace all spaces by underscores, you can use (in JSON format):
+
 ```json
-characterReplacement: [ { original: " ", replacement: "_" } ]
+"characterReplacement": [
+  {
+    "original": " ",
+    "replacement": "_"
+  }
+]
 ```
+
 There is also a limitation to the filename's length (255 characters). You will get a warning that the file rename was not performed when the new name exceeds 255 characters.
+

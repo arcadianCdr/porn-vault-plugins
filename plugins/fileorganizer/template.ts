@@ -1,7 +1,6 @@
 import { Actor } from "../../types/actor";
 import { Label } from "../../types/label";
 import { Movie } from "../../types/movie";
-import { Studio } from "../../types/studio";
 import { MySceneContext } from "./main";
 
 const FIELD_NAME = "name";
@@ -27,12 +26,28 @@ interface ITemplateFieldResolver {
   getInitialData(index?: number): Promise<string | undefined>;
 }
 
-// Regex to parse templates into blocks with prefix, field and suffix for each block
+// To avoid side effects, only some of the initial scene data can be used on createScene event (most are empty anyway and the name is not safe to use)
+enum SafeInitialDataForSceneCreate {
+  FIELD_VIDEO_DURATION,
+  FIELD_VIDEO_WIDTH,
+  FIELD_VIDEO_HEIGHT,
+}
+
+/**
+ * Regex to parse templates into blocks with prefix, field and suffix for each block
+ *
+ * @returns the RegExp
+ */
 export function getTemplateMatcher(): RegExp {
   return /{(?<prefix>[^{}<]*)<(?<field>[^\d\s\W(>]*)(?<args>[\d\W]*|(?:\([^){}]*\))*)>(?<suffix>[^{}]*)}/g;
 }
 
-// Description of all fields allowed within a template (and the functions to retreive their string value)
+/**
+ * List of all fields allowed within a template and the functions to retreive their string value
+ *
+ * @param ctx
+ * @returns the resolver for each field
+ */
 export function getTemplateFieldsResolvers(ctx: MySceneContext): ITemplateFieldResolver[] {
   const { args, scene, data, $moment } = ctx;
   const HAS_NAME_PROP = true;
@@ -66,7 +81,7 @@ export function getTemplateFieldsResolvers(ctx: MySceneContext): ITemplateFieldR
     },
     {
       name: FIELD_VIDEO_DURATION,
-      getInitialData: async (i?: number) => getVideoDuration($moment, scene.meta?.duration),
+      getInitialData: async (i?: number) => formatVideoDuration($moment, scene.meta?.duration),
     },
     {
       name: FIELD_ACTORS,
@@ -83,8 +98,7 @@ export function getTemplateFieldsResolvers(ctx: MySceneContext): ITemplateFieldR
       name: FIELD_STUDIO,
       getPluginData: async (i?: number) => data.studio,
       getInitialData: async (i?: number) => {
-        const studio: Studio = await ctx.$getStudio();
-        return studio.name;
+        return (await ctx.$getStudio())?.name;
       },
     },
     {
@@ -109,7 +123,12 @@ export function getTemplateFieldsResolvers(ctx: MySceneContext): ITemplateFieldR
   ];
 }
 
-// Validates and extracts the different components of a field argument
+/**
+ * Validates and extracts the different components of a field argument
+ *
+ * @param args the field argument to process
+ * @returns IFieldArgs corresponding to the args
+ */
 export function getAndValidateFieldArgs(args: string | undefined): IFieldArgs {
   if (!args) return { isValid: true, isMandatory: false };
 
@@ -127,36 +146,47 @@ export function getAndValidateFieldArgs(args: string | undefined): IFieldArgs {
   return { isValid, isMandatory, index };
 }
 
-// Use the resolver's functions to get the value of a given field
+/**
+ * Use the resolver's functions to get the value of a given field
+ *
+ * @param ctx
+ * @param resolver
+ * @param index optional. If absent and the field is an array, the full array is used.
+ * @returns the field's value
+ */
 export async function getTemplateFieldValue(
   ctx: MySceneContext,
   resolver: ITemplateFieldResolver,
-  index: number | undefined
+  index?: number
 ): Promise<string | undefined> {
-  const { event, $formatMessage, $logger } = ctx;
-
   let fieldValue: string | undefined;
-  try {
-    // By default: use piped data from latest plugin...
-    if (resolver.getPluginData) {
-      fieldValue = await resolver.getPluginData(index);
-    }
 
-    // ...and complete the missing piped data with the initial scene data
-    if (
-      event === "sceneCustom" ||
-      (event === "sceneCreate" && usableInitialDataForSceneCreateEvent().includes(resolver.name))
-    ) {
-      fieldValue ??= await resolver.getInitialData(index);
-    }
-  } catch (err) {
-    $logger.error(`Cannot get value for field "${resolver.name}": ${$formatMessage(err)}`);
+  // By default: use piped data from latest plugin...
+  if (resolver.getPluginData) {
+    fieldValue = await resolver.getPluginData(index);
+  }
+
+  // ...and complete the missing piped data with the initial scene data
+  if (
+    ctx.event === "sceneCustom" ||
+    (ctx.event === "sceneCreate" &&
+      Object.values(SafeInitialDataForSceneCreate).includes(resolver.name))
+  ) {
+    fieldValue ??= await resolver.getInitialData(index);
   }
 
   return fieldValue;
 }
 
-// Converts the array to a string (either the requested index or the joined full array)
+/**
+ * For fields that have an array value, converts the array to a string (either the requested index or the joined full array)
+ *
+ * @param ctx
+ * @param array
+ * @param index
+ * @param hasNameProperty indicates wether the array is an array of strings (false) or if the strings have to be taken from the arrat object's name property
+ * @returns
+ */
 function arrayToString(
   ctx: MySceneContext,
   array: Actor[] | Movie[] | Label[] | string[] | undefined,
@@ -184,12 +214,14 @@ function arrayToString(
   return a[i];
 }
 
-// To avoid side effects, only some of the initial scene data can be used on createScene event
-function usableInitialDataForSceneCreateEvent(): string[] {
-  return [FIELD_VIDEO_DURATION, FIELD_VIDEO_WIDTH, FIELD_VIDEO_HEIGHT];
-}
-
-function getVideoDuration($moment, duration): string | undefined {
+/**
+ * Formats the video duration into a string
+ *
+ * @param $moment
+ * @param duration
+ * @returns the formatted duration
+ */
+function formatVideoDuration($moment, duration): string | undefined {
   if (duration) {
     return $moment()
       .startOf("day")

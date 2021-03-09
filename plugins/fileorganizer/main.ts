@@ -1,3 +1,4 @@
+import { promises as $fsPromises } from "fs";
 import { SceneContext, SceneOutput } from "../../types/scene";
 import {
   getAndValidateFieldArgs,
@@ -7,10 +8,10 @@ import {
 } from "./template";
 import { toNormalizedSafeFilename } from "./utils";
 
-// @todo: add custom fields support in templates
-// @todo: add blacklist to exclude some file patterns from the rename operations
-// @todo: nice to have: add support for undos (rename log journal that can be rolled back?)
-// @todo: nice to have: add support for path rename (file move) - TBD
+// TODO: add custom fields support in templates
+// TODO: add blacklist to exclude some file patterns from the rename operations
+// TODO: nice to have: add support for undos (rename log journal that can be rolled back?)
+// TODO: nice to have: add support for path rename (file move) - TBD
 
 export interface IReplacementCharacter {
   original: string;
@@ -20,7 +21,6 @@ export interface IReplacementCharacter {
 export interface MySceneContext extends SceneContext {
   args: {
     dry?: boolean;
-    isMochaTesting?: boolean;
     fileStructureTemplate: string;
     dateFormat?: string;
     multiValuesSeparator?: string;
@@ -35,11 +35,18 @@ async function filenameMaker(ctx: MySceneContext, template: string): Promise<str
   const { $logger } = ctx;
   let result: string = "";
 
+  if (!template || !getTemplateMatcher().test(template)) {
+    $logger.error(
+      `invalid teamplate: '${template}'. Please correct and retry. No rename can be performed.`
+    );
+    return;
+  }
+
+  const fieldResolvers = getTemplateFieldsResolvers(ctx);
   const matches = template.matchAll(getTemplateMatcher());
 
   for (const match of matches) {
     // Finds the resolver for the matched field and retreive its field arguments
-    const fieldResolvers = getTemplateFieldsResolvers(ctx);
     const resolver = fieldResolvers.find(
       (item) => item.name.toLowerCase() === match.groups?.field?.toLowerCase()
     );
@@ -63,39 +70,48 @@ async function filenameMaker(ctx: MySceneContext, template: string): Promise<str
       return;
     }
 
-    if (fieldValue) result += `${match.groups?.prefix}${fieldValue}${match.groups?.suffix}`;
+    if (fieldValue) {
+      const groupOutput = `${match.groups?.prefix}${fieldValue}${match.groups?.suffix}`;
+      result += groupOutput;
+      $logger.debug(`Group output for field <${resolver.name}>: '${groupOutput}'`);
+    } else {
+      $logger.debug(`Got no value for field <${resolver.name}>: the whole group is skipped.`);
+    }
   }
 
   if (result) {
     return toNormalizedSafeFilename(ctx, result);
   } else {
     $logger.warn(
-      `Could not generate a new filename based on template: '${template}'. The template structure is probably incorrect.`
+      `Could not generate a new filename based on template: '${template}'. All the template fields were without value.`
     );
   }
 }
 
+enum ConflictAction {
+  OVERWRITE = "overwrite",
+  RENAME = "rename",
+  SKIP = "skip",
+}
+
 module.exports = async (ctx: MySceneContext): Promise<SceneOutput> => {
   const { args, scenePath, $formatMessage, $fs, $logger, $path, $throw } = ctx;
-  const CONFLICT_OVERWRITE = "overwrite";
-  const CONFLICT_RENAME = "rename";
-  const CONFLICT_SKIP = "skip";
-  const CONFLICT_SUPPORTED = [CONFLICT_RENAME, CONFLICT_SKIP, CONFLICT_OVERWRITE];
 
-  if (!scenePath) $throw("Uh oh. You shouldn't use the plugin for this type of event");
+  if (!["sceneCreated", "sceneCustom"].includes(ctx.event)) {
+    $throw("Uh oh. You shouldn't use the plugin for this type of event");
+  }
 
-  $logger.verbose(`Starting fileorganizer to rename scene: ${scenePath}...`);
+  $logger.verbose(`Starting fileorganizer for scene: '${scenePath}'`);
 
   // Check args and set defaults if needed
-  if (args.dateFormat === undefined) args.dateFormat = "YYYY-MM-DD";
-  if (args.characterReplacement === undefined) {
-    args.characterReplacement = [{ original: ":", replacement: "∶" }];
-  }
-  if (args.multiValuesSeparator === undefined) args.multiValuesSeparator = ", ";
-  if (args.nameConflictHandling === undefined) args.nameConflictHandling = CONFLICT_RENAME;
-  if (args.normalizeAccents === undefined) args.normalizeAccents = false;
-  if (args.normalizeMultipleSpaces === undefined) args.normalizeMultipleSpaces = true;
-  if (!CONFLICT_SUPPORTED.includes(args.nameConflictHandling)) {
+  args.dateFormat ??= args.dateFormat = "YYYY-MM-DD";
+  // What looks like a colon is actually the mathematical "ratio" chacacter that is allowed in filenames.
+  args.characterReplacement ??= [{ original: ":", replacement: "∶" }];
+  args.multiValuesSeparator ??= ", ";
+  args.nameConflictHandling ??= ConflictAction.RENAME;
+  args.normalizeAccents ??= false;
+  args.normalizeMultipleSpaces ??= true;
+  if (!(<any>Object).values(ConflictAction).includes(args.nameConflictHandling)) {
     $throw(
       `Unsupported 'nameConflictHandling' argument value: ${args.nameConflictHandling}. Please adapt your config and retry.`
     );
@@ -129,20 +145,21 @@ module.exports = async (ctx: MySceneContext): Promise<SceneOutput> => {
 
   // Manage name conflicts
   if ($fs.existsSync(newScenePath)) {
-    if (args.nameConflictHandling === CONFLICT_SKIP) return {};
+    if (args.nameConflictHandling === ConflictAction.SKIP) return {};
     let counter: number = 1;
-    while (args.nameConflictHandling === CONFLICT_RENAME && $fs.existsSync(newScenePath)) {
+    while (args.nameConflictHandling === ConflictAction.RENAME && $fs.existsSync(newScenePath)) {
       newScenePath = $path.format({
         dir: parsed.dir,
         name: `${newFileName}(${counter++})`,
         ext: parsed.ext,
       });
     }
+    // Nothing to do for ConflictAction.OVERWRITE as $fs.rename overwrites by default
   }
 
   // Performm the rename operation
   try {
-    if (!args.isMochaTesting) $fs.renameSync(scenePath, newScenePath);
+    await $fsPromises.rename(scenePath, newScenePath);
   } catch (err) {
     $logger.error(`Could not rename "${scenePath}" to "${newScenePath}": ${$formatMessage(err)}`);
     return {};

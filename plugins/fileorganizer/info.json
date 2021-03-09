@@ -1,8 +1,8 @@
 {
   "name": "fileorganizer",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "authors": ["arcadianCdr"],
-  "description": "File organizer plugin (using porn-vault's library data). It uses your custom-defined templates to rename your scene files.",
+  "description": "Use your custom-defined templates to rename your scene files.",
   "pluginEvents": ["sceneCreated", "sceneCustom"],
   "arguments": [
     {
@@ -38,28 +38,28 @@
       "type": "String",
       "required": false,
       "default": "rename",
-      "description": "Behavior in case of name conflicts. Possible values are: `rename`, `overwrite` and `skip`. With 'rename', the new filename is suffixed with a number so that it does not conflict with an existing name anymore. With 'overwrite', the existing file is overriden by the renamed one. For 'skip', the rename operation is cancelled."
+      "description": "Behavior in case of name conflicts. Possible values are: `rename`, `overwrite` and `skip`. With `rename`, the new filename is suffixed with a number so that it does not conflict with an existing name anymore. With `overwrite`, the existing file is overriden by the renamed one. For `skip`, the rename operation is cancelled."
     },
     {
       "name": "dateFormat",
       "type": "String",
       "required": false,
       "default": "YYYY-MM-DD",
-      "description": "The date format to use in file names."
+      "description": "The date format to use in file names. The full details are available at https://momentjs.com/docs/#/displaying/format/ although you probably just need `YYYY`, `MM` and `DD`."
     },
     {
       "name": "multiValuesSeparator",
       "type": "String",
       "required": true,
       "default": ", ",
-      "description": "The separator to use for multiple values (like actors, labels,...). For instance, with a `,` as separator, the list of labels will be: `label1, label2, label3`."
+      "description": "The separator to use for multiple values (like actors, labels,...). For instance, with a `', '` as separator, a list of 3 labels will look like: `label1, label2, label3`."
     },
     {
       "name": "characterReplacement",
       "type": "object[]",
       "required": false,
-      "default": "[{ original: \":\", replacement: \"∶\" }]",
-      "description": "Used to substitite characters with a replacement alternative. See doc above for details."
+      "default": [{ "original": ":", "replacement": "∶" }],
+      "description": "Used to substitite characters with a replacement alternative. See doc above for details. Note: the examples below looks like it is replacing a colon by a colon, but it is actually replacing the colon (illegal in filenames) by the similar looking 'mathematical ratio' character (allowed in filenams)"
     }
   ]
 }
