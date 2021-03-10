@@ -9,12 +9,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js 14.x
-      uses: actions/setup-node@v1
-      with:
-        node-version: 14.x
-    - run: cd md_gen && npm ci && npm start
-    - uses: stefanzweifel/git-auto-commit-action@v4
-      with:
-        commit_message: Update MD
+      - uses: actions/checkout@v2
+      - name: Use Node.js 14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - run: cd md_gen && npm ci && npm start
+      - run: npm ci && npm run build
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Update MD
