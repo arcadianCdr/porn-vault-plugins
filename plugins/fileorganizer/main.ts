@@ -35,13 +35,6 @@ async function filenameMaker(ctx: MySceneContext, template: string): Promise<str
   const { $logger } = ctx;
   let result: string = "";
 
-  if (!template || !getTemplateMatcher().test(template)) {
-    $logger.error(
-      `invalid teamplate: '${template}'. Please correct and retry. No rename can be performed.`
-    );
-    return;
-  }
-
   const fieldResolvers = getTemplateFieldsResolvers(ctx);
   const matches = template.matchAll(getTemplateMatcher());
 
@@ -104,6 +97,9 @@ module.exports = async (ctx: MySceneContext): Promise<SceneOutput> => {
   $logger.verbose(`Starting fileorganizer for scene: '${scenePath}'`);
 
   // Check args and set defaults if needed
+  if (!args.fileStructureTemplate || !getTemplateMatcher().test(args.fileStructureTemplate)) {
+    $throw(`invalid teamplate: '${args.fileStructureTemplate}'. Please correct and retry.`);
+  }
   args.dateFormat ??= args.dateFormat = "YYYY-MM-DD";
   // What looks like a colon is actually the mathematical "ratio" chacacter that is allowed in filenames.
   args.characterReplacement ??= [{ original: ":", replacement: "∶" }];
