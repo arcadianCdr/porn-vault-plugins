@@ -137,7 +137,7 @@ const generatePluginDocs = () => {
     table: table([
       tableHeaders,
       ...Object.entries(info).map(([pluginDirName, pluginInfo]) => [
-        `[${pluginInfo.name}](https://github.com/arcadianCdr/porn-vault-plugins/blob/master/plugins/${pluginDirName}/README.md)`,
+        `[${pluginInfo.name}](https://github.com/arcadianCdr/plugins/tree/master/plugins/${pluginDirName}/README.md)`,
         pluginInfo.description,
       ]),
     ]),
