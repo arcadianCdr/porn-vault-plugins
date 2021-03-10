@@ -17,6 +17,7 @@ import {
 module.exports = async (ctx: MyContext): Promise<SceneOutput> => {
   const {
     event,
+    scene,
     scenePath,
     sceneName,
     $throw,
@@ -92,10 +93,10 @@ module.exports = async (ctx: MyContext): Promise<SceneOutput> => {
     searchTitle = data.name ?? data.movie;
     searchActors = data.actors ?? [];
     searchStudio = data.studio;
-    searchTimestamp = data.releaseDate ?? searchTimestamp;
-    userMovie = data.movie ?? userMovie;
-    $logger.info(
-      `Piped data takes precedence for the search: ${$formatMessage({
+    searchTimestamp = data.releaseDate;
+    userMovie = data.movie;
+    $logger.verbose(
+      `Piped data from the previous plugin take precedence for the search: ${$formatMessage({
         searchTitle: searchTitle,
         searchActors: searchActors,
         searchStudio: searchStudio,
@@ -107,12 +108,16 @@ module.exports = async (ctx: MyContext): Promise<SceneOutput> => {
 
   // Assign or parse only it the value is still undefined (there were no piped data for it)
   searchTitle ??= sceneName;
-  searchTimestamp ??= parseSceneTimestamp(ctx) ?? undefined;
-  searchStudio ??= parseSceneStudio(ctx) ?? undefined;
+  searchTimestamp ??= scene.releaseDate ?? parseSceneTimestamp(ctx) ?? undefined;
+  searchStudio ??= (await ctx.$getStudio())?.name ?? parseSceneStudio(ctx);
   if (!searchActors.length) {
-    const parsedDbActor = parseSceneActor(ctx);
-    searchActors = parsedDbActor ? [parsedDbActor] : [];
+    searchActors = (await ctx.$getActors())?.map((a) => a.name) ?? [];
+    if (!searchActors.length) {
+      const parsedDbActor = parseSceneActor(ctx);
+      searchActors = parsedDbActor ? [parsedDbActor] : [];
+    }
   }
+  userMovie ??= (await ctx.$getMovies())?.[0]?.name;
 
   const gotResultOrExit = false;
   do {

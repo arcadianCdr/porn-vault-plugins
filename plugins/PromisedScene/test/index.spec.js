@@ -19,6 +19,10 @@ describe("PromisedScene", () => {
         await runPlugin({
           ...mockContext,
           event: "fake event",
+          scene: {},
+          $getStudio: async () => {},
+          $getMovies: async () => [],
+          $getActors: async () => [],
           args: {
             manualTouch: true,
             sceneDuplicationCheck: true,
@@ -51,6 +55,10 @@ describe("PromisedScene", () => {
         await runPlugin({
           ...mockContext,
           event: "sceneCreated",
+          scene: {},
+          $getStudio: async () => {},
+          $getMovies: async () => [],
+          $getActors: async () => [],
           args: {
             manualTouch: true,
             sceneDuplicationCheck: true,
@@ -78,6 +86,10 @@ describe("PromisedScene", () => {
         await runPlugin({
           ...mockContext,
           event: "sceneCreated",
+          scene: {},
+          $getStudio: async () => {},
+          $getMovies: async () => [],
+          $getActors: async () => [],
           args: {
             manualTouch: true,
             sceneDuplicationCheck: true,
@@ -109,6 +121,10 @@ describe("PromisedScene", () => {
         await runPlugin({
           ...mockContext,
           event: "sceneCreated",
+          scene: {},
+          $getStudio: async () => {},
+          $getMovies: async () => [],
+          $getActors: async () => [],
           args: {
             manualTouch: true,
             sceneDuplicationCheck: true,
@@ -139,6 +155,10 @@ describe("PromisedScene", () => {
         await runPlugin({
           ...mockContext,
           event: "sceneCreated",
+          scene: {},
+          $getStudio: async () => {},
+          $getMovies: async () => [],
+          $getActors: async () => [],
           args: {
             sceneDuplicationCheck: true,
             parseActor: true,
@@ -170,6 +190,10 @@ describe("PromisedScene", () => {
         await runPlugin({
           ...mockContext,
           event: "sceneCreated",
+          scene: {},
+          $getStudio: async () => {},
+          $getMovies: async () => [],
+          $getActors: async () => [],
           args: {
             manualTouch: true,
             parseActor: true,
@@ -202,6 +226,10 @@ describe("PromisedScene", () => {
       const result = await runPlugin({
         ...mockContext,
         event: "sceneCreated",
+        scene: {},
+        $getStudio: async () => {},
+        $getMovies: async () => [],
+        $getActors: async () => [],
         args: {
           manualTouch: true,
           sceneDuplicationCheck: true,
@@ -236,6 +264,10 @@ describe("PromisedScene", () => {
       const result = await runPlugin({
         ...mockContext,
         event: "sceneCreated",
+        scene: {},
+        $getStudio: async () => {},
+        $getMovies: async () => [],
+        $getActors: async () => [],
         args: {
           manualTouch: true,
           sceneDuplicationCheck: true,
@@ -278,6 +310,10 @@ describe("PromisedScene", () => {
       const result = await runPlugin({
         ...mockContext,
         event: "sceneCreated",
+        scene: {},
+        $getStudio: async () => {},
+        $getMovies: async () => [],
+        $getActors: async () => [],
         args: {
           manualTouch: true,
           sceneDuplicationCheck: true,
@@ -312,6 +348,10 @@ describe("PromisedScene", () => {
       const result = await runPlugin({
         ...mockContext,
         event: "sceneCreated",
+        scene: {},
+        $getStudio: async () => {},
+        $getMovies: async () => [],
+        $getActors: async () => [],
         args: {
           manualTouch: true,
           sceneDuplicationCheck: true,
@@ -346,6 +386,10 @@ describe("PromisedScene", () => {
       const result = await runPlugin({
         ...mockContext,
         event: "sceneCreated",
+        scene: {},
+        $getStudio: async () => {},
+        $getMovies: async () => [],
+        $getActors: async () => [],
         args: {
           manualTouch: true,
           sceneDuplicationCheck: true,
@@ -394,6 +438,10 @@ describe("PromisedScene", () => {
       const result = await runPlugin({
         ...mockContext,
         event: "sceneCreated",
+        scene: {},
+        $getStudio: async () => {},
+        $getMovies: async () => [],
+        $getActors: async () => [],
         args: {
           manualTouch: true,
           sceneDuplicationCheck: true,
@@ -441,6 +489,10 @@ describe("PromisedScene", () => {
       const result = await runPlugin({
         ...mockContext,
         event: "sceneCreated",
+        scene: {},
+        $getStudio: async () => {},
+        $getMovies: async () => [],
+        $getActors: async () => [],
         args: {
           manualTouch: true,
           sceneDuplicationCheck: true,
@@ -488,6 +540,10 @@ describe("PromisedScene", () => {
       const result = await runPlugin({
         ...mockContext,
         event: "sceneCreated",
+        scene: {},
+        $getStudio: async () => {},
+        $getMovies: async () => [],
+        $getActors: async () => [],
         args: {
           manualTouch: true,
           sceneDuplicationCheck: true,
@@ -533,6 +589,10 @@ describe("PromisedScene", () => {
       const result = await runPlugin({
         ...mockContext,
         event: "sceneCreated",
+        scene: {},
+        $getStudio: async () => {},
+        $getMovies: async () => [],
+        $getActors: async () => [],
         args: {
           manualTouch: true,
           sceneDuplicationCheck: true,
@@ -571,6 +631,10 @@ describe("PromisedScene", () => {
       const result = await runPlugin({
         ...mockContext,
         event: "sceneCreated",
+        scene: {},
+        $getStudio: async () => {},
+        $getMovies: async () => [],
+        $getActors: async () => [],
         args: {
           manualTouch: true,
           sceneDuplicationCheck: true,
@@ -616,6 +680,10 @@ describe("PromisedScene", () => {
       const result = await runPlugin({
         ...mockContext,
         event: "sceneCreated",
+        scene: {},
+        $getStudio: async () => {},
+        $getMovies: async () => [],
+        $getActors: async () => [],
         args: {
           manualTouch: true,
           sceneDuplicationCheck: true,
@@ -653,6 +721,10 @@ describe("PromisedScene", () => {
       const result = await runPlugin({
         ...mockContext,
         event: "sceneCreated",
+        scene: {},
+        $getStudio: async () => {},
+        $getMovies: async () => [],
+        $getActors: async () => [],
         args: {
           manualTouch: true,
           sceneDuplicationCheck: true,
@@ -690,6 +762,10 @@ describe("PromisedScene", () => {
       const result = await runPlugin({
         ...mockContext,
         event: "sceneCreated",
+        scene: {},
+        $getStudio: async () => {},
+        $getMovies: async () => [],
+        $getActors: async () => [],
         args: {
           manualTouch: true,
           sceneDuplicationCheck: true,
@@ -732,6 +808,10 @@ describe("PromisedScene", () => {
       const result = await runPlugin({
         ...mockContext,
         event: "sceneCreated",
+        scene: {},
+        $getStudio: async () => {},
+        $getMovies: async () => [],
+        $getActors: async () => [],
         args: {
           alwaysUseSingleResult: true,
           manualTouch: true,
@@ -782,6 +862,10 @@ describe("PromisedScene", () => {
       const result = await runPlugin({
         ...mockContext,
         event: "sceneCreated",
+        scene: {},
+        $getStudio: async () => {},
+        $getMovies: async () => [],
+        $getActors: async () => [],
         args: {
           manualTouch: false,
           sceneDuplicationCheck: true,
@@ -808,6 +892,10 @@ describe("PromisedScene", () => {
       const result = await runPlugin({
         ...mockContext,
         event: "sceneCreated",
+        scene: {},
+        $getStudio: async () => {},
+        $getMovies: async () => [],
+        $getActors: async () => [],
         args: {
           manualTouch: true,
           sceneDuplicationCheck: false,
@@ -854,6 +942,10 @@ describe("PromisedScene", () => {
       const result = await runPlugin({
         ...mockContext,
         event: "sceneCreated",
+        scene: {},
+        $getStudio: async () => {},
+        $getMovies: async () => [],
+        $getActors: async () => [],
         args: {
           manualTouch: true,
           sceneDuplicationCheck: false,
@@ -894,6 +986,10 @@ describe("PromisedScene", () => {
       const result = await runPlugin({
         ...mockContext,
         event: "sceneCreated",
+        scene: {},
+        $getStudio: async () => {},
+        $getMovies: async () => [],
+        $getActors: async () => [],
         args: {
           manualTouch: true,
           sceneDuplicationCheck: true,
@@ -942,6 +1038,10 @@ describe("PromisedScene", () => {
       const result = await runPlugin({
         ...mockContext,
         event: "sceneCreated",
+        scene: {},
+        $getStudio: async () => {},
+        $getMovies: async () => [],
+        $getActors: async () => [],
         args: {
           alwaysUseSingleResult: true,
           manualTouch: true,
@@ -992,6 +1092,10 @@ describe("PromisedScene", () => {
       const result = await runPlugin({
         ...mockContext,
         event: "sceneCreated",
+        scene: {},
+        $getStudio: async () => {},
+        $getMovies: async () => [],
+        $getActors: async () => [],
         args: {
           manualTouch: true,
           sceneDuplicationCheck: true,
@@ -1038,6 +1142,10 @@ describe("PromisedScene", () => {
         ...mockContext,
         $createImage: () => Promise.reject(new Error("test error")),
         event: "sceneCreated",
+        scene: {},
+        $getStudio: async () => {},
+        $getMovies: async () => [],
+        $getActors: async () => [],
         args: {
           manualTouch: true,
           sceneDuplicationCheck: true,
@@ -1084,6 +1192,10 @@ describe("PromisedScene", () => {
       const result = await runPlugin({
         ...mockContext,
         event: "sceneCreated",
+        scene: {},
+        $getStudio: async () => {},
+        $getMovies: async () => [],
+        $getActors: async () => [],
         args: {
           manualTouch: true,
           sceneDuplicationCheck: true,
@@ -1130,6 +1242,10 @@ describe("PromisedScene", () => {
       const result = await runPlugin({
         ...mockContext,
         event: "sceneCreated",
+        scene: {},
+        $getStudio: async () => {},
+        $getMovies: async () => [],
+        $getActors: async () => [],
         args: {
           manualTouch: false,
           sceneDuplicationCheck: true,
@@ -1159,6 +1275,10 @@ describe("PromisedScene", () => {
       const result = await runPlugin({
         ...mockContext,
         event: "sceneCreated",
+        scene: {},
+        $getStudio: async () => {},
+        $getMovies: async () => [],
+        $getActors: async () => [],
         args: {
           manualTouch: true,
           sceneDuplicationCheck: true,
@@ -1208,6 +1328,10 @@ describe("PromisedScene", () => {
       const result = await runPlugin({
         ...mockContext,
         event: "sceneCreated",
+        scene: {},
+        $getStudio: async () => {},
+        $getMovies: async () => [],
+        $getActors: async () => [],
         args: {
           manualTouch: false,
           sceneDuplicationCheck: true,
@@ -1252,6 +1376,10 @@ describe("PromisedScene", () => {
       const result = await runPlugin({
         ...mockContext,
         event: "sceneCreated",
+        scene: {},
+        $getStudio: async () => {},
+        $getMovies: async () => [],
+        $getActors: async () => [],
         args: {
           manualTouch: false,
           sceneDuplicationCheck: true,
@@ -1299,6 +1427,10 @@ describe("PromisedScene", () => {
       const result = await runPlugin({
         ...mockContext,
         event: "sceneCreated",
+        scene: {},
+        $getStudio: async () => {},
+        $getMovies: async () => [],
+        $getActors: async () => [],
         args: {
           manualTouch: false,
           sceneDuplicationCheck: true,
@@ -1343,6 +1475,85 @@ describe("PromisedScene", () => {
       expect(result.actors).to.contain("Valentina Nappi");
       expect(result.actors).to.contain("Alex Legend");
       expect(result.studio).to.equal("NF Busty");
+    });
+  });
+
+  describe("When initial data exist...", () => {
+    it("Should match from initial data", async () => {
+      const result = await runPlugin({
+        ...mockContext,
+        event: "sceneCreated",
+        scene: { releaseDate: new Date(2013, 9, 10).valueOf() },
+        $getStudio: async () => {
+          return { name: "New Sensations" };
+        },
+        $getMovies: async () => [],
+        $getActors: async () => [{ name: "Mia Malkova" }],
+        args: {
+          manualTouch: true,
+          sceneDuplicationCheck: true,
+          parseActor: false,
+          parseStudio: false,
+          parseDate: false,
+          source_settings: {
+            actors: "./plugins/PromisedScene/test/fixtures/actorsPopulated.db",
+            scenes: "./plugins/PromisedScene/test/fixtures/scenesPopulated.db",
+            studios: "./plugins/PromisedScene/test/fixtures/studiosPopulated.db",
+          },
+        },
+        sceneName: "So Young So Sexy P.O.V. #8",
+        scenePath:
+          "Z:\\Keep\\test\\[New Sensations] Mia Malkova 2013.10.10 - So Young So Sexy P.O.V. #8.mp4",
+        testMode: {
+          correctImportInfo: "y",
+          testSiteUnavailable: false,
+          status: true,
+        },
+      });
+      expect(result).to.be.an("object");
+      expect(result.description).to.equal(
+        "Mia Malkova's back and more flexible more than ever. She is looking fine and is extremely horny for some sweet stud lovin'. Cum watch Mia Malkova work this hard cock to explosion of warm man chowder all across her face!"
+      );
+      expect(result.releaseDate).to.be.a("number");
+      expect(result.thumbnail).to.equal(IMAGE_ID);
+      expect(result.actors).to.be.a("Array");
+      expect(result.studio).to.equal("New Sensations");
+    });
+    it("Should not match without the initial data", async () => {
+      const result = await runPlugin({
+        ...mockContext,
+        event: "sceneCreated",
+        scene: {},
+        $getStudio: async () => {},
+        $getMovies: async () => [],
+        $getActors: async () => [],
+        args: {
+          manualTouch: true,
+          sceneDuplicationCheck: true,
+          parseActor: false,
+          parseStudio: false,
+          parseDate: false,
+          source_settings: {
+            actors: "./plugins/PromisedScene/test/fixtures/actorsPopulated.db",
+            scenes: "./plugins/PromisedScene/test/fixtures/scenesPopulated.db",
+            studios: "./plugins/PromisedScene/test/fixtures/studiosPopulated.db",
+          },
+        },
+        sceneName: "So Young So Sexy P.O.V. #8",
+        scenePath:
+          "Z:\\Keep\\test\\[New Sensations] Mia Malkova 2013.10.10 - So Young So Sexy P.O.V. #8.mp4",
+        testMode: {
+          correctImportInfo: "y",
+          testSiteUnavailable: false,
+          status: true,
+        },
+      });
+      expect(result).to.be.an("object");
+      expect(result.description).to.be.undefined;
+      expect(result.releaseDate).to.be.undefined;
+      expect(result.thumbnail).to.undefined;
+      expect(result.actors).to.be.undefined;
+      expect(result.studio).to.be.undefined;
     });
   });
 });

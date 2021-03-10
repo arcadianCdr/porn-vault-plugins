@@ -225,7 +225,9 @@ export const matchSceneResultToSearch = (
   return null;
 };
 
-// Removes anything except letters and digits from a string
+/**
+ * Removes anything except letters and digits from a string
+ */
 function cleanup(text: string): string {
   return text.replace(/[^\w\d]/g, "");
 }
