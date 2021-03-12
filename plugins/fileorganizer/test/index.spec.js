@@ -159,6 +159,43 @@ describe("fileorganizer", () => {
       expect(result.path).to.be.undefined;
       expect(fs.existsSync("./plugins/fileorganizer/test/fixtures/temp/original.txt")).to.be.true;
     });
+    it("Should rename with allowed initial data on sceneCreate events...", async () => {
+      fs.writeFileSync("./plugins/fileorganizer/test/fixtures/temp/original.txt", "");
+      const result = await runPlugin({
+        event: "sceneCreated",
+        data: {
+          name: "Initial scene name"
+        },
+        scene: {
+          meta: { dimensions: {width: 1920, height: 1080}, duration: 90}
+        },
+        sceneName: "Should be ignored",
+        scenePath: "./plugins/fileorganizer/test/fixtures/temp/original.txt",
+        args: {
+          fileStructureTemplate: "{<name!>}{ (<videoHeight!>p)}",
+        },
+      });
+      expect(result.path).to.equal("./plugins/fileorganizer/test/fixtures/temp/Initial scene name (1080p).txt");
+      expect(fs.existsSync("./plugins/fileorganizer/test/fixtures/temp/original.txt")).to.be.false;
+      expect(fs.existsSync("./plugins/fileorganizer/test/fixtures/temp/Initial scene name (1080p).txt")).to.be.true;
+    });
+    it("Should not rename with unsafe initial data on sceneCreate events...", async () => {
+      fs.writeFileSync("./plugins/fileorganizer/test/fixtures/temp/original.txt", "");
+      const result = await runPlugin({
+        event: "sceneCreated",
+        scene: {
+          name: "Initial scene name",
+          meta: { dimensions: {width: 1920, height: 1080}, duration: 90}
+        },
+        sceneName: "Should be ignored",
+        scenePath: "./plugins/fileorganizer/test/fixtures/temp/original.txt",
+        args: {
+          fileStructureTemplate: "{<name!>}{ (<videoHeight!>p)}",
+        },
+      });
+      expect(result.path).to.be.undefined;
+      expect(fs.existsSync("./plugins/fileorganizer/test/fixtures/temp/original.txt")).to.be.true;
+    });
   });
 
   describe("Name normalize & sanitize...", () => {
@@ -291,32 +328,6 @@ describe("fileorganizer", () => {
           encoding: "utf8",
         })
       ).to.equal("Should be skipped");
-    });
-    it("Should overwrite...", async () => {
-      fs.writeFileSync("./plugins/fileorganizer/test/fixtures/temp/original.txt", "Original");
-      fs.writeFileSync(
-        "./plugins/fileorganizer/test/fixtures/temp/renamed.txt",
-        "Should be overwriten..."
-      );
-      const result = await runPlugin({
-        event: "sceneCustom",
-        scene: {
-          name: "renamed",
-        },
-        scenePath: "./plugins/fileorganizer/test/fixtures/temp/original.txt",
-        args: {
-          fileStructureTemplate: "{<name>}",
-          nameConflictHandling: "overwrite",
-        },
-      });
-      expect(result.path).to.equal("./plugins/fileorganizer/test/fixtures/temp/renamed.txt");
-      expect(fs.existsSync("./plugins/fileorganizer/test/fixtures/temp/original.txt")).to.be.false;
-      expect(fs.existsSync("./plugins/fileorganizer/test/fixtures/temp/renamed.txt")).to.be.true;
-      expect(
-        fs.readFileSync("./plugins/fileorganizer/test/fixtures/temp/renamed.txt", {
-          encoding: "utf8",
-        })
-      ).to.equal("Original");
     });
   });
 

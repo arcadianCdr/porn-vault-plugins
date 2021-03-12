@@ -38,7 +38,7 @@
       "type": "String",
       "required": false,
       "default": "rename",
-      "description": "Behavior in case of name conflicts. Possible values are: `rename`, `overwrite` and `skip`. With `rename`, the new filename is suffixed with a number so that it does not conflict with an existing name anymore. With `overwrite`, the existing file is overriden by the renamed one. For `skip`, the rename operation is cancelled."
+      "description": "Behavior in case of name conflicts. Possible values are: `rename` and `skip`. With `rename`, the new filename is suffixed with a number so that it does not conflict with an existing name anymore. With `skip`, the rename operation is cancelled."
     },
     {
       "name": "dateFormat",

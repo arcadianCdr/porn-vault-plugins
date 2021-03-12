@@ -28,9 +28,9 @@ interface ITemplateFieldResolver {
 
 // To avoid side effects, only some of the initial scene data can be used on createScene event (most are empty anyway and the name is not safe to use)
 enum SafeInitialDataForSceneCreate {
-  FIELD_VIDEO_DURATION,
-  FIELD_VIDEO_WIDTH,
-  FIELD_VIDEO_HEIGHT,
+  VIDEO_DURATION = "videoDuration",
+  VIDEO_WIDTH = "videoWidth",
+  VIDEO_HEIGHT = "videoHeight",
 }
 
 /**
@@ -169,8 +169,8 @@ export async function getTemplateFieldValue(
   // ...and complete the missing piped data with the initial scene data
   if (
     ctx.event === "sceneCustom" ||
-    (ctx.event === "sceneCreate" &&
-      Object.values(SafeInitialDataForSceneCreate).includes(resolver.name))
+    (ctx.event === "sceneCreated" &&
+      (<any>Object).values(SafeInitialDataForSceneCreate).includes(resolver.name))
   ) {
     fieldValue ??= await resolver.getInitialData(index);
   }

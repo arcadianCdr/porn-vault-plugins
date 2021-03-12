@@ -82,7 +82,6 @@ async function filenameMaker(ctx: MySceneContext, template: string): Promise<str
 }
 
 enum ConflictAction {
-  OVERWRITE = "overwrite",
   RENAME = "rename",
   SKIP = "skip",
 }
@@ -150,7 +149,6 @@ module.exports = async (ctx: MySceneContext): Promise<SceneOutput> => {
         ext: parsed.ext,
       });
     }
-    // Nothing to do for ConflictAction.OVERWRITE as $fs.rename overwrites by default
   }
 
   // Performm the rename operation
