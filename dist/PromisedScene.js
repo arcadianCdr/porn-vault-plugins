@@ -88,7 +88,7 @@ var __awaiter = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisAr
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkSceneExistsInDb = exports.normalizeSceneResultData = exports.matchSceneResultToSearch = exports.ignoreDbLine = exports.createQuestionPrompter = exports.escapeRegExp = exports.stripStr = exports.dateToTimestamp = exports.timestampToString = exports.isPositiveAnswer = exports.manualTouchChoices = void 0;
+exports.checkSceneExistsInDb = exports.normalizeSceneResultData = exports.matchSceneResultToPipedData = exports.matchSceneResultToSearch = exports.ignoreDbLine = exports.createQuestionPrompter = exports.escapeRegExp = exports.stripStr = exports.dateToTimestamp = exports.timestampToString = exports.isPositiveAnswer = exports.manualTouchChoices = void 0;
 exports.manualTouchChoices = {
     MANUAL_ENTER: "Enter scene details manually, straight into the porn-vault",
     NOTHING: "Do nothing (let the scene be imported with no details)",
@@ -212,6 +212,66 @@ const matchSceneResultToSearch = (ctx, sceneList, knownActors, studio) => {
     return null;
 };
 exports.matchSceneResultToSearch = matchSceneResultToSearch;
+function cleanup(text) {
+    return text.replace(/[^\w\d]/g, "");
+}
+function checkActorMatch(performers, actors) {
+    let isActorsMatch = false;
+    if ((performers === null || performers === void 0 ? void 0 : performers.length) && (actors === null || actors === void 0 ? void 0 : actors.length)) {
+        isActorsMatch = actors.every((actor) => performers.filter(({ name }) => name.localeCompare(actor, undefined, { sensitivity: "base" }) === 0));
+    }
+    return isActorsMatch;
+}
+function checkStudioMatch(site, studio) {
+    let isStudioMatch = false;
+    if ((site === null || site === void 0 ? void 0 : site.name) && studio) {
+        isStudioMatch =
+            cleanup(site.name).localeCompare(cleanup(studio), undefined, { sensitivity: "base" }) === 0;
+    }
+    return isStudioMatch;
+}
+const matchSceneResultToPipedData = (ctx, sceneList) => {
+    var _a, _b, _c, _d;
+    const { data, $formatMessage, $moment } = ctx;
+    ctx.$logger.verbose(`MATCH PIPED: ${sceneList.length} results found`);
+    const sceneMatchingScores = [];
+    for (const scene of sceneList) {
+        const foundTitle = stripStr(scene.title || "").trim();
+        const searchedTitle = stripStr((_b = (_a = data.name) !== null && _a !== void 0 ? _a : data.movie) !== null && _b !== void 0 ? _b : "").trim();
+        const isTitleMatch = foundTitle.localeCompare(searchedTitle, undefined, { sensitivity: "base" }) === 0;
+        const isActorsMatch = checkActorMatch(scene.performers, data.actors);
+        const isDateMatch = $moment(scene.date, "YYYY-MM-DD").valueOf() === data.releaseDate;
+        const isStudioMatch = checkStudioMatch(scene.site, data.studio);
+        let confidenceScore = 0.0;
+        if (isTitleMatch && isActorsMatch) {
+            confidenceScore = 1.0;
+        }
+        else if (isTitleMatch) {
+            confidenceScore = 0.8;
+        }
+        else if (isActorsMatch && isDateMatch && isStudioMatch) {
+            confidenceScore = 0.7;
+        }
+        else if (isActorsMatch && isDateMatch) {
+            confidenceScore = 0.3;
+        }
+        sceneMatchingScores.push(confidenceScore);
+        ctx.$logger.verbose(`MATCH PIPED: Trying to match TPD scene:\n${$formatMessage({
+            studio: (_c = scene.site) === null || _c === void 0 ? void 0 : _c.name,
+            title: foundTitle,
+            actors: (_d = scene.performers) === null || _d === void 0 ? void 0 : _d.map((performer) => performer.name),
+            releaseDate: scene.date,
+        })}\nConfidence score for this scene: ${confidenceScore}`);
+    }
+    const indexOfMax = sceneMatchingScores.indexOf(Math.max(...sceneMatchingScores));
+    if (sceneMatchingScores[indexOfMax] > 0) {
+        ctx.$logger.verbose(`MATCH PIPED: SUCCESS: matched with a confidence score of ${sceneMatchingScores[indexOfMax]} to TPDB scene: ${sceneList[indexOfMax].title}`);
+        return sceneList[indexOfMax];
+    }
+    ctx.$logger.error(`MATCH PIPED:\tERR: did not find any match`);
+    return null;
+};
+exports.matchSceneResultToPipedData = matchSceneResultToPipedData;
 const normalizeSceneResultData = (sceneData) => {
     var _a;
     const result = {};
@@ -452,10 +512,14 @@ var __awaiter = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisAr
 
 
 var main = (ctx) => __awaiter(void 0, void 0, void 0, function* () {
-    const { event, scenePath, sceneName, $throw, $logger, $formatMessage, testMode, args, $inquirer, $createImage, } = ctx;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+    const { event, scene, scenePath, sceneName, $throw, $logger, $formatMessage, testMode, args, $inquirer, $createImage, data, } = ctx;
     let didRunMakeChoices = false;
     if (event !== "sceneCreated" && event !== "sceneCustom") {
         $throw("Plugin used for unsupported event");
+    }
+    if (!Object.hasOwnProperty.call(args, "usePipedInputInSearch")) {
+        args.usePipedInputInSearch = false;
     }
     if (!Object.hasOwnProperty.call(args, "useTitleInSearch")) {
         $logger.warn("Missing useTitleInSearch in plugin args!");
@@ -483,15 +547,37 @@ var main = (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     }
     const tpdbApi = new api.Api(ctx);
     $logger.info(`STARTING to analyze scene: ${JSON.stringify(scenePath)}`);
-    const parsedDbActor = parse.parseSceneActor(ctx);
-    const parsedDbStudio = parse.parseSceneStudio(ctx);
-    const parsedTimestamp = parse.parseSceneTimestamp(ctx);
-    let searchTitle = sceneName;
-    let searchActors = parsedDbActor ? [parsedDbActor] : [];
-    let searchStudio = parsedDbStudio !== null && parsedDbStudio !== void 0 ? parsedDbStudio : undefined;
-    let searchTimestamp = parsedTimestamp !== null && parsedTimestamp !== void 0 ? parsedTimestamp : undefined;
+    let searchTitle;
+    let searchActors = [];
+    let searchStudio;
+    let searchTimestamp;
     let userMovie;
     let extra;
+    if (args.usePipedInputInSearch && Object.keys(data).length) {
+        searchTitle = (_a = data.name) !== null && _a !== void 0 ? _a : data.movie;
+        searchActors = (_b = data.actors) !== null && _b !== void 0 ? _b : [];
+        searchStudio = data.studio;
+        searchTimestamp = data.releaseDate;
+        userMovie = data.movie;
+        $logger.verbose(`Piped data from the previous plugin take precedence for the search: ${$formatMessage({
+            searchTitle: searchTitle,
+            searchActors: searchActors,
+            searchStudio: searchStudio,
+            searchTimestamp: ctx.$moment(searchTimestamp).format("YYYY-MM-DD"),
+            userMovie: userMovie,
+        })}`);
+    }
+    searchTitle !== null && searchTitle !== void 0 ? searchTitle : (searchTitle = sceneName);
+    searchTimestamp !== null && searchTimestamp !== void 0 ? searchTimestamp : (searchTimestamp = (_d = (_c = scene.releaseDate) !== null && _c !== void 0 ? _c : parse.parseSceneTimestamp(ctx)) !== null && _d !== void 0 ? _d : undefined);
+    searchStudio !== null && searchStudio !== void 0 ? searchStudio : (searchStudio = (_f = (_e = (yield ctx.$getStudio())) === null || _e === void 0 ? void 0 : _e.name) !== null && _f !== void 0 ? _f : parse.parseSceneStudio(ctx));
+    if (!searchActors.length) {
+        searchActors = (_h = (_g = (yield ctx.$getActors())) === null || _g === void 0 ? void 0 : _g.map((a) => a.name)) !== null && _h !== void 0 ? _h : [];
+        if (!searchActors.length) {
+            const parsedDbActor = parse.parseSceneActor(ctx);
+            searchActors = parsedDbActor ? [parsedDbActor] : [];
+        }
+    }
+    userMovie !== null && userMovie !== void 0 ? userMovie : (userMovie = (_k = (_j = (yield ctx.$getMovies())) === null || _j === void 0 ? void 0 : _j[0]) === null || _k === void 0 ? void 0 : _k.name);
     const gotResultOrExit = false;
     do {
         const searchResult = yield doASearch({
@@ -843,7 +929,13 @@ var main = (ctx) => __awaiter(void 0, void 0, void 0, function* () {
                 $logger.error("Did not find any results from TPDB");
                 return null;
             }
-            const matchedScene = util.matchSceneResultToSearch(ctx, sceneList, searchActors, searchStudio);
+            let matchedScene;
+            if (args.usePipedInputInSearch && Object.keys(data).length) {
+                matchedScene = util.matchSceneResultToPipedData(ctx, sceneList);
+            }
+            else {
+                matchedScene = util.matchSceneResultToSearch(ctx, sceneList, searchActors, searchStudio);
+            }
             if (matchedScene) {
                 return mergeSearchResult(matchedScene);
             }

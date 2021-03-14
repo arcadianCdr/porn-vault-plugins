@@ -123,6 +123,14 @@ var main = (ctx) => __awaiter(void 0, void 0, void 0, function* () {
         return {};
     }
     const $ = $cheerio.load(html || "");
+    let name;
+    if (args.exactNameMatch) {
+        name = $(".h1.d-flex.align-items-center.mb-1.mb-md-0.font-weight-bold").text().trim().replace(" Bio", "");
+        if (name.localeCompare(actorName, undefined, { sensitivity: "base" }) !== 0) {
+            $logger.warn(`Stopped scraping as actor name is not an exact match: found: '${name}', expected: '${actorName}'`);
+            return {};
+        }
+    }
     function getNationality() {
         if (isBlacklisted("nationality"))
             return {};
@@ -382,7 +390,7 @@ var main = (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     if (custom.tattoos === "Unknown") {
         delete custom.tattoos;
     }
-    const data = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, getNationality()), getAge()), getAlias()), (yield getAvatar())), { custom });
+    const data = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({ name }, getNationality()), getAge()), getAlias()), (yield getAvatar())), { custom });
     if (!isBlacklisted("labels")) {
         data.labels = [];
         if (custom["hair color"]) {

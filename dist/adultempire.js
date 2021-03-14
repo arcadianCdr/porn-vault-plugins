@@ -12,6 +12,9 @@ var __awaiter = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisAr
     });
 };
 
+function lowercase(str) {
+    return str.toLowerCase();
+}
 function default_1(ctx) {
     return __awaiter(this, void 0, void 0, function* () {
         const { args, $axios, $cheerio, $logger, $formatMessage, actorName, $createImage } = ctx;
@@ -20,6 +23,20 @@ function default_1(ctx) {
             .replace(/\s{2,}/g, " ")
             .trim();
         $logger.info(`Scraping actor info for '${name}', dry mode: ${(args === null || args === void 0 ? void 0 : args.dry) || false}...`);
+        const blacklist = (args.blacklist || []).map(lowercase);
+        if (!args.blacklist)
+            $logger.verbose("No blacklist defined, returning everything...");
+        if (blacklist.length)
+            $logger.verbose(`Blacklist defined, will ignore: ${blacklist.join(", ")}`);
+        const whitelist = (args.whitelist || []).map(lowercase);
+        if (whitelist.length)
+            $logger.verbose(`Whitelist defined, will only return: ${whitelist.join(", ")}...`);
+        function isBlacklisted(prop) {
+            if (whitelist.length) {
+                return !whitelist.includes(lowercase(prop));
+            }
+            return blacklist.includes(lowercase(prop));
+        }
         const url = `https://www.adultempire.com/allsearch/search?q=${name}`;
         const html = (yield $axios.get(url)).data;
         const $ = $cheerio.load(html);
@@ -30,32 +47,68 @@ function default_1(ctx) {
             const html = (yield $axios.get(actorUrl)).data;
             const $ = $cheerio.load(html);
             let avatar;
-            const firstImageResult = $(`a.fancy`).toArray()[0];
-            const avatarUrl = $(firstImageResult).attr("href");
-            if (avatarUrl) {
-                avatar = yield $createImage(avatarUrl, `${actorName} (avatar)`);
+            let avatarUrl;
+            if (!isBlacklisted("avatar")) {
+                const firstImageResult = $(`a.fancy`).toArray()[0];
+                avatarUrl = $(firstImageResult).attr("href");
+                if (avatarUrl) {
+                    avatar = yield $createImage(avatarUrl, `${actorName} (avatar)`);
+                }
             }
             let hero;
-            const secondImageResult = $(`a.fancy`).toArray()[1];
-            const heroUrl = $(secondImageResult).attr("href");
-            if (heroUrl) {
-                hero = yield $createImage(heroUrl, `${actorName} (hero image)`);
+            let heroUrl;
+            if (!isBlacklisted("hero")) {
+                const secondImageResult = $(`a.fancy`).toArray()[1];
+                heroUrl = $(secondImageResult).attr("href");
+                if (heroUrl) {
+                    hero = yield $createImage(heroUrl, `${actorName} (hero image)`);
+                }
             }
             let description;
-            const descEl = $("#content .row aside");
-            if (descEl) {
-                description = descEl.text().trim();
+            if (!isBlacklisted("description")) {
+                const descEl = $(".text-md");
+                if (descEl) {
+                    description = descEl.children().remove("div").end().text().replace("Biography Text ©Adult DVD Empire", "").trim();
+                }
             }
-            let aliases = [];
-            const aliasEl = $("#content .row .col-sm-5 .m-b-1");
-            if (aliasEl) {
-                const text = aliasEl.text();
-                aliases = text
-                    .replace("Alias: ", "")
-                    .split(",")
-                    .map((s) => s.trim());
+            let thumbnail;
+            const thirdImageResult = $(`.performer-image-container img`).toArray()[0];
+            const thumbnailUrl = $(thirdImageResult).attr("src");
+            if (thumbnailUrl) {
+                thumbnail = yield $createImage(thumbnailUrl, `${actorName} (thumbnail)`);
             }
-            const result = { avatar, $ae_avatar: avatarUrl, hero, $ae_hero: heroUrl, aliases, description };
+            let aliases;
+            if (!isBlacklisted("aliases")) {
+                const aliasEl = $("#content .row .col-sm-5 .m-b-1");
+                if (aliasEl) {
+                    const text = aliasEl.text();
+                    aliases = text
+                        .replace("Alias: ", "")
+                        .split(",")
+                        .map((s) => s.trim());
+                }
+            }
+            let rating;
+            if (!isBlacklisted("rating")) {
+                const ratingResult = $(`.performer-info-control strong`).toArray()[0];
+                if (ratingResult) {
+                    const ratingValue = parseFloat($(ratingResult).text().slice(0, -2));
+                    if (typeof ratingValue === "number" && ratingValue >= 0 && ratingValue <= 5) {
+                        rating = Math.round((Math.pow(ratingValue, 4)) / 62.5);
+                        $logger.debug(`Converted AdultEmpire rating ${ratingValue} to ${rating}`);
+                    }
+                }
+            }
+            const result = {
+                thumbnail,
+                avatar,
+                $ae_avatar: avatarUrl,
+                hero,
+                $ae_hero: heroUrl,
+                aliases,
+                rating,
+                description,
+            };
             if (args === null || args === void 0 ? void 0 : args.dry) {
                 $logger.info(`Would have returned ${$formatMessage(result)}`);
                 return {};
