@@ -106,7 +106,7 @@ module.exports = async (ctx: MySceneContext): Promise<SceneOutput> => {
   args.nameConflictHandling ??= ConflictAction.RENAME;
   args.normalizeAccents ??= false;
   args.normalizeMultipleSpaces ??= true;
-  if (!(<any>Object).values(ConflictAction).includes(args.nameConflictHandling)) {
+  if (!Object.values(ConflictAction).includes(args.nameConflictHandling as ConflictAction)) {
     $throw(
       `Unsupported 'nameConflictHandling' argument value: ${args.nameConflictHandling}. Please adapt your config and retry.`
     );
