@@ -2,6 +2,8 @@
 
 by arcadianCdr
 
+[Download here](https://raw.githubusercontent.com/porn-vault/plugins/master/dist/fileorganizer.js)
+
 Use your custom-defined templates to rename your scene files.
 
 ### Documentation
@@ -94,27 +96,28 @@ There is also a limitation to the filename's length (255 characters). You will g
 
 ### Arguments
 
-| Name                    | Type     | Required | Description                                                                                                                                                                                                                                                                                                                          |
-| ----------------------- | -------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| dry                     | Boolean  | false    | Whether to perform the rename operation or just a simulation.                                                                                                                                                                                                                                                                        |
-| fileStructureTemplate   | String   | true     | The template for the new name. See documentation above for details.                                                                                                                                                                                                                                                                  |
-| normalizeAccents        | Boolean  | false    | Whether to normalize file names and path to unaccented unicode.                                                                                                                                                                                                                                                                      |
-| normalizeMultipleSpaces | Boolean  | false    | Whether to replace multiple spaces with a single space.                                                                                                                                                                                                                                                                              |
-| nameConflictHandling    | String   | false    | Behavior in case of name conflicts. Possible values are: `rename`, `overwrite` and `skip`. With `rename`, the new filename is suffixed with a number so that it does not conflict with an existing name anymore. With `overwrite`, the existing file is overriden by the renamed one. For `skip`, the rename operation is cancelled. |
-| dateFormat              | String   | false    | The date format to use in file names. The full details are available at https://momentjs.com/docs/#/displaying/format/ although you probably just need `YYYY`, `MM` and `DD`.                                                                                                                                                        |
-| multiValuesSeparator    | String   | true     | The separator to use for multiple values (like actors, labels,...). For instance, with a `', '` as separator, a list of 3 labels will look like: `label1, label2, label3`.                                                                                                                                                           |
-| characterReplacement    | object[] | false    | Used to substitite characters with a replacement alternative. See doc above for details. Note: the examples below looks like it is replacing a colon by a colon, but it is actually replacing the colon (illegal in filenames) by the similar looking 'mathematical ratio' character (allowed in filenams)                           |
+| Name                    | Type     | Required | Description                                                                                                                                                                                                                                                                                                |
+| ----------------------- | -------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| dry                     | Boolean  | false    | Whether to perform the rename operation or just a simulation.                                                                                                                                                                                                                                              |
+| fileStructureTemplate   | String   | true     | The template for the new name. See documentation above for details.                                                                                                                                                                                                                                        |
+| normalizeAccents        | Boolean  | false    | Whether to normalize file names and path to unaccented unicode.                                                                                                                                                                                                                                            |
+| normalizeMultipleSpaces | Boolean  | false    | Whether to replace multiple spaces with a single space.                                                                                                                                                                                                                                                    |
+| nameConflictHandling    | String   | false    | Behavior in case of name conflicts. Possible values are: `rename` and `skip`. With `rename`, the new filename is suffixed with a number so that it does not conflict with an existing name anymore. With `skip`, the rename operation is cancelled.                                                        |
+| dateFormat              | String   | false    | The date format to use in file names. The full details are available at https://momentjs.com/docs/#/displaying/format/ although you probably just need `YYYY`, `MM` and `DD`.                                                                                                                              |
+| multiValuesSeparator    | String   | true     | The separator to use for multiple values (like actors, labels,...). For instance, with a `', '` as separator, a list of 3 labels will look like: `label1, label2, label3`.                                                                                                                                 |
+| characterReplacement    | object[] | false    | Used to substitite characters with a replacement alternative. See doc above for details. Note: the examples below looks like it is replacing a colon by a colon, but it is actually replacing the colon (illegal in filenames) by the similar looking 'mathematical ratio' character (allowed in filenams) |
 
 ### Example installation with default arguments
 
 `config.json`
+
 ```json
 ---
 {
   "plugins": {
     "register": {
       "fileorganizer": {
-        "path": "./plugins/fileorganizer/main.ts",
+        "path": "./plugins/fileorganizer.js",
         "args": {
           "dry": false,
           "fileStructureTemplate": "",
@@ -146,28 +149,10 @@ There is also a limitation to the filename's length (255 characters). You will g
 ```
 
 `config.yaml`
+
 ```yaml
 ---
-plugins:
-  register:
-    fileorganizer:
-      path: ./plugins/fileorganizer/main.ts
-      args:
-        dry: false
-        fileStructureTemplate: ""
-        normalizeAccents: false
-        normalizeMultipleSpaces: true
-        nameConflictHandling: rename
-        dateFormat: YYYY-MM-DD
-        multiValuesSeparator: ", "
-        characterReplacement:
-          - original: ":"
-            replacement: ∶
-  events:
-    sceneCreated:
-      - fileorganizer
-    sceneCustom:
-      - fileorganizer
-
+{ { { exampleYAML } } }
 ---
+
 ```

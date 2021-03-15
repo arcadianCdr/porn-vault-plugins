@@ -2,6 +2,8 @@
 
 by arcadianCdr, boi123212321 (for some adultempire movie scraping code I reused)
 
+[Download here](https://raw.githubusercontent.com/porn-vault/plugins/master/dist/moviescene.js)
+
 Scrape scene details from adultempire. Does not work by itself. It needs to be piped (chained) with another plugin that will parse the movie, actors or scene name (like fileparser).
 
 ### Arguments
@@ -13,13 +15,14 @@ Scrape scene details from adultempire. Does not work by itself. It needs to be p
 ### Example installation with default arguments
 
 `config.json`
+
 ```json
 ---
 {
   "plugins": {
     "register": {
       "moviescene": {
-        "path": "./plugins/moviescene/main.ts",
+        "path": "./plugins/moviescene.js",
         "args": {
           "dry": false
         }
@@ -36,17 +39,10 @@ Scrape scene details from adultempire. Does not work by itself. It needs to be p
 ```
 
 `config.yaml`
+
 ```yaml
 ---
-plugins:
-  register:
-    moviescene:
-      path: ./plugins/moviescene/main.ts
-      args:
-        dry: false
-  events:
-    sceneCreated:
-      - moviescene
-
+{ { { exampleYAML } } }
 ---
+
 ```

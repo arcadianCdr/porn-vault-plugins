@@ -66,26 +66,7 @@ Currently custom fields can only be named as follows (not case sensitive): Hair 
 
 ```yaml
 ---
-plugins:
-  register:
-    freeones:
-      path: ./plugins/freeones/main.ts
-      args:
-        dry: false
-        whitelist: []
-        blacklist: []
-        searchResultsSort: relevance
-        useImperial: false
-        useAvatarAsThumbnail: false
-        exactNameMatch: false
-        piercingsType: string
-        tattoosType: string
-  events:
-    actorCreated:
-      - freeones
-    actorCustom:
-      - freeones
-
+{ { { exampleYAML } } }
 ---
 
 ```

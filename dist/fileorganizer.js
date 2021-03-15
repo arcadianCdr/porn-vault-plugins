@@ -35,12 +35,7 @@ const FIELD_ACTORS = "actors";
 const FIELD_STUDIO = "studio";
 const FIELD_MOVIES = "movies";
 const FIELD_LABELS = "labels";
-var SafeInitialDataForSceneCreate;
-(function (SafeInitialDataForSceneCreate) {
-    SafeInitialDataForSceneCreate["VIDEO_DURATION"] = "videoDuration";
-    SafeInitialDataForSceneCreate["VIDEO_WIDTH"] = "videoWidth";
-    SafeInitialDataForSceneCreate["VIDEO_HEIGHT"] = "videoHeight";
-})(SafeInitialDataForSceneCreate || (SafeInitialDataForSceneCreate = {}));
+const safeInitialDataForSceneCreate = ["videoDuration", "videoWidth", "videoHeight"];
 function getTemplateMatcher() {
     return /{(?<prefix>[^{}<]*)<(?<field>[^\d\s\W(>]*)(?<args>[\d\W]*|(?:\([^){}]*\))*)>(?<suffix>[^{}]*)}/g;
 }
@@ -143,8 +138,7 @@ function getTemplateFieldValue(ctx, resolver, index) {
             fieldValue = yield resolver.getPluginData(index);
         }
         if (ctx.event === "sceneCustom" ||
-            (ctx.event === "sceneCreated" &&
-                Object.values(SafeInitialDataForSceneCreate).includes(resolver.name))) {
+            (ctx.event === "sceneCreated" && safeInitialDataForSceneCreate.includes(resolver.name))) {
             fieldValue !== null && fieldValue !== void 0 ? fieldValue : (fieldValue = yield resolver.getInitialData(index));
         }
         return fieldValue;
@@ -176,7 +170,7 @@ function formatVideoDuration($moment, duration) {
 
 var utils = createCommonjsModule(function (module, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mergeUnique = exports.sanitize = exports.toNormalizedSafeFilename = void 0;
+exports.sanitize = exports.toNormalizedSafeFilename = void 0;
 function toNormalizedSafeFilename(ctx, unsafeName) {
     let safeFileName = sanitize(unsafeName, ctx.args.characterReplacement);
     if (ctx.args.normalizeAccents) {
@@ -212,10 +206,6 @@ function sanitize(input, replacement) {
     return sanitized;
 }
 exports.sanitize = sanitize;
-function mergeUnique(a, b) {
-    return a.concat(b.filter((item1) => a.findIndex((item2) => item2.localeCompare(item1, undefined, { sensitivity: "base" }) === 0)));
-}
-exports.mergeUnique = mergeUnique;
 });
 
 var __awaiter = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisArg, _arguments, P, generator) {

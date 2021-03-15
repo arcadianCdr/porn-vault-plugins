@@ -49,20 +49,7 @@ Scrape data from adultempire
 
 ```yaml
 ---
-plugins:
-  register:
-    adultempire:
-      path: ./plugins/adultempire/main.ts
-      args:
-        whitelist: []
-        blacklist: []
-        dry: false
-  events:
-    movieCreated:
-      - adultempire
-    actorCreated:
-      - adultempire
-
+{ { { exampleYAML } } }
 ---
 
 ```
