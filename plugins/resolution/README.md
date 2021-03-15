@@ -2,6 +2,8 @@
 
 by boi123212321
 
+[Download here](https://raw.githubusercontent.com/porn-vault/plugins/master/dist/resolution.js)
+
 Add resolution labels to a scene
 
 ### Arguments
@@ -13,13 +15,14 @@ Add resolution labels to a scene
 ### Example installation with default arguments
 
 `config.json`
+
 ```json
 ---
 {
   "plugins": {
     "register": {
       "resolution": {
-        "path": "./plugins/resolution/main.ts",
+        "path": "./plugins/resolution.js",
         "args": {
           "resolutions": []
         }
@@ -39,19 +42,10 @@ Add resolution labels to a scene
 ```
 
 `config.yaml`
+
 ```yaml
 ---
-plugins:
-  register:
-    resolution:
-      path: ./plugins/resolution/main.ts
-      args:
-        resolutions: []
-  events:
-    sceneCreated:
-      - resolution
-    sceneCustom:
-      - resolution
-
+{ { { exampleYAML } } }
 ---
+
 ```

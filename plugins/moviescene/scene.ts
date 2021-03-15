@@ -4,7 +4,14 @@ import { SceneContext, SceneOutput } from "../../types/scene";
 interface MySceneContext extends SceneContext {
   args: {
     dry?: boolean;
+    whitelist?: string[];
+    blacklist?: string[];
+    useMovieAsName?: boolean;
   };
+}
+
+function lowercase(str: string): string {
+  return str.toLowerCase();
 }
 
 async function searchForMovie(
@@ -25,129 +32,176 @@ async function searchForMovie(
 }
 
 export default async function (ctx: MySceneContext): Promise<SceneOutput> {
-  const { args, $axios, $cheerio, data, $moment, sceneName, scenePath, $logger, $throw } = ctx;
+  const { args, $axios, $cheerio, data, $moment, sceneName, $logger, $throw } = ctx;
 
-  if (!scenePath) $throw("Uh oh. You shouldn't use the plugin for this type of event");
+  if (!["sceneCreated", "sceneCustom"].includes(ctx.event)) {
+    $throw("Uh oh. You shouldn't use the plugin for this type of event");
+  }
 
-  // Piped date take precedence when they exist
+  // Use initial or piped data for the matching
   const searchName: string | undefined = data.name ?? sceneName;
-  const searchActors: string[] | undefined = data.actors;
-  const searchMovie: string | undefined = data.movie;
+  const searchActors: string[] = data.actors ?? (await ctx.$getActors())?.map((a) => a.name);
+  const searchMovie: string | undefined = data.movie ?? (await ctx.$getMovies())?.[0]?.name;
 
-  let name: string | undefined;
-  let movie: string | undefined;
-  let studio: string | undefined;
-  let actors: string[] | undefined;
-  let releaseDate: number | undefined;
-  let url: string | false = false;
-  let movieName: string = "";
+  if (!searchMovie && (!searchName || !searchActors.length)) {
+    $throw(
+      "Not enough data to perform the search. moviescene requires at least a 'movie', and either a 'name' (containing the scene number) or some 'actors' " +
+        "to identify which scene of the movie to use. Other plugins can help you scrape these data from the web or from your filenames (like fileparser)."
+    );
+  }
 
-  $logger.warn(`Piped data: ${JSON.stringify(ctx.data, null, "\t")}`); // @todo: delete
+  const blacklist = (args.blacklist || []).map(lowercase);
+  if (!args.blacklist) $logger.verbose("No blacklist defined, returning everything...");
+  if (blacklist.length) $logger.verbose(`Blacklist defined, will ignore: ${blacklist.join(", ")}`);
+
+  const whitelist = (args.whitelist || []).map(lowercase);
+  if (whitelist.length) {
+    $logger.verbose(`Whitelist defined, will only return: ${whitelist.join(", ")}...`);
+  }
+
+  function isBlacklisted(prop): boolean {
+    if (whitelist.length) {
+      return !whitelist.includes(lowercase(prop));
+    }
+    return blacklist.includes(lowercase(prop));
+  }
+
   $logger.info(
-    `Scraping scene: ${sceneName} with input data: scene name: '${searchName}', movie: '${searchMovie}', actors: ${JSON.stringify(
-      searchActors
-    )}`
+    `Scraping scene from movie '${searchMovie}' based on name: '${sceneName}' and/or actors: '${searchActors.join()}'`
   );
 
-  if (searchMovie) {
-    movieName = searchMovie
-      .replace(/[#&]/g, "")
-      .replace(/\s{2,}/g, " ")
-      .trim();
-    url = await searchForMovie(ctx, movieName);
-  } else {
-    $logger.warn("No movie in the piped data. No results to grab.");
-  }
+  // let releaseDate: number | undefined;
+  let url: string | false = false;
+  const movieName: string = searchMovie
+    .replace(/[#&]/g, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+  url = await searchForMovie(ctx, movieName);
 
   if (!url) {
     $logger.warn("Unable to identify a scene number. No results to grab.");
-  } else {
-    const html = (await $axios.get<string>(url)).data;
-    const $ = $cheerio.load(html);
+    return {};
+  }
+  const html = (await $axios.get<string>(url)).data;
+  const $ = $cheerio.load(html);
 
-    movie = $(`.title-rating-section .col-sm-6 h1`)
+  function getMovie(): Partial<{ movie: string }> {
+    if (isBlacklisted("movie")) return {};
+
+    const scrapedMovie = $(`.title-rating-section .col-sm-6 h1`)
       .text()
       .replace(/[\t\n]+/g, " ")
       .replace(/ {2,}/, " ")
       .replace(/- On Sale!.*/i, "")
       .trim();
+    $logger.debug(`Found movie: '${scrapedMovie}'`);
 
-    $logger.verbose(`Looking up scene number for found movie: '${movie}'`);
+    return { movie: scrapedMovie };
+  }
 
-    // Find the index of the best matching scene based scene number matching in the scene's name (assumes cleaned-up scene names where the only digits represents the scene number)
-    let sceneIndexMatchedFromName: number | undefined;
-    const matchedSceneNumber = /\d{1,2}/.exec(searchName);
-    if (matchedSceneNumber) {
-      sceneIndexMatchedFromName = Number(matchedSceneNumber[0]) - 1;
-      $logger.verbose(
-        `Based on scene name matching, the scene index is: ${sceneIndexMatchedFromName}`
-      );
+  function getName(): Partial<{ name: string }> {
+    if (isBlacklisted("name")) return {};
+
+    let scrapedName = $(".col-sm-6 > .m-b-1").eq(sceneIndex).text().trim();
+    if (args.useMovieAsName && /Scene \d+/.exec(scrapedName)) {
+      scrapedName = `${movieName} - ${scrapedName}`;
     }
 
-    // Find the index of the best matching scene based on actor matching score (largest intersection between pv & web actors wins)
-    let sceneIndexBestActorsMatch: number | undefined;
-    if (searchActors && searchActors.length > 0) {
-      let actorsFound: string[];
-      let bestActorsMatchCount: number = 0;
-      let currentActorMatchesCount: number;
-      $(".col-sm-6.text-right.text-left-xs.m-b-1").each(function (i, elm) {
-        actorsFound = [];
-        currentActorMatchesCount = 0;
+    return { name: scrapedName };
+  }
+
+  function getActors(): Partial<{ actors: string[] }> {
+    if (isBlacklisted("actors")) return {};
+
+    const foundActors: string[] = [];
+    $(".col-sm-6.text-right.text-left-xs.m-b-1 > div")
+      .eq(sceneIndex)
+      .each(function (i, elm) {
         $(elm)
           .find("a")
           .each(function (index, elem) {
-            const actor = $(elem).text();
-            actorsFound.push(actor);
-            if (searchActors.includes(actor)) currentActorMatchesCount++;
+            foundActors.push($(elem).text());
           });
-        if (currentActorMatchesCount > bestActorsMatchCount) {
-          bestActorsMatchCount = currentActorMatchesCount;
-          sceneIndexBestActorsMatch = i;
-        }
       });
-      $logger.verbose(
-        `Based on best actors matching, the scene index is: ${sceneIndexBestActorsMatch}`
-      );
+    if (foundActors.length > 0) {
+      return { actors: foundActors };
     }
-
-    // Scrapes scene details based on matched scene index (name/number match always takes precedence on actor match)
-    const sceneIndex = sceneIndexMatchedFromName ?? sceneIndexBestActorsMatch;
-    if (sceneIndex !== undefined && sceneIndex > -1) {
-      name = $(".col-sm-6 > .m-b-1").eq(sceneIndex).text().trim();
-      if (/Scene \d+/.exec(name)) {
-        name = `${movieName} - ${name}`;
-      }
-      $logger.info(`Found scene: ${name} based on movie '${movie}' and scene index: ${sceneIndex}`);
-
-      const actorsFound: string[] = [];
-      $(".col-sm-6.text-right.text-left-xs.m-b-1 > div")
-        .eq(sceneIndex)
-        .each(function (i, elm) {
-          $(elm)
-            .find("a")
-            .each(function (index, elem) {
-              actorsFound.push($(elem).text());
-            });
-        });
-      if (actorsFound.length > 0) actors = actorsFound;
-
-      studio = $(`.title-rating-section .item-info > a`).eq(0).text().trim();
-
-      $(".col-sm-4.m-b-2 li").each(function (i, elm) {
-        const grabrvars = $(elm).text().split(":");
-        if (grabrvars[0].includes("Released")) {
-          releaseDate = $moment(grabrvars[1].trim().replace(" ", "-"), "MMM-DD-YYYY").valueOf();
-        }
-      });
-    }
+    return {};
   }
 
+  function getStudio(): Partial<{ studio: string }> {
+    if (isBlacklisted("studio")) return {};
+
+    const foundStudio = $(`.title-rating-section .item-info > a`).eq(0).text().trim();
+    return { studio: foundStudio };
+  }
+
+  function getReleaseDate(): Partial<{ releaseDate: number }> {
+    if (isBlacklisted("releaseDate")) return {};
+
+    let date: number | undefined;
+    $(".col-sm-4.m-b-2 li").each(function (i, elm) {
+      const grabrvars = $(elm).text().split(":");
+      if (grabrvars[0].includes("Released")) {
+        date = $moment(grabrvars[1].trim().replace(" ", "-"), "MMM-DD-YYYY").valueOf();
+      }
+    });
+    return { releaseDate: date };
+  }
+
+  // Finds the index of the best matching scene based scene number matching in the scene's name
+  // (assumes cleaned-up scene names where the only digits represents the scene number)
+  let sceneIndexMatchedFromName: number = -1;
+  const matchedSceneNumber = /\d{1,2}/.exec(searchName);
+  if (matchedSceneNumber) {
+    sceneIndexMatchedFromName = Number(matchedSceneNumber[0]) - 1;
+    $logger.verbose(
+      `Based on scene name matching, the scene index is: ${sceneIndexMatchedFromName}`
+    );
+  }
+
+  // Find the index of the best matching scene based on actor matching score (largest intersection between pv & web actors wins)
+  let sceneIndexBestActorsMatch: number = -1;
+  if (searchActors && searchActors.length > 0) {
+    let foundActors: string[];
+    let bestActorsMatchCount: number = 0;
+    let currentActorMatchesCount: number;
+    $(".col-sm-6.text-right.text-left-xs.m-b-1").each(function (i, elm) {
+      foundActors = [];
+      currentActorMatchesCount = 0;
+      $(elm)
+        .find("a")
+        .each(function (index, elem) {
+          const actor = $(elem).text();
+          foundActors.push(actor);
+          if (searchActors.includes(actor)) currentActorMatchesCount++;
+        });
+      if (currentActorMatchesCount > bestActorsMatchCount) {
+        bestActorsMatchCount = currentActorMatchesCount;
+        sceneIndexBestActorsMatch = i;
+      }
+    });
+    $logger.verbose(
+      `Based on best actors matching, the scene index is: ${sceneIndexBestActorsMatch}`
+    );
+  }
+
+  // Scene index matched on name/number takes precedence on actor match
+  const sceneIndex =
+    sceneIndexMatchedFromName > -1 ? sceneIndexMatchedFromName : sceneIndexBestActorsMatch;
+
+  if (sceneIndex < 0) {
+    $logger.warn(`Unable to match a scene within the movie.`);
+    return {};
+  }
+  $logger.info(`Found scene: index ${sceneIndex}`);
+
   const sceneOutput: SceneOutput = {
-    name,
-    releaseDate,
-    actors,
-    studio,
-    movie,
+    ...getMovie,
+    ...getName(),
+    ...getActors(),
+    ...getStudio(),
+    ...getReleaseDate(),
   };
 
   if (args.dry === true) {

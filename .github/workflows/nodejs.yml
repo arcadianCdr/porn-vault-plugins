@@ -23,3 +23,8 @@ jobs:
       - run: npm run check-info
       - run: npm run lint
       - run: npm run coverage
+      - uses: codecov/codecov-action@v1
+        with:
+          file: "./coverage/coverage-final.json"
+          name: codecov
+          fail_ci_if_error: true

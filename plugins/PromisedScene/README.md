@@ -2,6 +2,8 @@
 
 by Ch00nassid a.k.a: DGs.Ch00, leadwolf
 
+[Download here](https://raw.githubusercontent.com/porn-vault/plugins/master/dist/PromisedScene.js)
+
 Ask questions and make sure scene parsing is correct
 
 ### Documentation
@@ -37,13 +39,14 @@ If no match is found, and `manualTouch` is enabled, you will be able to interact
 ### Example installation with default arguments
 
 `config.json`
+
 ```json
 ---
 {
   "plugins": {
     "register": {
       "PromisedScene": {
-        "path": "./plugins/PromisedScene/main.ts",
+        "path": "./plugins/PromisedScene.js",
         "args": {
           "useTitleInSearch": false,
           "alwaysUseSingleResult": false,
@@ -75,30 +78,10 @@ If no match is found, and `manualTouch` is enabled, you will be able to interact
 ```
 
 `config.yaml`
+
 ```yaml
 ---
-plugins:
-  register:
-    PromisedScene:
-      path: ./plugins/PromisedScene/main.ts
-      args:
-        useTitleInSearch: false
-        alwaysUseSingleResult: false
-        usePipedInputInSearch: false
-        parseActor: true
-        parseStudio: true
-        parseDate: true
-        manualTouch: true
-        sceneDuplicationCheck: true
-        source_settings:
-          actors: ./library/actors.db
-          studios: ./library/studios.db
-          scenes: ./library/scenes.db
-  events:
-    sceneCreated:
-      - PromisedScene
-    sceneCustom:
-      - PromisedScene
-
+{ { { exampleYAML } } }
 ---
+
 ```
