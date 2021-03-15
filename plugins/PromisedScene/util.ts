@@ -226,6 +226,96 @@ export const matchSceneResultToSearch = (
 };
 
 /**
+ * Removes anything except letters and digits from a string
+ */
+function cleanup(text: string): string {
+  return text.replace(/[^\w\d]/g, "");
+}
+
+function checkActorMatch(
+  performers: SceneResult.Performer[],
+  actors: string[] | undefined
+): boolean {
+  let isActorsMatch: boolean = false;
+  if (performers?.length && actors?.length) {
+    isActorsMatch = actors.every((actor) =>
+      performers.filter(
+        ({ name }) => name.localeCompare(actor, undefined, { sensitivity: "base" }) === 0
+      )
+    );
+  }
+  return isActorsMatch;
+}
+
+function checkStudioMatch(site: SceneResult.Site, studio: string | undefined): boolean {
+  let isStudioMatch: boolean = false;
+  if (site?.name && studio) {
+    isStudioMatch =
+      cleanup(site.name).localeCompare(cleanup(studio), undefined, { sensitivity: "base" }) === 0;
+  }
+  return isStudioMatch;
+}
+
+/**
+ * Tries to find a scene that matches a combination of piped data.
+ *
+ * @param ctx - plugin context
+ * @param sceneList - list of scenes to try to match
+ * @returns the matched scene or null
+ */
+export const matchSceneResultToPipedData = (
+  ctx: MyContext,
+  sceneList: SceneResult.SceneData[]
+): SceneResult.SceneData | null => {
+  const { data, $formatMessage, $moment } = ctx;
+  ctx.$logger.verbose(`MATCH PIPED: ${sceneList.length} results found`);
+
+  const sceneMatchingScores: number[] = [];
+  for (const scene of sceneList) {
+    const foundTitle = stripStr(scene.title || "").trim();
+    const searchedTitle = stripStr(data.name ?? data.movie ?? "").trim();
+
+    const isTitleMatch =
+      foundTitle.localeCompare(searchedTitle, undefined, { sensitivity: "base" }) === 0;
+    const isActorsMatch = checkActorMatch(scene.performers, data.actors);
+    const isDateMatch = $moment(scene.date, "YYYY-MM-DD").valueOf() === data.releaseDate;
+    const isStudioMatch = checkStudioMatch(scene.site, data.studio);
+
+    let confidenceScore: number = 0.0;
+    if (isTitleMatch && isActorsMatch) {
+      confidenceScore = 1.0;
+    } else if (isTitleMatch) {
+      confidenceScore = 0.8;
+    } else if (isActorsMatch && isDateMatch && isStudioMatch) {
+      confidenceScore = 0.7;
+    } else if (isActorsMatch && isDateMatch) {
+      confidenceScore = 0.3;
+    }
+    sceneMatchingScores.push(confidenceScore);
+
+    ctx.$logger.verbose(
+      `MATCH PIPED: Trying to match TPD scene:\n${$formatMessage({
+        studio: scene.site?.name,
+        title: foundTitle,
+        actors: scene.performers?.map((performer) => performer.name),
+        releaseDate: scene.date,
+      })}\nConfidence score for this scene: ${confidenceScore}`
+    );
+  }
+
+  const indexOfMax = sceneMatchingScores.indexOf(Math.max(...sceneMatchingScores));
+  if (sceneMatchingScores[indexOfMax] > 0) {
+    ctx.$logger.verbose(
+      `MATCH PIPED: SUCCESS: matched with a confidence score of ${sceneMatchingScores[indexOfMax]} to TPDB scene: ${sceneList[indexOfMax].title}`
+    );
+    return sceneList[indexOfMax];
+  }
+
+  ctx.$logger.error(`MATCH PIPED:\tERR: did not find any match`);
+  return null;
+};
+
+/**
  * @param sceneData - tpdb scene data
  * @returns the data in a plugin scene output form
  */

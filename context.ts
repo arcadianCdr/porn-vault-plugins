@@ -16,7 +16,13 @@ import yaml from "yaml";
 import * as zod from "zod";
 import winston from "winston";
 
+import { Actor, ActorContext } from "./types/actor";
 import { Context, Matcher, MatchSource } from "./types/plugin";
+import { Scene, SceneContext } from "./types/scene";
+import { Movie, MovieContext } from "./types/movie";
+import { Studio, StudioContext } from "./types/studio";
+import { Label } from "./types/label";
+import { SceneView } from "./types/watch";
 
 export const basicMatcher: Matcher = new (class BasicMatcher implements Matcher {
   filterMatchingItems<T extends MatchSource>(
@@ -173,7 +179,13 @@ function createPluginLogger(name: string): winston.Logger {
   });
 }
 
-const context: Context = {
+function warnServerFunc(functionName: string) {
+  throw new Error(
+    `Your test should implement ${functionName} as server functions are not available when running Mocha tests...`
+  );
+}
+
+const context: Context | SceneContext | ActorContext | MovieContext | StudioContext = {
   // Libraries
   $axios: axios,
   $boxen: boxen,
@@ -199,6 +211,46 @@ const context: Context = {
   },
   $createLocalImage: async () => {
     return Date.now().toString(36);
+  },
+  $getActors: async () => {
+    warnServerFunc("$getActors()");
+    return [] as Actor[];
+  },
+  $getLabels: async () => {
+    warnServerFunc("$getLabels()");
+    return [] as Label[];
+  },
+  $getWatches: async () => {
+    warnServerFunc("$getWatches()");
+    return [] as SceneView[];
+  },
+  $getMovies: async () => {
+    warnServerFunc("$getMovies()");
+    return [] as Movie[];
+  },
+  $getScenes: async () => {
+    warnServerFunc("$getScenes()");
+    return [] as Scene[];
+  },
+  $getRating: async () => {
+    warnServerFunc("$getRating()");
+    return 0 as number;
+  },
+  $getAverageRating: async () => {
+    warnServerFunc("$getAverageRating()");
+    return 0 as number;
+  },
+  $getStudio: async () => {
+    warnServerFunc("$getStudio()");
+    return {} as Studio;
+  },
+  $getParents: async () => {
+    warnServerFunc("$getParents()");
+    return [] as Studio[];
+  },
+  $getSubStudios: async () => {
+    warnServerFunc("$getSubStudios()");
+    return [] as Studio[];
   },
   $cwd: process.cwd(),
   $library: ".",

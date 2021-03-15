@@ -1,4 +1,9 @@
+import { Actor } from "./actor";
+import { Label } from "./label";
+import { Movie } from "./movie";
 import { Context, CustomFieldsOutput } from "./plugin";
+import { Studio } from "./studio";
+import { SceneView } from "./watch";
 
 export interface IDimensions {
   width: number;
@@ -12,7 +17,7 @@ export interface SceneMeta {
   fps: number | null;
 }
 
-interface Scene {
+export interface Scene {
   _id: string;
   hash: string | null;
   name: string;
@@ -56,4 +61,10 @@ export interface SceneContext extends Context<SceneOutput> {
   scene: Scene;
   sceneName: string;
   scenePath: string;
+  // Server functions to lazy load extra scene data
+  $getActors: () => Promise<Actor[]>;
+  $getLabels: () => Promise<Label[]>;
+  $getWatches: () => Promise<SceneView[]>;
+  $getStudio: () => Promise<Studio>;
+  $getMovies: () => Promise<Movie[]>;
 }
