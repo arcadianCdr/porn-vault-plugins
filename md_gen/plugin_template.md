@@ -2,6 +2,8 @@
 
 by {{ authors }}
 
+[Download here]({{ downloadLink }})
+
 {{ description }}
 {{#if docs}}
 
@@ -19,6 +21,7 @@ by {{ authors }}
 ### Example installation with default arguments
 
 `config.json`
+
 ```json
 ---
 {{{ exampleJSON }}}
@@ -26,8 +29,10 @@ by {{ authors }}
 ```
 
 `config.yaml`
+
 ```yaml
 ---
-{{{ exampleYAML }}}
+{ { { exampleYAML } } }
 ---
+
 ```

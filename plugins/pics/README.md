@@ -2,6 +2,8 @@
 
 by boi123212321, john4valor, leadwolf
 
+[Download here](https://raw.githubusercontent.com/porn-vault/plugins/master/dist/pics.js)
+
 Find actor, scene, movie, studio images based on local files. GIF support.
 
 ### Documentation
@@ -112,13 +114,14 @@ Example with multiple configurations:
 ### Example installation with default arguments
 
 `config.json`
+
 ```json
 ---
 {
   "plugins": {
     "register": {
       "pics": {
-        "path": "./plugins/pics/main.ts",
+        "path": "./plugins/pics.js",
         "args": {
           "dry": false,
           "actors": [
@@ -200,60 +203,10 @@ Example with multiple configurations:
 ```
 
 `config.yaml`
+
 ```yaml
 ---
-plugins:
-  register:
-    pics:
-      path: ./plugins/pics/main.ts
-      args:
-        dry: false
-        actors:
-          - prop: thumbnail
-            path: ./path/to/all/actor/pictures
-            searchTerms:
-              - thumbnail
-            blacklistTerms: []
-            mustMatchInFilename: false
-            max: -1
-        scenes:
-          - prop: thumbnail
-            path: ./path/to/all/scene/pictures
-            searchTerms:
-              - thumbnail
-            blacklistTerms: []
-            mustMatchInFilename: false
-            max: -1
-        movies:
-          - prop: thumbnail
-            path: ./path/to/all/movie/pictures
-            searchTerms:
-              - thumbnail
-            blacklistTerms: []
-            max: -1
-        studios:
-          - prop: thumbnail
-            path: ./path/to/all/studio/pictures
-            searchTerms:
-              - thumbnail
-            blacklistTerms: []
-            mustMatchInFilename: false
-            max: -1
-  events:
-    actorCreated:
-      - pics
-    actorCustom:
-      - pics
-    sceneCreated:
-      - pics
-    sceneCustom:
-      - pics
-    movieCreated:
-      - pics
-    studioCreated:
-      - pics
-    studioCustom:
-      - pics
-
+{ { { exampleYAML } } }
 ---
+
 ```

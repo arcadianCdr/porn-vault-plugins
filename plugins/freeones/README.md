@@ -2,7 +2,14 @@
 
 by boi123212321, john4valor, pizzajohnny, leadwolf
 
-Scrape data from freeones.com. Custom fields can only be named as follows (not case sensitive): Hair Color, Eye Color, Ethnicity, Height, Weight, Birthplace, Zodiac, Measurements, Chest Size, Waist Size, Hip Size, Cup Size, Bra Size, Bust Size
+[Download here](https://raw.githubusercontent.com/porn-vault/plugins/master/dist/freeones.js)
+
+Scrape actress data from freeones.com
+
+### Documentation
+
+Currently custom fields can only be named as follows (not case sensitive): Hair Color, Eye Color, Ethnicity, Height, Weight, Birthplace, Zodiac, Measurements, Chest Size, Waist Size, Hip Size, Cup Size, Bra Size, Bust Size
+
 
 ### Arguments
 
@@ -20,13 +27,14 @@ Scrape data from freeones.com. Custom fields can only be named as follows (not c
 ### Example installation with default arguments
 
 `config.json`
+
 ```json
 ---
 {
   "plugins": {
     "register": {
       "freeones": {
-        "path": "./plugins/freeones/main.ts",
+        "path": "./plugins/freeones.js",
         "args": {
           "dry": false,
           "whitelist": [],
@@ -53,26 +61,10 @@ Scrape data from freeones.com. Custom fields can only be named as follows (not c
 ```
 
 `config.yaml`
+
 ```yaml
 ---
-plugins:
-  register:
-    freeones:
-      path: ./plugins/freeones/main.ts
-      args:
-        dry: false
-        whitelist: []
-        blacklist: []
-        searchResultsSort: relevance
-        useImperial: false
-        useAvatarAsThumbnail: false
-        piercingsType: string
-        tattoosType: string
-  events:
-    actorCreated:
-      - freeones
-    actorCustom:
-      - freeones
-
+{ { { exampleYAML } } }
 ---
+
 ```

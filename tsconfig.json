@@ -29,7 +29,7 @@
     // "sourceMap": true,
     /* Generates corresponding '.map' file. */
     // "outFile": "./dist/index.js",                       /* Concatenate and emit output to single file. */
-    "outDir": "./dist" /* Redirect output structure to the directory. */,
+    "outDir": "./build" /* Redirect output structure to the directory. */,
     "rootDir": "." /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */,
     "composite": false, /* Enable project compilation */
     "removeComments": true /* Do not emit comments to output. */,

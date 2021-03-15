@@ -2,6 +2,8 @@
 
 by boi123212321
 
+[Download here](https://raw.githubusercontent.com/porn-vault/plugins/master/dist/legalporno.js)
+
 Scrape Legalporno/Analvids scene data
 
 ### Arguments
@@ -15,13 +17,14 @@ Scrape Legalporno/Analvids scene data
 ### Example installation with default arguments
 
 `config.json`
+
 ```json
 ---
 {
   "plugins": {
     "register": {
       "legalporno": {
-        "path": "./plugins/legalporno/main.ts",
+        "path": "./plugins/legalporno.js",
         "args": {
           "deep": true,
           "dry": false,
@@ -43,21 +46,10 @@ Scrape Legalporno/Analvids scene data
 ```
 
 `config.yaml`
+
 ```yaml
 ---
-plugins:
-  register:
-    legalporno:
-      path: ./plugins/legalporno/main.ts
-      args:
-        deep: true
-        dry: false
-        useSceneId: false
-  events:
-    sceneCreated:
-      - legalporno
-    sceneCustom:
-      - legalporno
-
+{ { { exampleYAML } } }
 ---
+
 ```

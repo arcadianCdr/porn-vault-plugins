@@ -2,6 +2,8 @@
 
 by boi123212321
 
+[Download here](https://raw.githubusercontent.com/porn-vault/plugins/master/dist/adultempire.js)
+
 Scrape data from adultempire
 
 ### Arguments
@@ -13,13 +15,14 @@ Scrape data from adultempire
 ### Example installation with default arguments
 
 `config.json`
+
 ```json
 ---
 {
   "plugins": {
     "register": {
       "adultempire": {
-        "path": "./plugins/adultempire/main.ts",
+        "path": "./plugins/adultempire.js",
         "args": {
           "dry": false
         }
@@ -39,19 +42,10 @@ Scrape data from adultempire
 ```
 
 `config.yaml`
+
 ```yaml
 ---
-plugins:
-  register:
-    adultempire:
-      path: ./plugins/adultempire/main.ts
-      args:
-        dry: false
-  events:
-    movieCreated:
-      - adultempire
-    actorCreated:
-      - adultempire
-
+{ { { exampleYAML } } }
 ---
+
 ```
