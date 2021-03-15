@@ -20,10 +20,13 @@ describe("moviescene", () => {
   describe("Scenes", () => {
     it("Should fetch scene details based on scene name (where scene number can be found)", async () => {
       const result = await runPlugin({
+        event: "sceneCreated",
         sceneName: "Fly Girls - s06",
         scenePath: "/Fly Girls - s06.mp4",
         data: { movie: "Fly Girls" },
-        args: {},
+        args: { useMovieAsName: true },
+        $getActors: async () => [],
+        $getMovies: async () => [],
       });
       expect(result).to.be.an("object");
       expect(result.name).to.equal("Fly Girls - Scene 6");
@@ -33,10 +36,13 @@ describe("moviescene", () => {
     });
     it("Should fetch scene details based on actors match", async () => {
       const result = await runPlugin({
+        event: "sceneCreated",
         sceneName: "Big Wet Asses Eva",
         scenePath: "/Big Wet Asses Eva.mp4",
         data: { movie: "Big Wet Asses 12", actors: ["Eva Angelina", "Michael Stefano"] },
         args: {},
+        $getActors: async () => [],
+        $getMovies: async () => [],
       });
       expect(result).to.be.an("object");
       expect(result.name).to.equal("Eva Does Anal!");
@@ -46,5 +52,9 @@ describe("moviescene", () => {
       expect(result.releaseDate).to.equal(moment("2007-11-20", "YYYY-MM-DD").valueOf());
       expect(result.studio).to.equal("Elegant Angel");
     });
+
+    // TODO: Test initial and piped data. 
+    // TODO: Test args 
+
   });
 });
