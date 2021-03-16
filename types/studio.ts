@@ -1,3 +1,4 @@
+import { Label } from "./label";
 import { Context, CustomFieldsOutput } from "./plugin";
 
 export interface Studio {
@@ -30,4 +31,9 @@ export type StudioOutput = Partial<FullStudioOutput>;
 export interface StudioContext extends Context<StudioOutput> {
   studio: Studio;
   studioName: string;
+  // Server functions to lazy load extra studio data
+  $getLabels: () => Promise<Label[]>;
+  $getAverageRating: () => Promise<number>;
+  $getParents: () => Promise<Studio[]>;
+  $getSubStudios: () => Promise<Studio[]>;
 }

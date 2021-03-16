@@ -103,5 +103,5 @@ export interface CustomFieldsOutput {
 }
 
 export type DeepPartial<T> = {
-  [P in keyof T]: DeepPartial<T[P]> | undefined;
+  [P in keyof T]?: DeepPartial<T[P]> | undefined;
 };

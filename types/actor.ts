@@ -1,3 +1,4 @@
+import { Label } from "./label";
 import { Context, CustomFieldsOutput } from "./plugin";
 
 export interface Actor {
@@ -40,4 +41,7 @@ export type ActorOutput = Partial<FullActorOutput>;
 export interface ActorContext extends Context<ActorOutput> {
   actor: Actor;
   actorName: string;
+  // Server functions to lazy load extra actor data
+  $getLabels: () => Promise<Label[]>;
+  $getAverageRating: () => Promise<number>;
 }

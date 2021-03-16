@@ -1,6 +1,6 @@
 {
   "name": "PromisedScene",
-  "version": "0.3.1",
+  "version": "0.3.3",
   "authors": ["Ch00nassid a.k.a: DGs.Ch00", "leadwolf"],
   "description": "Ask questions and make sure scene parsing is correct",
   "pluginEvents": ["sceneCreated", "sceneCustom"],
@@ -18,6 +18,13 @@
       "required": false,
       "default": false,
       "description": "When searching TPDB, if there is **only** 1 result, even if its title **doesn't** match the searched title, if should return that data"
+    },
+    {
+      "name": "usePipedInputInSearch",
+      "type": "Boolean",
+      "required": false,
+      "default": false,
+      "description": "This option is only relevant when PromisedScene is chained from another plugin (piped data are set). If true, the piped data take precedence for the search. If false, the piped data are ignored."
     },
     {
       "name": "parseActor",

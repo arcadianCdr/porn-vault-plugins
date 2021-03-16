@@ -1,4 +1,4 @@
-## PromisedScene 0.3.1
+## PromisedScene 0.3.3
 
 by Ch00nassid a.k.a: DGs.Ch00, leadwolf
 
@@ -22,18 +22,19 @@ If no match is found, and `manualTouch` is enabled, you will be able to interact
 
 ### Arguments
 
-| Name                    | Type    | Required | Description                                                                                                                                       |
-| ----------------------- | ------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| useTitleInSearch        | Boolean | false    | When searching TPDB: in auto search, if should use existing scene title. In manual user search, if should prompt user for title and use in search |
-| alwaysUseSingleResult   | Boolean | false    | When searching TPDB, if there is **only** 1 result, even if its title **doesn't** match the searched title, if should return that data            |
-| parseActor              | Boolean | true     | Try to find the Actor name in your database within the scenePath string                                                                           |
-| parseStudio             | Boolean | true     | Try to find the Studio name in your database within the scenePath string                                                                          |
-| parseDate               | Boolean | true     | Try to find the date within the scenePath string                                                                                                  |
-| manualTouch             | Boolean | true     | If true, will allow you to answer questions to manually enter scene data, manually search TPDB, confirm the final result                          |
-| sceneDuplicationCheck   | Boolean | true     | Will notify you of a possible duplicate title that is being imported.  Will not currently stop / correct anything                                 |
-| source_settings.actors  | String  | true     | finds the DB file for Actors to determine which actors are currently in your collection                                                           |
-| source_settings.studios | String  | true     | finds the DB file for Studios to determine which Studios are currently in your collection                                                         |
-| source_settings.scenes  | String  | true     | finds the DB file for Scenes to determine which Scenes are currently in your collection                                                           |
+| Name                    | Type    | Required | Description                                                                                                                                                                                        |
+| ----------------------- | ------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| useTitleInSearch        | Boolean | false    | When searching TPDB: in auto search, if should use existing scene title. In manual user search, if should prompt user for title and use in search                                                  |
+| alwaysUseSingleResult   | Boolean | false    | When searching TPDB, if there is **only** 1 result, even if its title **doesn't** match the searched title, if should return that data                                                             |
+| usePipedInputInSearch   | Boolean | false    | This option is only relevant when PromisedScene is chained from another plugin (piped data are set). If true, the piped data take precedence for the search. If false, the piped data are ignored. |
+| parseActor              | Boolean | true     | Try to find the Actor name in your database within the scenePath string                                                                                                                            |
+| parseStudio             | Boolean | true     | Try to find the Studio name in your database within the scenePath string                                                                                                                           |
+| parseDate               | Boolean | true     | Try to find the date within the scenePath string                                                                                                                                                   |
+| manualTouch             | Boolean | true     | If true, will allow you to answer questions to manually enter scene data, manually search TPDB, confirm the final result                                                                           |
+| sceneDuplicationCheck   | Boolean | true     | Will notify you of a possible duplicate title that is being imported.  Will not currently stop / correct anything                                                                                  |
+| source_settings.actors  | String  | true     | finds the DB file for Actors to determine which actors are currently in your collection                                                                                                            |
+| source_settings.studios | String  | true     | finds the DB file for Studios to determine which Studios are currently in your collection                                                                                                          |
+| source_settings.scenes  | String  | true     | finds the DB file for Scenes to determine which Scenes are currently in your collection                                                                                                            |
 
 ### Example installation with default arguments
 
@@ -49,6 +50,7 @@ If no match is found, and `manualTouch` is enabled, you will be able to interact
         "args": {
           "useTitleInSearch": false,
           "alwaysUseSingleResult": false,
+          "usePipedInputInSearch": false,
           "parseActor": true,
           "parseStudio": true,
           "parseDate": true,

@@ -1,3 +1,6 @@
+import { Actor } from "./actor";
+import { Label } from "./label";
+import { Scene } from "./scene";
 import { Context, CustomFieldsOutput } from "./plugin";
 
 export interface Movie {
@@ -30,9 +33,14 @@ export interface FullMovieOutput extends CustomFieldsOutput {
   studio: string;
 }
 
-export type MovieOutput = Partial<FullMovieOutput>
+export type MovieOutput = Partial<FullMovieOutput>;
 
 export interface MovieContext extends Context<MovieOutput> {
   movie: Movie;
   movieName: string;
+  // Server functions to lazy load extra movie data
+  $getActors: () => Promise<Actor[]>;
+  $getLabels: () => Promise<Label[]>;
+  $getScenes: () => Promise<Scene[]>;
+  $getRating: () => Promise<number>;
 }
