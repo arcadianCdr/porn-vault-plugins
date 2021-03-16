@@ -1,0 +1,9 @@
+{
+  "name": "iafd",
+  "version": "0.0.1",
+  "authors": [
+    "ArcadianCdr"
+  ],
+  "description": "Scrapes scene data from the Internet Adult Film Database (iafd)",
+  "pluginEvents": []
+}
