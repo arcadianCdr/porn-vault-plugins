@@ -6,7 +6,8 @@ interface MySceneContext extends SceneContext {
     dry?: boolean;
     whitelist?: string[];
     blacklist?: string[];
-    useMovieAsName?: boolean;
+    useMovieNameAsSceneName?: boolean;
+    normalizeMovieName?: boolean;
   };
 }
 
@@ -32,7 +33,7 @@ async function searchForMovie(
 }
 
 export default async function (ctx: MySceneContext): Promise<SceneOutput> {
-  const { args, $axios, $cheerio, data, $moment, sceneName, $logger, $throw } = ctx;
+  const { args, $axios, $cheerio, data, $moment, sceneName, $formatMessage, $logger, $throw } = ctx;
 
   if (!["sceneCreated", "sceneCustom"].includes(ctx.event)) {
     $throw("Uh oh. You shouldn't use the plugin for this type of event");
@@ -67,10 +68,11 @@ export default async function (ctx: MySceneContext): Promise<SceneOutput> {
   }
 
   $logger.info(
-    `Scraping scene from movie '${searchMovie}' based on name: '${sceneName}' and/or actors: '${searchActors.join()}'`
+    `Scraping adultempire based on scene name: '${sceneName}' and/or actors: '${searchActors.join(
+      ", "
+    )}'`
   );
 
-  // let releaseDate: number | undefined;
   let url: string | false = false;
   const movieName: string = searchMovie
     .replace(/[#&]/g, "")
@@ -79,7 +81,7 @@ export default async function (ctx: MySceneContext): Promise<SceneOutput> {
   url = await searchForMovie(ctx, movieName);
 
   if (!url) {
-    $logger.warn("Unable to identify a scene number. No results to grab.");
+    $logger.warn("Unable to get results from adultempire. Returning without results.");
     return {};
   }
   const html = (await $axios.get<string>(url)).data;
@@ -88,13 +90,19 @@ export default async function (ctx: MySceneContext): Promise<SceneOutput> {
   function getMovie(): Partial<{ movie: string }> {
     if (isBlacklisted("movie")) return {};
 
-    const scrapedMovie = $(`.title-rating-section .col-sm-6 h1`)
+    let scrapedMovie = $(`.title-rating-section .col-sm-6 h1`)
       .text()
       .replace(/[\t\n]+/g, " ")
       .replace(/ {2,}/, " ")
       .replace(/- On Sale!.*/i, "")
       .trim();
-    $logger.debug(`Found movie: '${scrapedMovie}'`);
+    if (args.normalizeMovieName && scrapedMovie) {
+      // Normalizes to keep the movie name and number, without the symbols that cause inconsistencies in movies naming convention
+      scrapedMovie = scrapedMovie.replace(/(.*)([#V]|Vol|Volume)\W*(\d+)/gi, "$1$3");
+      // Remove multiple contiguous spaces
+      scrapedMovie = scrapedMovie.replace(/[ ]{2,}/gm, "");
+    }
+    $logger.debug(`Found matching movie on adultempire: '${scrapedMovie}'`);
 
     return { movie: scrapedMovie };
   }
@@ -103,9 +111,10 @@ export default async function (ctx: MySceneContext): Promise<SceneOutput> {
     if (isBlacklisted("name")) return {};
 
     let scrapedName = $(".col-sm-6 > .m-b-1").eq(sceneIndex).text().trim();
-    if (args.useMovieAsName && /Scene \d+/.exec(scrapedName)) {
+    if (args.useMovieNameAsSceneName && /Scene \d+/.exec(scrapedName)) {
       scrapedName = `${movieName} - ${scrapedName}`;
     }
+    $logger.debug(`Found scene name: '${scrapedName}'`);
 
     return { name: scrapedName };
   }
@@ -123,6 +132,8 @@ export default async function (ctx: MySceneContext): Promise<SceneOutput> {
             foundActors.push($(elem).text());
           });
       });
+
+    $logger.debug(`Found actors: '${foundActors.join(", ")}'`);
     if (foundActors.length > 0) {
       return { actors: foundActors };
     }
@@ -133,6 +144,8 @@ export default async function (ctx: MySceneContext): Promise<SceneOutput> {
     if (isBlacklisted("studio")) return {};
 
     const foundStudio = $(`.title-rating-section .item-info > a`).eq(0).text().trim();
+    $logger.debug(`Found scene name: '${foundStudio}'`);
+
     return { studio: foundStudio };
   }
 
@@ -146,6 +159,8 @@ export default async function (ctx: MySceneContext): Promise<SceneOutput> {
         date = $moment(grabrvars[1].trim().replace(" ", "-"), "MMM-DD-YYYY").valueOf();
       }
     });
+    $logger.debug(`Found release date: '${date || ""}'`);
+
     return { releaseDate: date };
   }
 
@@ -155,9 +170,7 @@ export default async function (ctx: MySceneContext): Promise<SceneOutput> {
   const matchedSceneNumber = /\d{1,2}/.exec(searchName);
   if (matchedSceneNumber) {
     sceneIndexMatchedFromName = Number(matchedSceneNumber[0]) - 1;
-    $logger.verbose(
-      `Based on scene name matching, the scene index is: ${sceneIndexMatchedFromName}`
-    );
+    $logger.debug(`Based on scene name matching, the scene index is: ${sceneIndexMatchedFromName}`);
   }
 
   // Find the index of the best matching scene based on actor matching score (largest intersection between pv & web actors wins)
@@ -181,7 +194,7 @@ export default async function (ctx: MySceneContext): Promise<SceneOutput> {
         sceneIndexBestActorsMatch = i;
       }
     });
-    $logger.verbose(
+    $logger.debug(
       `Based on best actors matching, the scene index is: ${sceneIndexBestActorsMatch}`
     );
   }
@@ -191,23 +204,24 @@ export default async function (ctx: MySceneContext): Promise<SceneOutput> {
     sceneIndexMatchedFromName > -1 ? sceneIndexMatchedFromName : sceneIndexBestActorsMatch;
 
   if (sceneIndex < 0) {
-    $logger.warn(`Unable to match a scene within the movie.`);
+    $logger.warn(`Unable to match a scene within the movie. Returning with empty results.`);
     return {};
   }
-  $logger.info(`Found scene: index ${sceneIndex}`);
 
-  const sceneOutput: SceneOutput = {
-    ...getMovie,
+  const result: SceneOutput = {
+    ...getMovie(),
     ...getName(),
     ...getActors(),
     ...getStudio(),
     ...getReleaseDate(),
   };
 
+  $logger.info(`Found scene name: '${result.name}', starring: '${result.actors?.join(", ")}'`);
+
   if (args.dry === true) {
-    $logger.info(`dry mode. Would have returned: ${JSON.stringify(sceneOutput)}`);
+    $logger.info(`dry mode. Would have returned: ${$formatMessage(result)}`);
     return {};
-  } else {
-    return sceneOutput;
   }
+
+  return result;
 }

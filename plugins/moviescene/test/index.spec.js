@@ -24,11 +24,12 @@ describe("moviescene", () => {
         sceneName: "Fly Girls - s06",
         scenePath: "/Fly Girls - s06.mp4",
         data: { movie: "Fly Girls" },
-        args: { useMovieAsName: true },
+        args: { useMovieNameAsSceneName: true },
         $getActors: async () => [],
         $getMovies: async () => [],
       });
       expect(result).to.be.an("object");
+      expect(result.movie).to.equal("Fly Girls");
       expect(result.name).to.equal("Fly Girls - Scene 6");
       expect(result.actors).to.be.undefined;
       expect(result.releaseDate).to.equal(moment("2010-02-16", "YYYY-MM-DD").valueOf());
@@ -40,11 +41,12 @@ describe("moviescene", () => {
         sceneName: "Big Wet Asses Eva",
         scenePath: "/Big Wet Asses Eva.mp4",
         data: { movie: "Big Wet Asses 12", actors: ["Eva Angelina", "Michael Stefano"] },
-        args: {},
+        args: { normalizeMovieName: true },
         $getActors: async () => [],
         $getMovies: async () => [],
       });
       expect(result).to.be.an("object");
+      expect(result.movie).to.equal("Big Wet Asses 12");
       expect(result.name).to.equal("Eva Does Anal!");
       expect(result.actors).to.be.an("array").to.have.lengthOf(2);
       expect(result.actors).to.include("Eva Angelina");
