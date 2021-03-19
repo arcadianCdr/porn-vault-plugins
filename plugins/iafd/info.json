@@ -1,9 +1,37 @@
 {
   "name": "iafd",
-  "version": "0.0.1",
-  "authors": [
-    "ArcadianCdr"
-  ],
-  "description": "Scrapes scene data from the Internet Adult Film Database (iafd)",
-  "pluginEvents": []
+  "version": "0.1.0",
+  "authors": ["ArcadianCdr"],
+  "description": "Scrapes scene data from the Internet Adult Film Database (iafd). Supports single-scene and multi-scene titles (movies).",
+  "pluginEvents": ["sceneCreated", "sceneCustom"],
+  "arguments": [
+    {
+      "name": "dry",
+      "type": "Boolean",
+      "required": false,
+      "default": false,
+      "description": "Whether to commit data changes"
+    },
+    {
+      "name": "whitelist",
+      "type": "String[]",
+      "required": false,
+      "default": [],
+      "description": "Array of data fields to pick (possible values: 'description, actors, studio, releaseDate, labels"
+    },
+    {
+      "name": "blacklist",
+      "type": "String[]",
+      "required": false,
+      "default": [],
+      "description": "Array of data fields to omit (for values see whitelist)"
+    },
+    {
+      "name": "addMovieNameInSceneName",
+      "type": "String",
+      "required": false,
+      "default": false,
+      "description": "For multi-scene titles (movies), IAFD simply names the scene: 'Scene 1', 'Scene 2',... This does not make for very good scene names. When this argument is true, the scene name will be a concatenation of the movie name and the scene name. Example: 'Best Movie Ever - Scene 1'"
+    }
+  ]
 }
