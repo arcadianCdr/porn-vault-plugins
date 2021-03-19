@@ -202,7 +202,12 @@ module.exports = async (ctx: MySceneContext): Promise<SceneOutput> => {
 
     // Enrich the scene name with the movie name (according to config)
     if (args.addMovieNameInSceneName && movie.length) {
-      scrapedName = `${movie} - ${scrapedName}`;
+      if (scrapedName.length) {
+        scrapedName = `${movie} - ${scrapedName}`;
+      } else {
+        const name = data.name || sceneName;
+        scrapedName = `${movie} - ${name}`;
+      }
     }
 
     return { name: scrapedName };
@@ -318,20 +323,32 @@ module.exports = async (ctx: MySceneContext): Promise<SceneOutput> => {
     `identified scene index ${sceneIndex} out of ${scenesActors.length} scenes returned for '${searchName}'`
   );
 
-  if (sceneIndex < 0 || sceneIndex >= scenesActors.length) {
+  if (sceneIndex < 0) {
     $logger.warn(`Unable to match a scene. Returning with empty results.`);
     return {};
   }
 
-  const result: SceneOutput = {
-    ...getMovie(),
-    ...getName(),
-    ...getDescription(),
-    ...getActors(),
-    ...getStudio(),
-    ...getReleaseDate(),
-    ...getLabels(),
-  };
+  let result: SceneOutput;
+  if (sceneIndex >= scenesActors.length) {
+    // IAFD does not reference all movie extras (like BTS, interviews,...).
+    // For those, it is only possible to return the general movie attributes (no actors or labels)
+    result = {
+      ...getMovie(),
+      ...getName(),
+      ...getStudio(),
+      ...getReleaseDate(),
+    };
+  } else {
+    result = {
+      ...getMovie(),
+      ...getName(),
+      ...getDescription(),
+      ...getActors(),
+      ...getStudio(),
+      ...getReleaseDate(),
+      ...getLabels(),
+    };
+  }
 
   $logger.info(`Found scene name: '${result.name}', starring: '${result.actors?.join(", ")}'`);
 
