@@ -205,7 +205,8 @@ module.exports = async (ctx: MySceneContext): Promise<SceneOutput> => {
       if (scrapedName.length) {
         scrapedName = `${movie} - ${scrapedName}`;
       } else {
-        scrapedName = `${movie} - ${sceneName}`;
+        const name = data.name || sceneName;
+        scrapedName = `${movie} - ${name}`;
       }
     }
 
