@@ -149,14 +149,12 @@ describe("iafd", () => {
       expect(result.movie).to.equal("Anal Craving MILFs 8");
       expect(result.studio).to.equal("LeWood");
     });
-    it("Should use args...", async () => {
+    it("Should use args an initial data via server functions...", async () => {
       const result = await runPlugin({
         event: "sceneCreated",
         sceneName: "Unknown",
-        data: {
-          movie: "Anal Craving MILFs 8",
-          actors: ["LaSirena69"],
-        },
+        $getMovies: async () => [{ name: "Anal Craving MILFs 8"}],
+        $getActors: async () => [{ name: "LaSirena69"}],
         args: {
           addMovieNameInSceneName: true,
           blacklist: ["studio", "labels", "actors", "releaseDate", "movie"],
@@ -170,6 +168,27 @@ describe("iafd", () => {
       expect(result.labels).to.be.undefined;
       expect(result.movie).to.be.undefined;
       expect(result.studio).to.be.undefined;
+    });
+    it("Should scrape partial details from a multi-scene title when the scene index is higher than what IAFD references (out of bounds)...", async () => {
+      const result = await runPlugin({
+        event: "sceneCreated",
+        $getActors: async () => [],
+        sceneName: "Scene 10",
+        data: {
+          movie: "Anal Craving MILFs 8",
+        },
+        args: {
+          addMovieNameInSceneName: true,
+        },
+      });
+      expect(result).to.be.an("object");
+      expect(result.name).to.equal("Anal Craving MILFs 8 - Scene 10");
+      expect(result.actors).to.be.undefined;
+      expect(result.releaseDate).to.equal(moment("2020-02-12", "YYYY-MM-DD").valueOf());
+      expect(result.description).to.be.undefined;
+      expect(result.labels).to.be.undefined;
+      expect(result.movie).to.equal("Anal Craving MILFs 8");
+      expect(result.studio).to.equal("LeWood");
     });
   });
 });
