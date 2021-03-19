@@ -96,6 +96,14 @@ function searchForMovie({ $cheerio, $axios }, name) {
         return `https://adultempire.com${href}`;
     });
 }
+function urlAvailable({ $axios }, url) {
+    return __awaiter$1(this, void 0, void 0, function* () {
+        const { status } = yield $axios.head(url, {
+            validateStatus: () => true,
+        });
+        return status < 400;
+    });
+}
 function default_1$1(ctx) {
     return __awaiter$1(this, void 0, void 0, function* () {
         const { args, $moment, $axios, $cheerio, $logger, $formatMessage, movieName, $createImage } = ctx;
@@ -126,7 +134,10 @@ function default_1$1(ctx) {
             const studioName = $(`.title-rating-section .item-info > a`).eq(0).text().trim();
             const frontCover = $("#front-cover img").toArray()[0];
             const frontCoverSrc = $(frontCover).attr("src") || "";
-            const backCoverSrc = frontCoverSrc.replace("h.jpg", "bh.jpg");
+            let backCoverSrc = frontCoverSrc.replace("h.jpg", "bh.jpg");
+            if (!(yield urlAvailable(ctx, backCoverSrc))) {
+                backCoverSrc = null;
+            }
             if ((args === null || args === void 0 ? void 0 : args.dry) === true) {
                 $logger.info(`Would have returned ${$formatMessage({
                     name: movieName,
@@ -140,7 +151,10 @@ function default_1$1(ctx) {
             }
             else {
                 const frontCoverImg = yield $createImage(frontCoverSrc, `${movieName} (front cover)`);
-                const backCoverImg = yield $createImage(backCoverSrc, `${movieName} (back cover)`);
+                let backCoverImg;
+                if (backCoverSrc) {
+                    backCoverImg = yield $createImage(backCoverSrc, `${movieName} (back cover)`);
+                }
                 return {
                     name: movieName,
                     frontCover: frontCoverImg,
