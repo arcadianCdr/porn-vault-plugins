@@ -211,7 +211,7 @@ module.exports = async (ctx: MySceneContext): Promise<SceneOutput> => {
       .trim();
 
     scrapedName = args.keepInitialSceneNameForMovies ? data.name || sceneName : scrapedName;
-    if (args.addMovieNameInSceneName && movie.length && scrapedName.length < 10) {
+    if (args.addMovieNameInSceneName && movie.length) {
       scrapedName = `${movie} - ${scrapedName}`;
     }
 
