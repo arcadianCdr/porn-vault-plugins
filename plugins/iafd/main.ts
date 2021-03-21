@@ -7,6 +7,8 @@ interface MySceneContext extends SceneContext {
     whitelist?: string[];
     blacklist?: string[];
     addMovieNameInSceneName?: boolean;
+    keepInitialSceneNameForMovies?: boolean;
+    sceneIndexMatchingRegex?: string;
   };
 }
 
@@ -60,7 +62,7 @@ async function searchForMovie(ctx: Context, name: string): Promise<string | fals
  * @returns The index of the best match (or -1 of no "good enough" match could be found).
  */
 function searchForScene(
-  ctx: Context,
+  ctx: MySceneContext,
   searchSceneName: string,
   searchActors: string[],
   scenesActors: string[]
@@ -72,7 +74,7 @@ function searchForScene(
     return 0;
   }
 
-  const indexFromName: number = matchSceneFromName(searchSceneName);
+  const indexFromName: number = matchSceneFromName(ctx, searchSceneName);
   $logger.debug(`Based on scene name matching, the scene index is: ${indexFromName}`);
 
   // Finds the index of the best matching scene based on actor matching (largest intersection between pv & iafd actors wins)
@@ -89,13 +91,21 @@ function searchForScene(
  * @param name the name to use for the match (assumed to be cleaned-up). It will not match if there are multiple numbers in the name (too ambiguous)
  * @returns the matched index (or -1 if no matches were possible)
  */
-function matchSceneFromName(name: string): number {
+function matchSceneFromName(ctx: MySceneContext, name: string): number {
   let indexFromName: number = -1;
 
   // The name must contain exactly one number between 0-99 for it to be considered a match.
-  const nameMatch = Array.from(name.matchAll(/\d{1,2}/gm));
+  const nameMatch = Array.from(
+    name.matchAll(
+      new RegExp(
+        ctx.args.sceneIndexMatchingRegex || "(.*)(Scene|S)\\W*(?<index>\\d{1,2})(.*)",
+        "gim"
+      )
+    )
+  );
   if (nameMatch.length === 1) {
-    indexFromName = Number(nameMatch[0]) - 1;
+    indexFromName = Number(nameMatch[0].groups?.index);
+    indexFromName = isNaN(indexFromName) ? -1 : indexFromName - 1;
   }
 
   return indexFromName;
@@ -149,7 +159,7 @@ module.exports = async (ctx: MySceneContext): Promise<SceneOutput> => {
     $throw("Uh oh. You shouldn't use the plugin for this type of event");
   }
 
-  args.addMovieNameInSceneName ??= false;
+  args.keepInitialSceneNameForMovies ??= true;
 
   const blacklist = (args.blacklist || []).map(lowercase);
   if (!args.blacklist) $logger.verbose("No blacklist defined, returning everything...");
@@ -200,14 +210,9 @@ module.exports = async (ctx: MySceneContext): Promise<SceneOutput> => {
       .replace(/\. (.*)$/, "")
       .trim();
 
-    // Enrich the scene name with the movie name (according to config)
-    if (args.addMovieNameInSceneName && movie.length) {
-      if (scrapedName.length) {
-        scrapedName = `${movie} - ${scrapedName}`;
-      } else {
-        const name = data.name || sceneName;
-        scrapedName = `${movie} - ${name}`;
-      }
+    scrapedName = args.keepInitialSceneNameForMovies ? data.name || sceneName : scrapedName;
+    if (args.addMovieNameInSceneName && movie.length && scrapedName.length < 10) {
+      scrapedName = `${movie} - ${scrapedName}`;
     }
 
     return { name: scrapedName };

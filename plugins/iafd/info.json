@@ -28,10 +28,24 @@
     },
     {
       "name": "addMovieNameInSceneName",
-      "type": "String",
+      "type": "Boolean",
       "required": false,
       "default": false,
-      "description": "For multi-scene titles (movies), IAFD simply names the scene: 'Scene 1', 'Scene 2',... This does not make for very good scene names. When this argument is true, the scene name will be a concatenation of the movie name and the scene name. Example: 'Best Movie Ever - Scene 1'"
+      "description": "For multi-scene titles (movies), IAFD simply names the scene: 'Scene 1', 'Scene 2',... This does not make for very good scene names. When this argument is true, the scene name will be a concatenation of the movie name and the short scene name. Example: 'Best Movie Ever - Scene 1'."
+    },
+    {
+      "name": "keepInitialSceneNameForMovies",
+      "type": "Boolean",
+      "required": false,
+      "default": true,
+      "description": "Only relevant for multi-scene titles like movie, where IAFD does not have names for every scenes (scene 1, scene 2,...). Wether to keep porn-vault's initial scene name or replace it wih the IAFD simple names."
+    },
+    {
+      "name": "sceneIndexMatchingRegex",
+      "type": "String",
+      "required": false,
+      "default": "(.*)(Scene|S)\\W*(?<index>\\d{1,2})(.*)",
+      "description": "Regex used to identify the scene index in the scene name (matched with the case insensitive flag). The default regex will match patterns with 'Scene' and a number or 'S' and a number (Scene1, Scene 02, S01, s1,...). Advanced setting. Leave the default unless you know what you are doing. In you provide a custom regex, make sure you have one regex group called 'index' that isolates/matches the scene index number (and nothing else)."
     }
   ]
 }

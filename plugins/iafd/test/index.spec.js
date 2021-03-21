@@ -5,7 +5,9 @@ const { expect } = require("chai");
 
 const runPlugin = createPluginRunner("iafd", plugin);
 
-describe("iafd", () => {
+describe("iafd", function () {
+  this.timeout(15000);
+
   it("Should fail", async () => {
     let errord = false;
     try {
@@ -38,7 +40,7 @@ describe("iafd", () => {
         args: {},
       });
       expect(result).to.be.an("object");
-      expect(result.name).to.equal("Scene 3");
+      expect(result.name).to.equal("S03");
     });
     it("Should match multi-scene results with a movie name and matching actors for one of the scenes...", async () => {
       const result = await runPlugin({
@@ -46,10 +48,23 @@ describe("iafd", () => {
         $getMovies: async () => [{ name: "Anal Craving MILFs 8" }],
         $getActors: async () => [{ name: "LaSirena69" }, { name: "Mark Wood" }],
         sceneName: "Scene Three",
-        args: {},
+        args: { keepInitialSceneNameForMovies: false },
       });
       expect(result).to.be.an("object");
       expect(result.name).to.equal("Scene 3");
+    });
+    it("Should match multi-scene results with a movie name and a scene name containing an ambiguous index...", async () => {
+      const result = await runPlugin({
+        event: "sceneCreated",
+        $getMovies: async () => [{ name: "Anal Craving MILFs 8" }],
+        $getActors: async () => [],
+        sceneName: "S01 filmed on the 4th of July",
+        args: { addMovieNameInSceneName: true },
+      });
+      expect(result).to.be.an("object");
+      expect(result.name).to.equal("S01 filmed on the 4th of July");
+      expect(result.actors).to.be.a("Array");
+      expect(result.actors).to.contain("Sarah Jessie");
     });
     it("Should NOT match multi-scene results with just the scene name...", async () => {
       const result = await runPlugin({
@@ -69,17 +84,6 @@ describe("iafd", () => {
         $getActors: async () => [],
         sceneName: "Nothing helping the match here...",
         data: { movie: "Anal Craving MILFs 8" },
-        args: {},
-      });
-      expect(result).to.be.an("object");
-      expect(result).to.be.empty;
-    });
-    it("Should NOT match multi-scene results with a movie name and a scene name containing an ambiguous index...", async () => {
-      const result = await runPlugin({
-        event: "sceneCreated",
-        $getMovies: async () => [{ name: "Anal Craving MILFs 8" }],
-        $getActors: async () => [],
-        sceneName: "S01 filmed on the 4th of July",
         args: {},
       });
       expect(result).to.be.an("object");
@@ -131,7 +135,7 @@ describe("iafd", () => {
           movie: "Anal Craving MILFs 8",
           actors: ["LaSirena69"],
         },
-        args: {},
+        args: { keepInitialSceneNameForMovies: false },
       });
       expect(result).to.be.an("object");
       expect(result.name).to.equal("Scene 3");
@@ -149,14 +153,15 @@ describe("iafd", () => {
       expect(result.movie).to.equal("Anal Craving MILFs 8");
       expect(result.studio).to.equal("LeWood");
     });
-    it("Should use args an initial data via server functions...", async () => {
+    it("Should use args an initial data via server functions (actors only)...", async () => {
       const result = await runPlugin({
         event: "sceneCreated",
         sceneName: "Unknown",
-        $getMovies: async () => [{ name: "Anal Craving MILFs 8"}],
-        $getActors: async () => [{ name: "LaSirena69"}],
+        $getMovies: async () => [{ name: "Anal Craving MILFs 8" }],
+        $getActors: async () => [{ name: "LaSirena69" }],
         args: {
           addMovieNameInSceneName: true,
+          keepInitialSceneNameForMovies: false,
           blacklist: ["studio", "labels", "actors", "releaseDate", "movie"],
         },
       });
