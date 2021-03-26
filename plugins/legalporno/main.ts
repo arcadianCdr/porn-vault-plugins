@@ -1,3 +1,5 @@
+import $cheerio from "cheerio";
+
 import { Context } from "../../types/plugin";
 
 type MyContext = Context & { sceneName?: string };
@@ -94,7 +96,7 @@ module.exports = async (ctx: MyContext): Promise<any> => {
         // Scraping courtesy of traxxx (https://traxxx.me)
         const html = (await ctx.$axios.get<string>(sceneUrl)).data;
 
-        const $ = ctx.$cheerio.load(html, { normalizeWhitespace: true });
+        const $ = $cheerio.load(html, { normalizeWhitespace: true });
 
         if (!args.useSceneId) {
           const originalTitle = $("h1.watchpage-title").text().trim();

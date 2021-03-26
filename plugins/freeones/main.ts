@@ -1,3 +1,5 @@
+import $cheerio from "cheerio";
+
 import { ActorContext, ActorOutput } from "../../types/actor";
 import { Context } from "../../types/plugin";
 
@@ -47,7 +49,7 @@ async function search(
 
 async function getFirstSearchResult(ctx: MyContext, query: string): Promise<cheerio.Cheerio> {
   const searchHtml = await search(ctx, query, ctx.args.searchResultsSort || "relevance");
-  const $ = ctx.$cheerio.load(searchHtml);
+  const $ = $cheerio.load(searchHtml);
   const el = $(".grid-item.teaser-subject>a");
   return el;
 }
@@ -86,7 +88,6 @@ module.exports = async (ctx: MyContext): Promise<ActorOutput> => {
     args,
     $axios,
     $moment,
-    $cheerio,
     $throw,
     $logger,
     $formatMessage,
@@ -425,10 +426,10 @@ module.exports = async (ctx: MyContext): Promise<ActorOutput> => {
     $logger.verbose("Getting bra/cup/bust size...");
     return measurements
       ? {
-          "cup size": measurements.cup,
-          "bra size": measurements.braSize(),
-          "bust size": measurements.bust,
-        }
+        "cup size": measurements.cup,
+        "bra size": measurements.braSize(),
+        "bust size": measurements.bust,
+      }
       : {};
   }
 

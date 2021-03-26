@@ -1,6 +1,5 @@
 import axios from "axios";
 import boxen from "boxen";
-import cheerio from "cheerio";
 import ffmpeg from "fluent-ffmpeg";
 import fs from "fs";
 import inquirer from "inquirer";
@@ -56,7 +55,7 @@ export interface Context<Data = unknown> {
   // Libraries
   $axios: typeof axios;
   $boxen: typeof boxen;
-  $cheerio: typeof cheerio;
+  // $cheerio: typeof cheerio;
   $ffmpeg: typeof ffmpeg;
   $fs: typeof fs;
   $inquirer: typeof inquirer;

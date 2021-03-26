@@ -1,3 +1,5 @@
+import $cheerio from "cheerio";
+
 import { ActorContext, ActorOutput } from "../../types/actor";
 
 interface MyContext extends ActorContext {
@@ -14,7 +16,7 @@ function lowercase(str: string): string {
 
 export default async function (ctx: MyContext): Promise<ActorOutput> {
   // eslint-disable-next-line @typescript-eslint/unbound-method
-  const { args, $axios, $cheerio, $logger, $formatMessage, actorName, $createImage } = ctx;
+  const { args, $axios, $logger, $formatMessage, actorName, $createImage } = ctx;
 
   const name = actorName
     .replace(/#/g, "")
