@@ -77,6 +77,7 @@ plugins:
         searchResultsSort: relevance
         useImperial: false
         useAvatarAsThumbnail: false
+        exactNameMatch: false
         piercingsType: string
         tattoosType: string
   events:

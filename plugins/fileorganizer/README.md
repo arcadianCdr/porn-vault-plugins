@@ -152,7 +152,27 @@ There is also a limitation to the filename's length (255 characters). You will g
 
 ```yaml
 ---
-{ { { exampleYAML } } }
+plugins:
+  register:
+    fileorganizer:
+      path: ./plugins/fileorganizer.js
+      args:
+        dry: false
+        fileStructureTemplate: ""
+        normalizeAccents: false
+        normalizeMultipleSpaces: true
+        nameConflictHandling: rename
+        dateFormat: YYYY-MM-DD
+        multiValuesSeparator: ", "
+        characterReplacement:
+          - original: ":"
+            replacement: ∶
+  events:
+    sceneCreated:
+      - fileorganizer
+    sceneCustom:
+      - fileorganizer
+
 ---
 
 ```

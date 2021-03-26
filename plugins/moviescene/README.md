@@ -42,7 +42,16 @@ Scrape scene details from adultempire. Does not work by itself. It needs to be p
 
 ```yaml
 ---
-{ { { exampleYAML } } }
+plugins:
+  register:
+    moviescene:
+      path: ./plugins/moviescene.js
+      args:
+        dry: false
+  events:
+    sceneCreated:
+      - moviescene
+
 ---
 
 ```

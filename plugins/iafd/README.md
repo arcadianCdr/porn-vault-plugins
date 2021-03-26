@@ -67,7 +67,23 @@ Either way, the iafd plugin will identify the correct scene in a multi-scene tit
 
 ```yaml
 ---
-{ { { exampleYAML } } }
+plugins:
+  register:
+    iafd:
+      path: ./plugins/iafd.js
+      args:
+        dry: false
+        whitelist: []
+        blacklist: []
+        addMovieNameInSceneName: false
+        keepInitialSceneNameForMovies: true
+        sceneIndexMatchingRegex: (.*)(Scene|S)\W*(?<index>\d{1,2})(.*)
+  events:
+    sceneCreated:
+      - iafd
+    sceneCustom:
+      - iafd
+
 ---
 
 ```

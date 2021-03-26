@@ -53,7 +53,22 @@ Scrape data from VIXEN Network (VIXEN, BLACKED, BLACKED RAW, TUSHY, TUSHY RAW, D
 
 ```yaml
 ---
-{ { { exampleYAML } } }
+plugins:
+  register:
+    vixen_network:
+      path: ./plugins/vixen_network.js
+      args:
+        stripString: "[^a-zA-Z0-9'/\\,()[\\]{}-]"
+        dry: false
+        deep: true
+        useThumbnail: false
+        useChapters: false
+  events:
+    sceneCreated:
+      - vixen_network
+    sceneCustom:
+      - vixen_network
+
 ---
 
 ```
