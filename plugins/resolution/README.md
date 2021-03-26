@@ -45,7 +45,18 @@ Add resolution labels to a scene
 
 ```yaml
 ---
-{ { { exampleYAML } } }
+plugins:
+  register:
+    resolution:
+      path: ./plugins/resolution.js
+      args:
+        resolutions: []
+  events:
+    sceneCreated:
+      - resolution
+    sceneCustom:
+      - resolution
+
 ---
 
 ```

@@ -81,7 +81,29 @@ If no match is found, and `manualTouch` is enabled, you will be able to interact
 
 ```yaml
 ---
-{ { { exampleYAML } } }
+plugins:
+  register:
+    PromisedScene:
+      path: ./plugins/PromisedScene.js
+      args:
+        useTitleInSearch: false
+        alwaysUseSingleResult: false
+        usePipedInputInSearch: false
+        parseActor: true
+        parseStudio: true
+        parseDate: true
+        manualTouch: true
+        sceneDuplicationCheck: true
+        source_settings:
+          actors: ./library/actors.db
+          studios: ./library/studios.db
+          scenes: ./library/scenes.db
+  events:
+    sceneCreated:
+      - PromisedScene
+    sceneCustom:
+      - PromisedScene
+
 ---
 
 ```

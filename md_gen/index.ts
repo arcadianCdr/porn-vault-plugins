@@ -137,12 +137,13 @@ const generatePluginDocs = () => {
   console.log("Generating index...");
 
   const indexTemplate = fs.readFileSync("template.md", "utf-8");
-  const tableHeaders = ["Plugin", "Description", "Download"];
+  const tableHeaders = ["Plugin", "Version", "Description", "Download"];
   const rendered = Handlebars.compile(indexTemplate)({
     table: table([
       tableHeaders,
       ...Object.entries(info).map(([pluginDirName, pluginInfo]) => [
-        `[${pluginInfo.name}](https://github.com/arcadianCdr/plugins/tree/master/plugins/${pluginDirName}/README.md)`,
+        `[${pluginInfo.name}](https://github.com/porn-vault/porn-vault-plugins/blob/master/plugins/${pluginDirName}/README.md)`,
+        pluginInfo.version,
         pluginInfo.description,
         `[Link](${downloadUrl(pluginDirName)})`,
       ]),

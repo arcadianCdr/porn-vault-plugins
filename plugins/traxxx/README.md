@@ -100,7 +100,28 @@ Example: plugin `A` returns `custom.myField: 'a string'`. and plugin `B` *would*
 
 ```yaml
 ---
-{ { { exampleYAML } } }
+plugins:
+  register:
+    traxxx:
+      path: ./plugins/traxxx.js
+      args:
+        dry: false
+        studios:
+          channelPriority: true
+          uniqueNames: true
+          channelSuffix: " (Channel)"
+          networkSuffix: " (Network)"
+          mergeAliases: true
+          whitelist: []
+          blacklist: []
+          whitelistOverride: []
+          blacklistOverride: []
+  events:
+    studioCreated:
+      - traxxx
+    studioCustom:
+      - traxxx
+
 ---
 
 ```

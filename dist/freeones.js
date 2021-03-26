@@ -63,15 +63,19 @@ class Measurements {
     }
 }
 var main = (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const { $createImage, args, $axios, $moment, $cheerio, $throw, $logger, $formatMessage, actorName, } = ctx;
-    if (!actorName)
+    if (!actorName) {
         $throw("Uh oh. You shouldn't use the plugin for this type of event");
+    }
     $logger.info(`Scraping freeones date for ${actorName}, dry mode: ${args.dry || false}...`);
     const blacklist = (args.blacklist || []).map(lowercase);
-    if (!args.blacklist)
+    if (!args.blacklist) {
         $logger.verbose("No blacklist defined, returning everything...");
-    if (blacklist.length)
+    }
+    if (blacklist.length) {
         $logger.verbose(`Blacklist defined, will ignore: ${blacklist.join(", ")}`);
+    }
     const whitelist = (args.whitelist || []).map(lowercase);
     if (whitelist.length) {
         $logger.verbose(`Whitelist defined, will only return: ${whitelist.join(", ")}...`);
@@ -105,18 +109,22 @@ var main = (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     }
     let firstResult;
     try {
+        $logger.debug(`Searching for ${actorName}`);
         firstResult = yield getFirstSearchResult(ctx, actorName);
     }
     catch (error) {
         $throw(error.message);
         return {};
     }
-    if (!firstResult)
+    if (!firstResult) {
         $throw(`${actorName} not found!`);
-    const href = firstResult.attr("href");
+    }
+    const href = (_a = firstResult.attr("href")) === null || _a === void 0 ? void 0 : _a.replace("/feed", "");
     let html;
     try {
-        html = (yield $axios.get(`https://freeones.com${href}/profile`)).data;
+        const url = `https://freeones.com${href}/bio`;
+        $logger.debug(`GET ${url}`);
+        html = (yield $axios.get(url)).data;
     }
     catch (error) {
         $throw(error.message);

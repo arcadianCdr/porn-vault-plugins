@@ -158,7 +158,19 @@ In addition to the parserconfig file(s), fileparser must be registered and confi
 
 ```yaml
 ---
-{ { { exampleYAML } } }
+plugins:
+  register:
+    fileparser:
+      path: ./plugins/fileparser.js
+      args:
+        dry: false
+        parseDate: true
+  events:
+    sceneCreated:
+      - fileparser
+    sceneCustom:
+      - fileparser
+
 ---
 
 ```

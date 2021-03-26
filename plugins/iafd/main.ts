@@ -162,8 +162,12 @@ module.exports = async (ctx: MySceneContext): Promise<SceneOutput> => {
   args.keepInitialSceneNameForMovies ??= true;
 
   const blacklist = (args.blacklist || []).map(lowercase);
-  if (!args.blacklist) $logger.verbose("No blacklist defined, returning everything...");
-  if (blacklist.length) $logger.verbose(`Blacklist defined, will ignore: ${blacklist.join(", ")}`);
+  if (!args.blacklist) {
+    $logger.verbose("No blacklist defined, returning everything...");
+  }
+  if (blacklist.length) {
+    $logger.verbose(`Blacklist defined, will ignore: ${blacklist.join(", ")}`);
+  }
 
   const whitelist = (args.whitelist || []).map(lowercase);
   if (whitelist.length) {
@@ -187,7 +191,9 @@ module.exports = async (ctx: MySceneContext): Promise<SceneOutput> => {
   }
 
   function getMovie(): Partial<{ movie: string }> {
-    if (isBlacklisted("movie")) return {};
+    if (isBlacklisted("movie")) {
+      return {};
+    }
 
     if (scenesActors.length > 1) {
       return { movie: getMovieInternal() };
@@ -220,7 +226,9 @@ module.exports = async (ctx: MySceneContext): Promise<SceneOutput> => {
 
   function getDescription(): Partial<{ description: string }> {
     // Skips the description if there is more than one scene as it would describe the movie, and not the current scene...
-    if (isBlacklisted("description") || scenesActors.length > 1) return {};
+    if (isBlacklisted("description") || scenesActors.length > 1) {
+      return {};
+    }
 
     const scrapedDesc = $("#synopsis.panel.panel-default > .padded-panel").text().trim();
 
@@ -228,7 +236,9 @@ module.exports = async (ctx: MySceneContext): Promise<SceneOutput> => {
   }
 
   function getActors(): Partial<{ actors: string[] }> {
-    if (isBlacklisted("actors")) return {};
+    if (isBlacklisted("actors")) {
+      return {};
+    }
 
     const foundActors: string[] = scenesActors[sceneIndex].split(", ");
 
@@ -239,7 +249,9 @@ module.exports = async (ctx: MySceneContext): Promise<SceneOutput> => {
   }
 
   function getStudio(): Partial<{ studio: string }> {
-    if (isBlacklisted("studio")) return {};
+    if (isBlacklisted("studio")) {
+      return {};
+    }
 
     const foundStudio = $("p.biodata > a[href*='/studio.rme']").text().trim();
     $logger.debug(`Found studio: '${foundStudio}'`);
@@ -248,7 +260,9 @@ module.exports = async (ctx: MySceneContext): Promise<SceneOutput> => {
   }
 
   function getReleaseDate(): Partial<{ releaseDate: number }> {
-    if (isBlacklisted("releaseDate")) return {};
+    if (isBlacklisted("releaseDate")) {
+      return {};
+    }
 
     let date: number | undefined;
     const scrapedReleaseDate = $("p.bioheading:contains('Release Date')").next().text().trim();
@@ -268,7 +282,9 @@ module.exports = async (ctx: MySceneContext): Promise<SceneOutput> => {
   }
 
   function getLabels(): Partial<{ labels: string[] }> {
-    if (isBlacklisted("labels")) return {};
+    if (isBlacklisted("labels")) {
+      return {};
+    }
 
     const foundLabels: string[] = [];
     const actors: string[] = getActors()?.actors || [];

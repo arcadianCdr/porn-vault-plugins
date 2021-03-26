@@ -32,7 +32,7 @@ by {{ authors }}
 
 ```yaml
 ---
-{ { { exampleYAML } } }
+{{{ exampleYAML }}}
 ---
 
 ```

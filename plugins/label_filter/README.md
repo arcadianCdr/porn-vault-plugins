@@ -59,7 +59,27 @@ Filter labels returned by other plugins
 
 ```yaml
 ---
-{ { { exampleYAML } } }
+plugins:
+  register:
+    label_filter:
+      path: ./plugins/label_filter.js
+      args:
+        whitelist: []
+        blacklist: []
+  events:
+    actorCreated:
+      - label_filter
+    actorCustom:
+      - label_filter
+    sceneCreated:
+      - label_filter
+    sceneCustom:
+      - label_filter
+    studioCreated:
+      - label_filter
+    studioCustom:
+      - label_filter
+
 ---
 
 ```

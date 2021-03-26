@@ -49,7 +49,20 @@ Scrape Legalporno/Analvids scene data
 
 ```yaml
 ---
-{ { { exampleYAML } } }
+plugins:
+  register:
+    legalporno:
+      path: ./plugins/legalporno.js
+      args:
+        deep: true
+        dry: false
+        useSceneId: false
+  events:
+    sceneCreated:
+      - legalporno
+    sceneCustom:
+      - legalporno
+
 ---
 
 ```

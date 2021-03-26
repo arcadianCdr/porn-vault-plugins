@@ -59,7 +59,6 @@ describe("iafd", function () {
         $getMovies: async () => [{ name: "Anal Craving MILFs 8" }],
         $getActors: async () => [],
         sceneName: "S01 filmed on the 4th of July",
-        args: { addMovieNameInSceneName: true },
       });
       expect(result).to.be.an("object");
       expect(result.name).to.equal("S01 filmed on the 4th of July");

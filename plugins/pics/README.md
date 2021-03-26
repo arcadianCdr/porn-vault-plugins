@@ -206,7 +206,59 @@ Example with multiple configurations:
 
 ```yaml
 ---
-{ { { exampleYAML } } }
+plugins:
+  register:
+    pics:
+      path: ./plugins/pics.js
+      args:
+        dry: false
+        actors:
+          - prop: thumbnail
+            path: ./path/to/all/actor/pictures
+            searchTerms:
+              - thumbnail
+            blacklistTerms: []
+            mustMatchInFilename: false
+            max: -1
+        scenes:
+          - prop: thumbnail
+            path: ./path/to/all/scene/pictures
+            searchTerms:
+              - thumbnail
+            blacklistTerms: []
+            mustMatchInFilename: false
+            max: -1
+        movies:
+          - prop: thumbnail
+            path: ./path/to/all/movie/pictures
+            searchTerms:
+              - thumbnail
+            blacklistTerms: []
+            max: -1
+        studios:
+          - prop: thumbnail
+            path: ./path/to/all/studio/pictures
+            searchTerms:
+              - thumbnail
+            blacklistTerms: []
+            mustMatchInFilename: false
+            max: -1
+  events:
+    actorCreated:
+      - pics
+    actorCustom:
+      - pics
+    sceneCreated:
+      - pics
+    sceneCustom:
+      - pics
+    movieCreated:
+      - pics
+    studioCreated:
+      - pics
+    studioCustom:
+      - pics
+
 ---
 
 ```
