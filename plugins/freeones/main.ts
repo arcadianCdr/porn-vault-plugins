@@ -97,7 +97,7 @@ module.exports = async (ctx: MyContext): Promise<ActorOutput> => {
     $throw("Uh oh. You shouldn't use the plugin for this type of event");
   }
 
-  $logger.info(`Scraping freeones date for ${actorName}, dry mode: ${args.dry || false}...`);
+  $logger.info(`Scraping freeones for ${actorName}, dry mode: ${args.dry || false}...`);
 
   const blacklist = (args.blacklist || []).map(lowercase);
   if (!args.blacklist) {
@@ -302,7 +302,7 @@ module.exports = async (ctx: MyContext): Promise<ActorOutput> => {
         $logger.verbose("No birth province found, just city!");
         return { birthplace: cityName };
       } else {
-        const bplace = cityName + ", " + stateName.split("-")[0].trim();
+        const bplace = `${cityName}, ${stateName.split("-")[0].trim()}`;
         return { birthplace: bplace };
       }
     }
@@ -382,6 +382,40 @@ module.exports = async (ctx: MyContext): Promise<ActorOutput> => {
     const aliases = aliasName.split(/,\s*/g);
 
     return { aliases };
+  }
+
+  function getCareer(): Partial<{
+    started: number;
+    ended: number;
+  }> {
+    if (isBlacklisted("career")) return {};
+    $logger.verbose("Getting career information...");
+
+    const careerSel = $(".timeline-horizontal p.m-0");
+    if (!careerSel) return {};
+
+    const career: Partial<{
+      started: number;
+      ended: number;
+    }> = {};
+
+    const careerStart = $(careerSel[0]).text();
+    if (careerStart && careerStart !== "Begin") {
+      career.started = Number.parseInt(careerStart, 10);
+      if (Number.isNaN(career.started)) {
+        delete career.started;
+      }
+    }
+
+    const careerEnd = $(careerSel[1]).text();
+    if (careerEnd && careerEnd !== "Now") {
+      career.ended = Number.parseInt(careerEnd, 10);
+      if (Number.isNaN(career.ended)) {
+        delete career.ended;
+      }
+    }
+
+    return career;
   }
 
   function scrapeMeasurements(): Measurements | null {
@@ -497,6 +531,7 @@ module.exports = async (ctx: MyContext): Promise<ActorOutput> => {
     ...getZodiac(),
     ...getGender(),
     ...getTattoos(),
+    ...getCareer(),
     ...getPiercings(),
   };
 
