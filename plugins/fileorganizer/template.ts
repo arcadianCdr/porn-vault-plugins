@@ -39,7 +39,7 @@ export function getTemplateMatcher(): RegExp {
 }
 
 /**
- * List of all fields allowed within a template and the functions to retreive their string value
+ * List of all fields allowed within a template and the functions to retrieve their string value
  *
  * @param ctx
  * @returns the resolver for each field
@@ -126,7 +126,9 @@ export function getTemplateFieldsResolvers(ctx: MySceneContext): ITemplateFieldR
  * @returns IFieldArgs corresponding to the args
  */
 export function getAndValidateFieldArgs(args: string | undefined): IFieldArgs {
-  if (!args) return { isValid: true, isMandatory: false };
+  if (!args) {
+    return { isValid: true, isMandatory: false };
+  }
 
   let isValid: boolean = false;
   let isMandatory: boolean = false;
@@ -179,7 +181,7 @@ export async function getTemplateFieldValue(
  * @param ctx
  * @param array
  * @param index
- * @param hasNameProperty indicates wether the array is an array of strings (false) or if the strings have to be taken from the arrat object's name property
+ * @param hasNameProperty indicates wether the array is an array of strings (false) or if the strings have to be taken from the array object's name property
  * @returns
  */
 function arrayToString(
@@ -188,13 +190,17 @@ function arrayToString(
   index: number | undefined,
   hasNameProperty: boolean
 ): string | undefined {
-  if (!array || !array.length) return;
+  if (!array || !array.length) {
+    return;
+  }
 
   const i: number = index || -1;
   const a: string[] = hasNameProperty ? array.map((a) => a.name) : array;
 
   // Returns the full array if no specific index is requested
-  if (i < 0) return a.join(ctx.args.multiValuesSeparator);
+  if (i < 0) {
+    return a.join(ctx.args.multiValuesSeparator);
+  }
 
   if (i >= a.length) {
     ctx.$logger.verbose(
@@ -222,6 +228,6 @@ function formatVideoDuration($moment, duration): string | undefined {
       .startOf("day")
       .seconds(duration)
       .format(duration < 3600 ? "mm∶ss" : "H∶mm∶ss");
-    // What looks like a colon above is actually the mathematical "ratio" chacacter that is allowed in filenames.
+    // What looks like a colon above is actually the mathematical "ratio" character that is allowed in filenames.
   }
 }

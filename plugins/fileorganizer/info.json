@@ -1,9 +1,9 @@
 {
   "name": "fileorganizer",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "authors": ["arcadianCdr"],
   "description": "Use your custom-defined templates to rename your scene files.",
-  "pluginEvents": ["sceneCreated", "sceneCustom"],
+  "events": ["sceneCreated", "sceneCustom"],
   "arguments": [
     {
       "name": "dry",
@@ -59,7 +59,7 @@
       "type": "object[]",
       "required": false,
       "default": [{ "original": ":", "replacement": "∶" }],
-      "description": "Used to substitite characters with a replacement alternative. See doc above for details. Note: the examples below looks like it is replacing a colon by a colon, but it is actually replacing the colon (illegal in filenames) by the similar looking 'mathematical ratio' character (allowed in filenams)"
+      "description": "Used to substitute characters with a replacement alternative. See doc above for details. Note: the examples below looks like it is replacing a colon by a colon, but it is actually replacing the colon (illegal in filenames) by the similar looking 'mathematical ratio' character (allowed in filenames)"
     }
   ]
 }

@@ -26,7 +26,7 @@ This group has
 
 For a scene with a video height of 2160 pixels, this block would output `" 2160p"` to the renamed file.
 
-Example of a complete rename template (sucession of blocks):
+Example of a complete rename template (succession of blocks):
 
 ```
 {<studio!>}{ - <releaseDate>}{ - <actors>}{ - <name!>}{ - <movies1>}{ (<videoHeight>p)}

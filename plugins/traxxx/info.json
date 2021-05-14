@@ -1,9 +1,9 @@
 {
   "name": "traxxx",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "authors": ["leadwolf"],
   "description": "Scrape data from traxxx",
-  "pluginEvents": ["studioCreated", "studioCustom"],
+  "events": ["studioCreated", "studioCustom"],
   "arguments": [
     {
       "name": "dry",

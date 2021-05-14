@@ -104,3 +104,41 @@ export interface CustomFieldsOutput {
 export type DeepPartial<T> = {
   [P in keyof T]?: DeepPartial<T[P]> | undefined;
 };
+
+export type PluginEvents =
+  | "actorCreated"
+  | "actorCustom"
+  | "sceneCreated"
+  | "sceneCustom"
+  | "movieCreated";
+
+export interface PluginArg {
+  name: string;
+  type: string;
+  required: boolean;
+  default?: any;
+  description?: string;
+}
+
+export interface IPluginInfo {
+  // Taken from plugin's info.json
+  events: PluginEvents[] | string[];
+  arguments: PluginArg[];
+  version: string;
+  authors: string[];
+  name: string;
+  description: string;
+}
+
+export type IPluginMetadata = {
+  // Used to validate usage
+  requiredVersion: string;
+  validateArguments: (args: unknown) => boolean;
+} & { info: IPluginInfo };
+export type PluginFunction<Input, Output> = (ctx: Input) => Promise<Output>;
+export type Plugin<Input, Output> = PluginFunction<Input, Output> & Partial<IPluginMetadata>;
+
+// available as utility function in plugin dev context
+export function applyMetadata(handler: Plugin<any, any>, info: IPluginInfo) {
+  handler.info = info;
+}

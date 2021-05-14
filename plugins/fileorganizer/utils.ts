@@ -32,7 +32,7 @@ export function toNormalizedSafeFilename(ctx: MySceneContext, unsafeName: string
  * Reserved filenames in Windows ("CON", "PRN", "AUX", "NUL", "COM1",
  * "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
  * "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", and
- * "LPT9") case-insesitively and with or without filename extensions.
+ * "LPT9") case-insensitively and with or without filename extensions.
  *
  * @param input Original filename
  * @param replacement Explicit character replacements
@@ -58,7 +58,7 @@ export function sanitize(input: string, replacement?: IReplacementCharacter[]): 
     });
   }
 
-  // All other replacements (including illegal chars that migh have been in the user's replacement config)
+  // All other replacements (including illegal chars that might be in the user's replacement config)
   sanitized = sanitized
     .replace(illegalRe, "")
     .replace(controlRe, "")
