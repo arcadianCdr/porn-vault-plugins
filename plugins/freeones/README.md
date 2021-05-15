@@ -21,6 +21,7 @@ Currently custom fields can only be named as follows (not case sensitive): Hair 
 | searchResultsSort    | String             | false    | Specify the search result sort order key to use. Advanced setting: use only if you know what you are doing. Possible values are 'relevance', 'rank.currentRank', 'followerCount', 'profileCompleted' or 'views'                              |
 | useImperial          | Boolean            | false    | Use imperial units for height and weight                                                                                                                                                                                                     |
 | useAvatarAsThumbnail | Boolean            | false    | Use the discovered Actor Avatar as the Actor Thumbnail image                                                                                                                                                                                 |
+| exactNameMatch       | Boolean            | false    | Returns data only if the actor's name on freeones is the same as the name being looked up                                                                                                                                                    |
 | piercingsType        | 'string' | 'array' | false    | How to return the piercings. Use 'array' if your custom field is a select or multi select                                                                                                                                                    |
 | tattoosType          | 'string' | 'array' | false    | How to return the tattoos. Use 'array' if your custom field is a select or multi select                                                                                                                                                      |
 
@@ -42,6 +43,7 @@ Currently custom fields can only be named as follows (not case sensitive): Hair 
           "searchResultsSort": "relevance",
           "useImperial": false,
           "useAvatarAsThumbnail": false,
+          "exactNameMatch": false,
           "piercingsType": "string",
           "tattoosType": "string"
         }
@@ -75,6 +77,7 @@ plugins:
         searchResultsSort: relevance
         useImperial: false
         useAvatarAsThumbnail: false
+        exactNameMatch: false
         piercingsType: string
         tattoosType: string
   events:

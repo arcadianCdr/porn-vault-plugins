@@ -7,15 +7,6 @@ function createCommonjsModule(fn) {
 	return fn(module, module.exports), module.exports;
 }
 
-var plugin = createCommonjsModule(function (module, exports) {
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.applyMetadata = void 0;
-function applyMetadata(handler, info) {
-    handler.info = info;
-}
-exports.applyMetadata = applyMetadata;
-});
-
 var require$$0$1 = {
 	"0": 65533,
 	"128": 8364,
@@ -47,11 +38,11 @@ var require$$0$1 = {
 	"159": 376
 };
 
-var __importDefault$4 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+var __importDefault$2 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 
-var decode_json_1 = __importDefault$4(require$$0$1);
+var decode_json_1 = __importDefault$2(require$$0$1);
 // Adapted from https://github.com/mathiasbynens/he/blob/master/src/he.js#L94-L119
 var fromCodePoint = 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -75,10 +66,10 @@ function decodeCodePoint(codePoint) {
     }
     return fromCodePoint(codePoint);
 }
-var _default$9 = decodeCodePoint;
+var _default$7 = decodeCodePoint;
 
 var decode_codepoint = /*#__PURE__*/Object.defineProperty({
-	default: _default$9
+	default: _default$7
 }, '__esModule', {value: true});
 
 var Aacute$1 = "Á";
@@ -4560,14 +4551,14 @@ var require$$0 = {
 	quot: quot
 };
 
-var __importDefault$3 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+var __importDefault$1 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 
-var decode_codepoint_1 = __importDefault$3(decode_codepoint);
-var entities_json_1 = __importDefault$3(require$$1$2);
-var legacy_json_1 = __importDefault$3(require$$1$1);
-var xml_json_1 = __importDefault$3(require$$0);
+var decode_codepoint_1 = __importDefault$1(decode_codepoint);
+var entities_json_1 = __importDefault$1(require$$1$2);
+var legacy_json_1 = __importDefault$1(require$$1$1);
+var xml_json_1 = __importDefault$1(require$$0);
 function whitespace(c) {
     return c === " " || c === "\n" || c === "\t" || c === "\f" || c === "\r";
 }
@@ -5463,10 +5454,10 @@ var Tokenizer$1 = /** @class */ (function () {
     };
     return Tokenizer;
 }());
-var _default$8 = Tokenizer$1;
+var _default$6 = Tokenizer$1;
 
 var Tokenizer_1 = /*#__PURE__*/Object.defineProperty({
-	default: _default$8
+	default: _default$6
 }, '__esModule', {value: true});
 
 var Parser_1 = createCommonjsModule(function (module, exports) {
@@ -6840,30 +6831,30 @@ var __assign = (commonjsGlobal && commonjsGlobal.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
-var __createBinding = (commonjsGlobal && commonjsGlobal.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+var __createBinding$1 = (commonjsGlobal && commonjsGlobal.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
 }));
-var __setModuleDefault = (commonjsGlobal && commonjsGlobal.__setModuleDefault) || (Object.create ? (function(o, v) {
+var __setModuleDefault$1 = (commonjsGlobal && commonjsGlobal.__setModuleDefault) || (Object.create ? (function(o, v) {
     Object.defineProperty(o, "default", { enumerable: true, value: v });
 }) : function(o, v) {
     o["default"] = v;
 });
-var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
+var __importStar$1 = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding$1(result, mod, k);
+    __setModuleDefault$1(result, mod);
     return result;
 };
 
 /*
  * Module dependencies
  */
-var ElementType = __importStar(lib$b);
+var ElementType = __importStar$1(lib$b);
 
 /**
  * Mixed-case SVG and MathML tags & attributes
@@ -6947,7 +6938,7 @@ function render$2(node, options) {
     }
     return output;
 }
-var _default$7 = render$2;
+var _default$5 = render$2;
 function renderNode(node, options) {
     switch (node.type) {
         case ElementType.Root:
@@ -7042,7 +7033,7 @@ function renderComment(elem) {
 }
 
 var lib$8 = /*#__PURE__*/Object.defineProperty({
-	default: _default$7
+	default: _default$5
 }, '__esModule', {value: true});
 
 var stringify$2 = createCommonjsModule(function (module, exports) {
@@ -12155,7 +12146,7 @@ class ErrorReportingParserMixin extends mixinBase {
 
 var parserMixin = ErrorReportingParserMixin;
 
-var _default$6 = createCommonjsModule(function (module, exports) {
+var _default$4 = createCommonjsModule(function (module, exports) {
 
 const { DOCUMENT_MODE } = html;
 
@@ -12833,7 +12824,7 @@ const DEFAULT_OPTIONS$1 = {
     scriptingEnabled: true,
     sourceCodeLocationInfo: false,
     onParseError: null,
-    treeAdapter: _default$6
+    treeAdapter: _default$4
 };
 
 //Misc constants
@@ -15771,7 +15762,7 @@ const NS = html.NAMESPACES;
 
 //Default serializer options
 const DEFAULT_OPTIONS = {
-    treeAdapter: _default$6
+    treeAdapter: _default$4
 };
 
 //Escaping regexes
@@ -16438,7 +16429,7 @@ exports.update = function (arr, parent) {
 });
 
 /** Cheerio default options. */
-var _default$5 = {
+var _default$3 = {
   xml: false,
   decodeEntities: true,
 };
@@ -16454,7 +16445,7 @@ var flatten = function (options) {
 };
 
 var options = {
-	default: _default$5,
+	default: _default$3,
 	flatten: flatten
 };
 
@@ -16968,7 +16959,7 @@ var charsToEscape = new Set(__spreadArray(__spreadArray([], Object.keys(actionTy
 function stringify$1(selector) {
     return selector.map(stringifySubselector).join(", ");
 }
-var _default$4 = stringify$1;
+var _default$2 = stringify$1;
 function stringifySubselector(token) {
     return token.map(stringifyToken).join("");
 }
@@ -17035,7 +17026,7 @@ function escapeName(str) {
 }
 
 var stringify_1 = /*#__PURE__*/Object.defineProperty({
-	default: _default$4
+	default: _default$2
 }, '__esModule', {value: true});
 
 var lib$3 = createCommonjsModule(function (module, exports) {
@@ -17124,7 +17115,7 @@ function sortByProcedure(arr) {
         }
     }
 }
-var _default$3 = sortByProcedure;
+var _default$1 = sortByProcedure;
 function getProcedure(token) {
     var proc = procedure.procedure[token.type];
     if (token.type === "attribute") {
@@ -17175,7 +17166,7 @@ function getProcedure(token) {
 }
 
 var sort = /*#__PURE__*/Object.defineProperty({
-	default: _default$3
+	default: _default$1
 }, '__esModule', {value: true});
 
 var attributes$1 = createCommonjsModule(function (module, exports) {
@@ -21817,9 +21808,9 @@ exports.load = function (content, options, isDocument) {
 };
 });
 
-var name$1 = "cheerio";
-var version$1 = "1.0.0-rc.6";
-var description$1 = "Tiny, fast, and elegant implementation of core jQuery designed specifically for the server";
+var name = "cheerio";
+var version = "1.0.0-rc.6";
+var description = "Tiny, fast, and elegant implementation of core jQuery designed specifically for the server";
 var author = "Matt Mueller <mattmuelle@gmail.com> (mat.io)";
 var license = "MIT";
 var keywords = [
@@ -21906,9 +21897,9 @@ var jest = {
 	]
 };
 var require$$1 = {
-	name: name$1,
-	version: version$1,
-	description: description$1,
+	name: name,
+	version: version,
+	description: description,
 	author: author,
 	license: license,
 	keywords: keywords,
@@ -22016,7 +22007,26 @@ exports.parseHTML = _static.parseHTML;
 exports.root = _static.root;
 });
 
-var __awaiter$2 = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisArg, _arguments, P, generator) {
+var __createBinding = (commonjsGlobal && commonjsGlobal.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (commonjsGlobal && commonjsGlobal.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter$1 = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -22025,22 +22035,38 @@ var __awaiter$2 = (commonjsGlobal && commonjsGlobal.__awaiter) || function (this
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault$2 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 
-const cheerio_1$1 = __importDefault$2(cheerio);
+const $cheerio = __importStar(cheerio);
 function lowercase(str) {
     return str.toLowerCase();
 }
-function default_1$1(ctx) {
-    return __awaiter$2(this, void 0, void 0, function* () {
-        const { args, $axios, $logger, $formatMessage, actorName, $createImage } = ctx;
-        const name = actorName
-            .replace(/#/g, "")
-            .replace(/\s{2,}/g, " ")
-            .trim();
-        $logger.info(`Scraping actor info for '${name}', dry mode: ${(args === null || args === void 0 ? void 0 : args.dry) || false}...`);
+function searchForMovie({ $axios }, name) {
+    return __awaiter$1(this, void 0, void 0, function* () {
+        const url = `https://www.adultempire.com/allsearch/search?q=${name}`;
+        const html = (yield $axios.get(url)).data;
+        const $ = $cheerio.load(html);
+        const firstResult = $(".boxcover").toArray()[0];
+        const href = $(firstResult).attr("href");
+        if (!href) {
+            return false;
+        }
+        return `https://adultempire.com${href}`;
+    });
+}
+function default_1(ctx) {
+    var _a, _b, _c, _d, _e, _f, _g;
+    return __awaiter$1(this, void 0, void 0, function* () {
+        const { args, $axios, data, $moment, sceneName, $formatMessage, $logger, $throw } = ctx;
+        if (!["sceneCreated", "sceneCustom"].includes(ctx.event)) {
+            $throw("Uh oh. You shouldn't use the plugin for this type of event");
+        }
+        const searchName = (_a = data.name) !== null && _a !== void 0 ? _a : sceneName;
+        const searchActors = (_b = data.actors) !== null && _b !== void 0 ? _b : (_c = (yield ctx.$getActors())) === null || _c === void 0 ? void 0 : _c.map((a) => a.name);
+        const searchMovie = (_d = data.movie) !== null && _d !== void 0 ? _d : (_f = (_e = (yield ctx.$getMovies())) === null || _e === void 0 ? void 0 : _e[0]) === null || _f === void 0 ? void 0 : _f.name;
+        if (!searchMovie && (!searchName || !searchActors.length)) {
+            $throw("Not enough data to perform the search. moviescene requires at least a 'movie', and either a 'name' (containing the scene number) or some 'actors' " +
+                "to identify which scene of the movie to use. Other plugins can help you scrape these data from the web or from your filenames (like fileparser).");
+        }
         const blacklist = (args.blacklist || []).map(lowercase);
         if (!args.blacklist)
             $logger.verbose("No blacklist defined, returning everything...");
@@ -22056,232 +22082,132 @@ function default_1$1(ctx) {
             }
             return blacklist.includes(lowercase(prop));
         }
-        const url = `https://www.adultempire.com/allsearch/search?q=${name}`;
-        const html = (yield $axios.get(url)).data;
-        const $ = cheerio_1$1.default.load(html);
-        const firstResult = $(`a.boxcover[label="Performer"]`).toArray()[0];
-        const href = $(firstResult).attr("href");
-        if (href) {
-            const actorUrl = `https://adultempire.com${href}`;
-            const html = (yield $axios.get(actorUrl)).data;
-            const $ = cheerio_1$1.default.load(html);
-            let avatar;
-            let avatarUrl;
-            if (!isBlacklisted("avatar")) {
-                const firstImageResult = $(`a.fancy`).toArray()[0];
-                avatarUrl = $(firstImageResult).attr("href");
-                if (avatarUrl) {
-                    avatar = yield $createImage(avatarUrl, `${actorName} (avatar)`);
-                }
-            }
-            let hero;
-            let heroUrl;
-            if (!isBlacklisted("hero")) {
-                const secondImageResult = $(`a.fancy`).toArray()[1];
-                heroUrl = $(secondImageResult).attr("href");
-                if (heroUrl) {
-                    hero = yield $createImage(heroUrl, `${actorName} (hero image)`);
-                }
-            }
-            let description;
-            if (!isBlacklisted("description")) {
-                const descEl = $(".text-md");
-                if (descEl) {
-                    description = descEl
-                        .children()
-                        .remove("div")
-                        .end()
-                        .text()
-                        .replace("Biography Text ©Adult DVD Empire", "")
-                        .trim();
-                }
-            }
-            let thumbnail;
-            const thirdImageResult = $(`.performer-image-container img`).toArray()[0];
-            const thumbnailUrl = $(thirdImageResult).attr("src");
-            if (thumbnailUrl) {
-                thumbnail = yield $createImage(thumbnailUrl, `${actorName} (thumbnail)`);
-            }
-            let aliases;
-            if (!isBlacklisted("aliases")) {
-                const aliasEl = $("#content .row .col-sm-5 .m-b-1");
-                if (aliasEl) {
-                    const text = aliasEl.text();
-                    aliases = text
-                        .replace("Alias: ", "")
-                        .split(",")
-                        .map((s) => s.trim());
-                }
-            }
-            let rating;
-            if (!isBlacklisted("rating")) {
-                const ratingResult = $(`.performer-info-control strong`).toArray()[0];
-                if (ratingResult) {
-                    const ratingValue = parseFloat($(ratingResult).text().slice(0, -2));
-                    if (typeof ratingValue === "number" && ratingValue >= 0 && ratingValue <= 5) {
-                        rating = Math.round(Math.pow(ratingValue, 4) / 62.5);
-                        $logger.debug(`Converted AdultEmpire rating ${ratingValue} to ${rating}`);
-                    }
-                }
-            }
-            const result = {
-                thumbnail,
-                avatar,
-                $ae_avatar: avatarUrl,
-                hero,
-                $ae_hero: heroUrl,
-                aliases,
-                rating,
-                description,
-            };
-            if (args === null || args === void 0 ? void 0 : args.dry) {
-                $logger.info(`Would have returned ${$formatMessage(result)}`);
-                return {};
-            }
-            else {
-                return result;
-            }
-        }
-        return {};
-    });
-}
-var _default$2 = default_1$1;
-
-var actor = /*#__PURE__*/Object.defineProperty({
-	default: _default$2
-}, '__esModule', {value: true});
-
-var __awaiter$1 = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importDefault$1 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-
-const cheerio_1 = __importDefault$1(cheerio);
-function searchForMovie({ $axios }, name) {
-    return __awaiter$1(this, void 0, void 0, function* () {
-        const url = `https://www.adultempire.com/allsearch/search?q=${name}`;
-        const html = (yield $axios.get(url)).data;
-        const $ = cheerio_1.default.load(html);
-        const firstResult = $(".boxcover").toArray()[0];
-        const href = $(firstResult).attr("href");
-        if (!href) {
-            return false;
-        }
-        return `https://adultempire.com${href}`;
-    });
-}
-function urlAvailable({ $axios }, url) {
-    return __awaiter$1(this, void 0, void 0, function* () {
-        const { status } = yield $axios.head(url, {
-            validateStatus: () => true,
-        });
-        return status < 400;
-    });
-}
-function default_1(ctx) {
-    return __awaiter$1(this, void 0, void 0, function* () {
-        const { args, $moment, $axios, $logger, $formatMessage, movieName, $createImage } = ctx;
-        const name = movieName
+        $logger.info(`Scraping adultempire based on scene name: '${sceneName}' and/or actors: '${searchActors.join(", ")}'`);
+        let url = false;
+        const movieName = searchMovie
             .replace(/[#&]/g, "")
             .replace(/\s{2,}/g, " ")
             .trim();
-        $logger.info(`Scraping movie covers for '${name}', dry mode: ${(args === null || args === void 0 ? void 0 : args.dry) || false}...`);
-        const url = movieName.startsWith("http") ? movieName : yield searchForMovie(ctx, name);
-        if (url) {
-            const movieUrl = url;
-            const html = (yield $axios.get(movieUrl)).data;
-            const $ = cheerio_1.default.load(html);
-            const desc = $(".m-b-0.text-dark.synopsis").text();
-            let release;
-            const movieName = $(`.title-rating-section .col-sm-6 h1`)
+        url = yield searchForMovie(ctx, movieName);
+        if (!url) {
+            $logger.warn("Unable to get results from adultempire. Returning without results.");
+            return {};
+        }
+        const html = (yield $axios.get(url)).data;
+        const $ = $cheerio.load(html);
+        function getMovie() {
+            if (isBlacklisted("movie"))
+                return {};
+            let scrapedMovie = $(`.title-rating-section .col-sm-6 h1`)
                 .text()
                 .replace(/[\t\n]+/g, " ")
                 .replace(/ {2,}/, " ")
                 .replace(/- On Sale!.*/i, "")
                 .trim();
+            if (args.normalizeMovieName && scrapedMovie) {
+                scrapedMovie = scrapedMovie.replace(/(.*)([#V]|Vol|Volume)\W*(\d+)/gi, "$1$3");
+                scrapedMovie = scrapedMovie.replace(/[ ]{2,}/gm, "");
+            }
+            $logger.debug(`Found matching movie on adultempire: '${scrapedMovie}'`);
+            return { movie: scrapedMovie };
+        }
+        function getName() {
+            if (isBlacklisted("name"))
+                return {};
+            let scrapedName = $(".col-sm-6 > .m-b-1").eq(sceneIndex).text().trim();
+            if (args.useMovieNameAsSceneName && /Scene \d+/.exec(scrapedName)) {
+                scrapedName = `${movieName} - ${scrapedName}`;
+            }
+            $logger.debug(`Found scene name: '${scrapedName}'`);
+            return { name: scrapedName };
+        }
+        function getActors() {
+            if (isBlacklisted("actors"))
+                return {};
+            const foundActors = [];
+            $(".col-sm-6.text-right.text-left-xs.m-b-1 > div")
+                .eq(sceneIndex)
+                .each(function (i, elm) {
+                $(elm)
+                    .find("a")
+                    .each(function (index, elem) {
+                    foundActors.push($(elem).text());
+                });
+            });
+            $logger.debug(`Found actors: '${foundActors.join(", ")}'`);
+            if (foundActors.length > 0) {
+                return { actors: foundActors };
+            }
+            return {};
+        }
+        function getStudio() {
+            if (isBlacklisted("studio"))
+                return {};
+            const foundStudio = $(`.title-rating-section .item-info > a`).eq(0).text().trim();
+            $logger.debug(`Found scene name: '${foundStudio}'`);
+            return { studio: foundStudio };
+        }
+        function getReleaseDate() {
+            if (isBlacklisted("releaseDate"))
+                return {};
+            let date;
             $(".col-sm-4.m-b-2 li").each(function (i, elm) {
                 const grabrvars = $(elm).text().split(":");
                 if (grabrvars[0].includes("Released")) {
-                    release = $moment(grabrvars[1].trim().replace(" ", "-"), "MMM-DD-YYYY").valueOf();
+                    date = $moment(grabrvars[1].trim().replace(" ", "-"), "MMM-DD-YYYY").valueOf();
                 }
             });
-            const studioName = $(`.title-rating-section .item-info > a`).eq(0).text().trim();
-            const frontCover = $("#front-cover img").toArray()[0];
-            const frontCoverSrc = $(frontCover).attr("src") || "";
-            let backCoverSrc = frontCoverSrc.replace("h.jpg", "bh.jpg");
-            if (!(yield urlAvailable(ctx, backCoverSrc))) {
-                backCoverSrc = null;
-            }
-            if ((args === null || args === void 0 ? void 0 : args.dry) === true) {
-                $logger.info(`Would have returned ${$formatMessage({
-                    name: movieName,
-                    movieUrl,
-                    frontCoverSrc,
-                    backCoverSrc,
-                    studioName,
-                    desc,
-                    release,
-                })}`);
-            }
-            else {
-                const frontCoverImg = yield $createImage(frontCoverSrc, `${movieName} (front cover)`);
-                let backCoverImg;
-                if (backCoverSrc) {
-                    backCoverImg = yield $createImage(backCoverSrc, `${movieName} (back cover)`);
-                }
-                return {
-                    name: movieName,
-                    frontCover: frontCoverImg,
-                    backCover: backCoverImg,
-                    description: desc,
-                    releaseDate: release,
-                    studio: studioName,
-                };
-            }
+            $logger.debug(`Found release date: '${date || ""}'`);
+            return { releaseDate: date };
         }
-        return {};
+        let sceneIndexMatchedFromName = -1;
+        const matchedSceneNumber = /\d{1,2}/.exec(searchName);
+        if (matchedSceneNumber) {
+            sceneIndexMatchedFromName = Number(matchedSceneNumber[0]) - 1;
+            $logger.debug(`Based on scene name matching, the scene index is: ${sceneIndexMatchedFromName}`);
+        }
+        let sceneIndexBestActorsMatch = -1;
+        if (searchActors && searchActors.length > 0) {
+            let foundActors;
+            let bestActorsMatchCount = 0;
+            let currentActorMatchesCount;
+            $(".col-sm-6.text-right.text-left-xs.m-b-1").each(function (i, elm) {
+                foundActors = [];
+                currentActorMatchesCount = 0;
+                $(elm)
+                    .find("a")
+                    .each(function (index, elem) {
+                    const actor = $(elem).text();
+                    foundActors.push(actor);
+                    if (searchActors.includes(actor))
+                        currentActorMatchesCount++;
+                });
+                if (currentActorMatchesCount > bestActorsMatchCount) {
+                    bestActorsMatchCount = currentActorMatchesCount;
+                    sceneIndexBestActorsMatch = i;
+                }
+            });
+            $logger.debug(`Based on best actors matching, the scene index is: ${sceneIndexBestActorsMatch}`);
+        }
+        const sceneIndex = sceneIndexMatchedFromName > -1 ? sceneIndexMatchedFromName : sceneIndexBestActorsMatch;
+        if (sceneIndex < 0) {
+            $logger.warn(`Unable to match a scene within the movie. Returning with empty results.`);
+            return {};
+        }
+        const result = Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, getMovie()), getName()), getActors()), getStudio()), getReleaseDate());
+        $logger.info(`Found scene name: '${result.name}', starring: '${(_g = result.actors) === null || _g === void 0 ? void 0 : _g.join(", ")}'`);
+        if (args.dry === true) {
+            $logger.info(`dry mode. Would have returned: ${$formatMessage(result)}`);
+            return {};
+        }
+        return result;
     });
 }
-var _default$1 = default_1;
+var _default = default_1;
 
-var movie = /*#__PURE__*/Object.defineProperty({
-	default: _default$1
+var scene = /*#__PURE__*/Object.defineProperty({
+	default: _default
 }, '__esModule', {value: true});
-
-var name = "adultempire";
-var version = "0.5.0";
-var authors = [
-	"boi123212321"
-];
-var description = "Scrape data from adultempire";
-var events = [
-	"movieCreated",
-	"actorCreated"
-];
-var require$$2 = {
-	name: name,
-	version: version,
-	authors: authors,
-	description: description,
-	events: events,
-	"arguments": [
-	{
-		name: "dry",
-		type: "Boolean",
-		required: false,
-		"default": false,
-		description: "Whether to commit data changes"
-	}
-]
-};
 
 var __awaiter = (commonjsGlobal && commonjsGlobal.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -22296,23 +22222,12 @@ var __importDefault = (commonjsGlobal && commonjsGlobal.__importDefault) || func
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 
-
-const actor_1 = __importDefault(actor);
-const movie_1 = __importDefault(movie);
-const info_json_1 = __importDefault(require$$2);
-const handler = (ctx) => __awaiter(void 0, void 0, void 0, function* () {
-    if (ctx.movieName) {
-        return movie_1.default(ctx);
-    }
-    if (ctx.actorName) {
-        return actor_1.default(ctx);
+const scene_1 = __importDefault(scene);
+var main = (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    if (ctx.scenePath) {
+        return scene_1.default(ctx);
     }
     ctx.$throw("Uh oh. You shouldn't use the plugin for this type of event");
 });
-handler.requiredVersion = ">=0.27.0";
-plugin.applyMetadata(handler, info_json_1.default);
-var main = handler;
-var _default = handler;
-main.default = _default;
 
-module.exports = _default;
+module.exports = main;

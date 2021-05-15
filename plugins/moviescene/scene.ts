@@ -1,5 +1,6 @@
 import { Context } from "../../types/plugin";
 import { SceneContext, SceneOutput } from "../../types/scene";
+import * as $cheerio from "cheerio";
 
 interface MySceneContext extends SceneContext {
   args: {
@@ -16,7 +17,7 @@ function lowercase(str: string): string {
 }
 
 async function searchForMovie(
-  { $cheerio, $axios }: { $cheerio: Context["$cheerio"]; $axios: Context["$axios"] },
+  { $axios }: { $axios: Context["$axios"] },
   name: string
 ): Promise<string | false> {
   const url = `https://www.adultempire.com/allsearch/search?q=${name}`;
@@ -33,7 +34,7 @@ async function searchForMovie(
 }
 
 export default async function (ctx: MySceneContext): Promise<SceneOutput> {
-  const { args, $axios, $cheerio, data, $moment, sceneName, $formatMessage, $logger, $throw } = ctx;
+  const { args, $axios, data, $moment, sceneName, $formatMessage, $logger, $throw } = ctx;
 
   if (!["sceneCreated", "sceneCustom"].includes(ctx.event)) {
     $throw("Uh oh. You shouldn't use the plugin for this type of event");

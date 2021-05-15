@@ -29,8 +29,9 @@ export default async function (ctx: MyContext): Promise<ActorOutput> {
   if (blacklist.length) $logger.verbose(`Blacklist defined, will ignore: ${blacklist.join(", ")}`);
 
   const whitelist = (args.whitelist || []).map(lowercase);
-  if (whitelist.length)
+  if (whitelist.length) {
     $logger.verbose(`Whitelist defined, will only return: ${whitelist.join(", ")}...`);
+  }
 
   function isBlacklisted(prop): boolean {
     if (whitelist.length) {
@@ -61,7 +62,7 @@ export default async function (ctx: MyContext): Promise<ActorOutput> {
       if (avatarUrl) {
         avatar = await $createImage(avatarUrl, `${actorName} (avatar)`);
       }
-    } 
+    }
 
     let hero;
     let heroUrl;
@@ -80,7 +81,13 @@ export default async function (ctx: MyContext): Promise<ActorOutput> {
     if (!isBlacklisted("description")) {
       const descEl = $(".text-md");
       if (descEl) {
-        description = descEl.children().remove("div").end().text().replace("Biography Text ©Adult DVD Empire","").trim();
+        description = descEl
+          .children()
+          .remove("div")
+          .end()
+          .text()
+          .replace("Biography Text ©Adult DVD Empire", "")
+          .trim();
       }
     }
 
@@ -94,7 +101,7 @@ export default async function (ctx: MyContext): Promise<ActorOutput> {
     }
 
     let aliases;
-    
+
     if (!isBlacklisted("aliases")) {
       const aliasEl = $("#content .row .col-sm-5 .m-b-1");
 
@@ -113,11 +120,11 @@ export default async function (ctx: MyContext): Promise<ActorOutput> {
       const ratingResult = $(`.performer-info-control strong`).toArray()[0];
 
       if (ratingResult) {
-        const ratingValue = parseFloat($(ratingResult).text().slice(0,-2));
+        const ratingValue = parseFloat($(ratingResult).text().slice(0, -2));
         if (typeof ratingValue === "number" && ratingValue >= 0 && ratingValue <= 5) {
-          //Converts decimal 0-5 AdultEmpire rating to integer 0-10 scale, also correcting distribution biais
-          //(AdultEmpire artificially favors the higher end of the scale).
-          rating = Math.round((ratingValue ** 4) / 62.5);
+          // Converts decimal 0-5 AdultEmpire rating to integer 0-10 scale, also correcting distribution biais
+          // (AdultEmpire artificially favors the higher end of the scale).
+          rating = Math.round(ratingValue ** 4 / 62.5);
           $logger.debug(`Converted AdultEmpire rating ${ratingValue} to ${rating}`);
         }
       }

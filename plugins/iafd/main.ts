@@ -1,5 +1,6 @@
 import { Context } from "../../types/plugin";
 import { SceneContext, SceneOutput } from "../../types/scene";
+import * as $cheerio from "cheerio";
 
 interface MySceneContext extends SceneContext {
   args: {
@@ -33,7 +34,7 @@ function normalize(name: string): string {
  * @returns the found movie url or false
  */
 async function searchForMovie(ctx: Context, name: string): Promise<string | false> {
-  const { $axios, $cheerio } = ctx;
+  const { $axios } = ctx;
   const url = `https://www.iafd.com/results.asp?searchtype=comprehensive&searchstring=${name}`;
   const html = (await $axios.get<string>(url)).data;
   const $ = $cheerio.load(html);
@@ -153,7 +154,7 @@ function matchSceneFromActors(searchActors: string[], scenesActors: string[]): n
 }
 
 module.exports = async (ctx: MySceneContext): Promise<SceneOutput> => {
-  const { args, data, $axios, $cheerio, $formatMessage, $moment, sceneName, $logger, $throw } = ctx;
+  const { args, data, $axios, $formatMessage, $moment, sceneName, $logger, $throw } = ctx;
 
   if (!["sceneCreated", "sceneCustom"].includes(ctx.event)) {
     $throw("Uh oh. You shouldn't use the plugin for this type of event");

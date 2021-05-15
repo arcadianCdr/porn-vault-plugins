@@ -164,9 +164,14 @@ const handler: Plugin<MyContext, ActorOutput> = async (ctx) => {
   // Enforces exact match (or fails)
   let name: string | undefined;
   if (args.exactNameMatch) {
-    name = $(".h1.d-flex.align-items-center.mb-1.mb-md-0.font-weight-bold").text().trim().replace(" Bio","");
-    if (name.localeCompare(actorName, undefined, {sensitivity: "base"}) !== 0) {
-      $logger.warn(`Stopped scraping as actor name is not an exact match: found: '${name}', expected: '${actorName}'`)
+    name = $(".h1.d-flex.align-items-center.mb-1.mb-md-0.font-weight-bold")
+      .text()
+      .trim()
+      .replace(" Bio", "");
+    if (name.localeCompare(actorName, undefined, { sensitivity: "base" }) !== 0) {
+      $logger.warn(
+        `Stopped scraping as actor name is not an exact match: found: '${name}', expected: '${actorName}'`
+      );
       return {};
     }
   }
