@@ -141,23 +141,23 @@ const handler: Plugin<MyContext, SceneOutput> = async (ctx) => {
       timestamp: searchTimestamp,
       extra,
     });
-    const searchResult2 = await doASearch({
+    const searchResultNoActors = await doASearch({
       title: searchTitle,
       studio: searchStudio,
       timestamp: searchTimestamp,
       extra,
     });
-    const searchResult3 = await doASearch({
+    const searchResultNoTitle = await doASearch({
       actors: searchActors,
       studio: searchStudio,
       timestamp: searchTimestamp,
       extra,
     });
-    if (!searchResult && searchResult2) {
-      searchResult = searchResult2;
+    if (!searchResult && searchResultNoActors) {
+      searchResult = searchResultNoActors;
     }
-    if (!searchResult && searchResult3) {
-      searchResult = searchResult3;
+    if (!searchResult && searchResultNoTitle) {
+      searchResult = searchResultNoTitle;
     }
     if (searchResult) {
       if (!searchResult.movie && userMovie) {
