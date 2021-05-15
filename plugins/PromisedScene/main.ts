@@ -99,13 +99,31 @@ module.exports = async (ctx: MyContext): Promise<SceneOutput> => {
 
   const gotResultOrExit = false;
   do {
-    const searchResult = await doASearch({
+    let searchResult = await doASearch({
       title: searchTitle,
       actors: searchActors,
       studio: searchStudio,
       timestamp: searchTimestamp,
       extra,
     });
+    const searchResultNoActors = await doASearch({
+      title: searchTitle,
+      studio: searchStudio,
+      timestamp: searchTimestamp,
+      extra,
+    });
+    const searchResultNoTitle = await doASearch({
+      actors: searchActors,
+      studio: searchStudio,
+      timestamp: searchTimestamp,
+      extra,
+    });
+    if (!searchResult && searchResultNoActors) {
+      searchResult = searchResultNoActors;
+    }
+    if (!searchResult && searchResultNoTitle) {
+      searchResult = searchResultNoTitle;
+    }
     if (searchResult) {
       if (!searchResult.movie && userMovie) {
         searchResult.movie = userMovie;
