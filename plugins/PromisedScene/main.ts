@@ -141,23 +141,23 @@ const handler: Plugin<MyContext, SceneOutput> = async (ctx) => {
       timestamp: searchTimestamp,
       extra,
     });
-    const searchResultNoActors = await doASearch({
-      title: searchTitle,
-      studio: searchStudio,
-      timestamp: searchTimestamp,
-      extra,
-    });
-    const searchResultNoTitle = await doASearch({
-      actors: searchActors,
-      studio: searchStudio,
-      timestamp: searchTimestamp,
-      extra,
-    });
-    if (!searchResult && searchResultNoActors) {
-      searchResult = searchResultNoActors;
+    if (!searchResult) {
+      // Search without the actors (that are sometimes missing on TPDB)
+      searchResult = await doASearch({
+        title: searchTitle,
+        studio: searchStudio,
+        timestamp: searchTimestamp,
+        extra,
+      });
     }
-    if (!searchResult && searchResultNoTitle) {
-      searchResult = searchResultNoTitle;
+    if (!searchResult) {
+      // Search without the title (that sometimes don't match on TPDB)
+      searchResult = await doASearch({
+        actors: searchActors,
+        studio: searchStudio,
+        timestamp: searchTimestamp,
+        extra,
+      });
     }
     if (searchResult) {
       if (!searchResult.movie && userMovie) {
