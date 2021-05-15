@@ -283,7 +283,7 @@ const matchSceneResultToPipedData = (ctx, sceneList) => {
 };
 exports.matchSceneResultToPipedData = matchSceneResultToPipedData;
 const normalizeSceneResultData = (sceneData) => {
-    var _a;
+    var _a, _b;
     const result = {};
     if (sceneData.title) {
         result.name = sceneData.title;
@@ -300,7 +300,7 @@ const normalizeSceneResultData = (sceneData) => {
     if (sceneData.background.large && !sceneData.background.large.includes("default")) {
         result.thumbnail = sceneData.background.large;
     }
-    if (sceneData.performers) {
+    if ((_b = sceneData.performers) === null || _b === void 0 ? void 0 : _b.length) {
         result.actors = sceneData.performers.map((p) => p.name);
     }
     if (sceneData.site.name) {
@@ -709,13 +709,29 @@ const handler = (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     userMovie !== null && userMovie !== void 0 ? userMovie : (userMovie = (_k = (_j = (yield ctx.$getMovies())) === null || _j === void 0 ? void 0 : _j[0]) === null || _k === void 0 ? void 0 : _k.name);
     const gotResultOrExit = false;
     do {
-        const searchResult = yield doASearch({
+        let searchResult = yield doASearch({
             title: searchTitle,
             actors: searchActors,
             studio: searchStudio,
             timestamp: searchTimestamp,
             extra,
         });
+        if (!searchResult) {
+            searchResult = yield doASearch({
+                title: searchTitle,
+                studio: searchStudio,
+                timestamp: searchTimestamp,
+                extra,
+            });
+        }
+        if (!searchResult) {
+            searchResult = yield doASearch({
+                actors: searchActors,
+                studio: searchStudio,
+                timestamp: searchTimestamp,
+                extra,
+            });
+        }
         if (searchResult) {
             if (!searchResult.movie && userMovie) {
                 searchResult.movie = userMovie;
