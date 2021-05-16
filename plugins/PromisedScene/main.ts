@@ -113,7 +113,9 @@ const handler: Plugin<MyContext, SceneOutput> = async (ctx) => {
         searchTitle: searchTitle,
         searchActors: searchActors,
         searchStudio: searchStudio,
-        searchTimestamp: ctx.$moment(searchTimestamp).format("YYYY-MM-DD"),
+        searchTimestamp: searchTimestamp
+          ? ctx.$moment(searchTimestamp).format("YYYY-MM-DD")
+          : undefined,
         userMovie: userMovie,
       })}`
     );
