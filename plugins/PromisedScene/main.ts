@@ -13,6 +13,7 @@ import {
   matchSceneResultToPipedData,
   matchSceneResultToSearch,
   normalizeSceneResultData,
+  stripStr,
   timestampToString,
 } from "./util";
 
@@ -146,7 +147,7 @@ const handler: Plugin<MyContext, SceneOutput> = async (ctx) => {
     if (!searchResult) {
       // Search without the actors (that are sometimes missing on TPDB)
       searchResult = await doASearch({
-        title: searchTitle,
+        title: stripStr(searchTitle || ""),
         studio: searchStudio,
         timestamp: searchTimestamp,
         extra,
