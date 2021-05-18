@@ -87,7 +87,7 @@ export function stripStr(str: string, keepDate: boolean = false): string {
     str = str.toLowerCase().replace(/\b0+/g, "");
   }
 
-  str = str.replace(/[^a-zA-Z0-9'/\\,(){}]/g, " ");
+  str = str.replace(/[^a-zA-Z0-9]/g, " ");
 
   str = str.replace(/  +/g, " ");
   return str;
