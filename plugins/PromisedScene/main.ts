@@ -10,6 +10,7 @@ import {
   manualTouchChoices,
   matchSceneResultToSearch,
   normalizeSceneResultData,
+  stripStr,
   timestampToString,
 } from "./util";
 
@@ -109,7 +110,7 @@ module.exports = async (ctx: MyContext): Promise<SceneOutput> => {
     if (!searchResult) {
       // Search without the actors (that are sometimes missing on TPDB)
       searchResult = await doASearch({
-        title: searchTitle,
+        title: stripStr(searchTitle || ""),
         studio: searchStudio,
         timestamp: searchTimestamp,
         extra,
