@@ -152,7 +152,7 @@ function stripStr(str, keepDate = false) {
     if (!keepDate) {
         str = str.toLowerCase().replace(/\b0+/g, "");
     }
-    str = str.replace(/[^a-zA-Z0-9'/\\,(){}]/g, " ");
+    str = str.replace(/[^a-zA-Z0-9]/g, " ");
     str = str.replace(/  +/g, " ");
     return str;
 }
@@ -692,7 +692,9 @@ const handler = (ctx) => __awaiter(void 0, void 0, void 0, function* () {
             searchTitle: searchTitle,
             searchActors: searchActors,
             searchStudio: searchStudio,
-            searchTimestamp: ctx.$moment(searchTimestamp).format("YYYY-MM-DD"),
+            searchTimestamp: searchTimestamp
+                ? ctx.$moment(searchTimestamp).format("YYYY-MM-DD")
+                : undefined,
             userMovie: userMovie,
         })}`);
     }
@@ -718,7 +720,7 @@ const handler = (ctx) => __awaiter(void 0, void 0, void 0, function* () {
         });
         if (!searchResult) {
             searchResult = yield doASearch({
-                title: searchTitle,
+                title: util.stripStr(searchTitle || ""),
                 studio: searchStudio,
                 timestamp: searchTimestamp,
                 extra,
