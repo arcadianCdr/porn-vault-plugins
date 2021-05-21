@@ -5,6 +5,7 @@ import * as $cheerio from "cheerio";
 
 import info from "./info.json";
 
+import cloudscraper from "cloudscraper";
 interface MySceneContext extends SceneContext {
   args: {
     dry?: boolean;
@@ -37,9 +38,15 @@ function normalize(name: string): string {
  * @returns the found movie url or false
  */
 async function searchForMovie(ctx: Context, name: string): Promise<string | false> {
-  const { $axios } = ctx;
+  // const { $axios } = ctx;
   const url = `https://www.iafd.com/results.asp?searchtype=comprehensive&searchstring=${name}`;
-  const html = (await $axios.get<string>(url)).data;
+  const options = {
+    method: "GET",
+    url: url,
+  };
+  const html = await cloudscraper(options);
+  // .then(function (html) {
+  // const html = (await $axios.get<string>(url)).data;
   const $ = $cheerio.load(html);
 
   const firstResult = $(".pop-execute").toArray()[0];
@@ -49,6 +56,8 @@ async function searchForMovie(ctx: Context, name: string): Promise<string | fals
     return false;
   }
   return `https://www.iafd.com${href}`;
+  // });
+  // return false;
 }
 
 /**
@@ -157,7 +166,7 @@ function matchSceneFromActors(searchActors: string[], scenesActors: string[]): n
 }
 
 const handler: Plugin<MySceneContext, SceneOutput> = async (ctx) => {
-  const { args, data, $axios, $formatMessage, $moment, sceneName, $logger, $throw } = ctx;
+  const { args, data, $formatMessage, $moment, sceneName, $logger, $throw } = ctx;
 
   if (!["sceneCreated", "sceneCustom"].includes(ctx.event)) {
     $throw("Uh oh. You shouldn't use the plugin for this type of event");
@@ -320,7 +329,12 @@ const handler: Plugin<MySceneContext, SceneOutput> = async (ctx) => {
     $logger.warn("Search aborted: unable to fins any results from iafd.");
     return {};
   }
-  const html = (await $axios.get<string>(url)).data;
+  const options = {
+    method: "GET",
+    url: url,
+  };
+  const html = await cloudscraper(options);
+  // const html = (await $axios.get<string>(url)).data;
   const $ = $cheerio.load(html);
 
   const scenesDiv = $("#sceneinfo.panel.panel-default");
