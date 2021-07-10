@@ -1,10 +1,17 @@
-## PromisedScene 0.4.1
+## PromisedScene 0.4.2
 
 by Ch00nassid a.k.a: DGs.Ch00, leadwolf
 
-[Download here](https://raw.githubusercontent.com/porn-vault/plugins/master/dist/PromisedScene.js)
+TPDB parser. Manual input possible: manual scene data entry, TPDB search result confirmation
 
-Ask questions and make sure scene parsing is correct
+### Download links
+Each download link is for the latest version of the plugin, for the indicated porn-vault server version.  
+Make sure you are reading the documentation of the plugin, for the correct porn-vault server version.  
+| Server version                                                                                                 | Plugin documentation                                                                                          |
+| -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| [Download link for: stable](https://raw.githubusercontent.com/porn-vault/plugins/master/dist/PromisedScene.js) | [documentation](https://github.com/porn-vault/porn-vault-plugins/blob/master/plugins/PromisedScene/README.md) |
+| [Download link for: 0.27](https://raw.githubusercontent.com/porn-vault/plugins/0.27/dist/PromisedScene.js)     | [documentation](https://github.com/porn-vault/porn-vault-plugins/blob/0.27/plugins/PromisedScene/README.md)   |
+
 
 ### Documentation
 
@@ -14,13 +21,33 @@ The plugin will search TPDB with one of scene's actors, the studio (these two mu
 With the results from TPDB, it then tries to match their titles to the title of the scene. If a match is found, it will be returned.  
 If no match is found, and `manualTouch` is enabled, you will be able to interactively search or enter the scene's details, until you confirm the result or quit the process.
 
-🚨 As of 15/04/2021, an API key is required. See `args.apiKey`
-
 ### Tips
 
 - When running without `manualTouch`, but you still want to search TPDB with a specific string, you can enable `useTitleInSearch`, change the scene's name and then run the plugin.
 
-- If TPDB only returns 1 result and  the plugin does not match the titles but you are sure they are the same , you can enable `alwaysUseSingleResult` to override the matching process.
+- If TPDB only returns 1 result and the plugin does not match the titles but you are sure they are the same , you can enable `alwaysUseSingleResult` to override the matching process.
+
+- Make sure to use set your TPDB api key in the args.
+
+### Changelog
+
+- **0.4.2 - server 0.27**
+- - Fix: labels were not being returned
+
+<details>
+  <summary>Show old versions</summary>
+  
+- **0.4.1 - server 0.27**
+- - Added API key support for 0.4.0 series (see 0.3.2).
+
+- **0.4.0 - server 0.27**
+- - Added support for porn-vault 0.27
+
+- **0.3.2 - server 0.26**
+- - As of 15/04/2021, an API key is required. See `args.apiKey`
+
+</details>
+
 
 ### Arguments
 

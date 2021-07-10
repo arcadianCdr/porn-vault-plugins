@@ -2,9 +2,16 @@
 
 by leadwolf
 
-[Download here](https://raw.githubusercontent.com/porn-vault/plugins/master/dist/traxxx.js)
-
 Scrape data from traxxx
+
+### Download links
+Each download link is for the latest version of the plugin, for the indicated porn-vault server version.  
+Make sure you are reading the documentation of the plugin, for the correct porn-vault server version.  
+| Server version                                                                                          | Plugin documentation                                                                                   |
+| ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| [Download link for: stable](https://raw.githubusercontent.com/porn-vault/plugins/master/dist/traxxx.js) | [documentation](https://github.com/porn-vault/porn-vault-plugins/blob/master/plugins/traxxx/README.md) |
+| [Download link for: 0.27](https://raw.githubusercontent.com/porn-vault/plugins/0.27/dist/traxxx.js)     | [documentation](https://github.com/porn-vault/porn-vault-plugins/blob/0.27/plugins/traxxx/README.md)   |
+
 
 ### Documentation
 

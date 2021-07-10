@@ -52,24 +52,22 @@ export default async function (ctx: MyContext): Promise<ActorOutput> {
     const html = (await $axios.get<string>(actorUrl)).data;
     const $ = $cheerio.load(html);
 
-    let avatar: string | undefined;
-    let avatarUrl;
+    let thumbnail: string | undefined;
 
-    if (!isBlacklisted("avatar")) {
-      const firstImageResult = $(`a.fancy`).toArray()[0];
-      avatarUrl = $(firstImageResult).attr("href");
+    const images = $(`a.fancy`).toArray();
 
-      if (avatarUrl) {
-        avatar = await $createImage(avatarUrl, `${actorName} (avatar)`);
-      }
+    const firstImageResult = images[0];
+    const thumbnailUrl = $(firstImageResult).attr("href");
+
+    if (thumbnailUrl) {
+      thumbnail = await $createImage(thumbnailUrl, `${actorName} (thumbnail)`);
     }
 
     let hero;
     let heroUrl;
 
-    if (!isBlacklisted("hero")) {
-      const secondImageResult = $(`a.fancy`).toArray()[1];
-      heroUrl = $(secondImageResult).attr("href");
+    const secondImageResult = images[1];
+    const heroUrl = $(secondImageResult).attr("href");
 
       if (heroUrl) {
         hero = await $createImage(heroUrl, `${actorName} (hero image)`);
@@ -132,12 +130,10 @@ export default async function (ctx: MyContext): Promise<ActorOutput> {
 
     const result = {
       thumbnail,
-      avatar,
-      $ae_avatar: avatarUrl,
+      $ae_thumbnail: thumbnailUrl,
       hero,
       $ae_hero: heroUrl,
       aliases,
-      rating,
       description,
     };
 

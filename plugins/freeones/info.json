@@ -1,6 +1,6 @@
 {
   "name": "freeones",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "authors": ["boi123212321", "john4valor", "pizzajohnny", "leadwolf"],
   "description": "Scrape actress data from freeones.com",
   "events": ["actorCreated", "actorCustom"],

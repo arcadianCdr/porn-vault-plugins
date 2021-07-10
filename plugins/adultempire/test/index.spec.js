@@ -24,8 +24,8 @@ describe("adultempire", () => {
         actorName: "Sofia Cucci",
         args: {},
       });
-      expect(result.avatar).to.be.a("string");
-      expect(result.$ae_avatar).to.equal("https://imgs1cdn.adultempire.com/actors/675975h.jpg");
+      expect(result.thumbnail).to.be.a("string");
+      expect(result.$ae_thumbnail).to.equal("https://imgs1cdn.adultempire.com/actors/675975h.jpg");
       expect(result.hero).to.be.a("string");
       expect(result.$ae_hero).to.equal("https://imgs1cdn.adultempire.com/actors/675975hero.jpg");
       expect(result.aliases).to.deep.equal(["Maricella", "FTV Maricella"]);

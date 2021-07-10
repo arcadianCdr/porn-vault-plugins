@@ -8,7 +8,7 @@ type MyContext = Context & { sceneName?: string };
 
 function extractShootId(originalTitle: string): string | null {
   const sceneIdMatch = originalTitle.match(
-    /(AB|AF|GP|SZ|IV|GIO|RS|TW|MA|FM|SAL|NR|AA|GL|BZ|FS|KS|OTS|NF|NT|AX|RV|CM|BTG|MS|YE|VK|SAA|SF|ALS|QE|SA|BRB|SHN|NRX|MSV|PF)\d+/i
+    /(AB|AF|GP|SZ|IV|GIO|RS|TW|MA|FM|SAL|NR|AA|GL|BZ|FS|KS|OTS|NF|NT|AX|RV|CM|BTG|MS|YE|VK|SAA|SF|ALS|QE|SA|BRB|SHN|NRX|MSV|PF|BIW)\d+/i
   ); // detect studio prefixes
   const shootId = sceneIdMatch ? sceneIdMatch[0] : null;
   return shootId;
