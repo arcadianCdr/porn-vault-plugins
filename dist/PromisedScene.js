@@ -509,10 +509,11 @@ exports.parseSceneTimestamp = parseSceneTimestamp;
 });
 
 var name = "PromisedScene";
-var version = "0.4.1";
+var version = "0.4.3";
 var authors = [
 	"Ch00nassid a.k.a: DGs.Ch00",
-	"leadwolf"
+	"leadwolf",
+	"arcadianCdr"
 ];
 var description = "Ask questions and make sure scene parsing is correct";
 var events = [

@@ -14,19 +14,27 @@ If no match is found, and `manualTouch` is enabled, you will be able to interact
 
 ### Changelog
 
-- **0.4.2 - server 0.27**
-- - Fix: labels were not being returned
+#### 0.4.3 - server 0.27
+
+- Fix: would remove actors when actors were piped, but tpdb returned no actors
 
 <details>
   <summary>Show old versions</summary>
-  
-- **0.4.1 - server 0.27**
-- - Added API key support for 0.4.0 series (see 0.3.2).
 
-- **0.4.0 - server 0.27**
-- - Added support for porn-vault 0.27
+#### 0.4.2 - server 0.27
 
-- **0.3.2 - server 0.26**
-- - As of 15/04/2021, an API key is required. See `args.apiKey`
+- Fix: labels were not being returned
+
+#### **0.4.1 - server 0.27**
+
+- Added API key support for 0.4.0 series (see 0.3.2).
+
+#### **0.4.0 - server 0.27**
+
+- Added support for porn-vault 0.27
+
+#### **0.3.2 - server 0.26**
+
+- As of 15/04/2021, an API key is required. See `args.apiKey`
 
 </details>
