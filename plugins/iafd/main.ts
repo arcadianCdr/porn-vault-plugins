@@ -1,4 +1,4 @@
-import { applyMetadata, Plugin, Context } from "../../types/plugin";
+import { applyMetadata, Plugin } from "../../types/plugin";
 import { SceneContext, SceneOutput } from "../../types/scene";
 
 import * as $cheerio from "cheerio";
@@ -6,6 +6,7 @@ import * as $cheerio from "cheerio";
 import info from "./info.json";
 
 import cloudscraper from "cloudscraper";
+import natural from "natural";
 interface MySceneContext extends SceneContext {
   args: {
     dry?: boolean;
@@ -37,8 +38,8 @@ function normalize(name: string): string {
  *
  * @returns the found movie url or false
  */
-async function searchForMovie(ctx: Context, name: string): Promise<string | false> {
-  // const { $axios } = ctx;
+async function searchForMovie(ctx: MySceneContext, name: string): Promise<string | false> {
+  const { $logger } = ctx;
   const url = `https://www.iafd.com/results.asp?searchtype=comprehensive&searchstring=${name}`;
   const options = {
     method: "GET",
@@ -49,120 +50,42 @@ async function searchForMovie(ctx: Context, name: string): Promise<string | fals
   // const html = (await $axios.get<string>(url)).data;
   const $ = $cheerio.load(html);
 
-  const firstResult = $(".pop-execute").toArray()[0];
-  const href = $(firstResult).attr("href");
+  // Looks for the first result that matches the right studio
+  let href: string | undefined;
+  let iafdName: string | undefined;
+  const studio: string = ctx.data.studio || (await ctx.$getStudio())?.name;
+  if (studio) {
+    const results = $(".pop-execute").toArray();
+    results.forEach(function (elem) {
+      const elemStudio = $(elem).parent().next().next().text();
+      if (elemStudio && !href && elemStudio.toLocaleLowerCase() === studio.toLocaleLowerCase()) {
+        iafdName = $(elem).text().trim();
+        href = $(elem).attr("href");
+      }
+    });
+  }
+
+  // No match on studio => take the first search result
+  if (!href) {
+    const firstResult = $(".pop-execute").toArray()[0];
+    iafdName = $(firstResult).text().trim();
+    href = $(firstResult).attr("href");
+  }
+
+  // if (
+  //   iafdName &&
+  //   name &&
+  //   normalize(iafdName).toLocaleLowerCase() !== normalize(name).toLocaleLowerCase()
+  // ) {
+  //   $logger.warn(`Cancelling search: found name '${iafdName}' does not match searched '${name}'`);
+  //   return false;
+  // }
+  $logger.info(`iafd: found name '${iafdName}', based on searched '${name}'`);
 
   if (!href) {
     return false;
   }
   return `https://www.iafd.com${href}`;
-  // });
-  // return false;
-}
-
-/**
- * Tries to match the most relevant scene according to the plugin's initial or piped data
- * (when IAFD returned a set of scenes like for movies).
- *
- * The matching is based on (either):
- *  - the presence of an index in the scene's name (like "Scene 1", "S01",...)
- *  - a match of one or more actors
- *
- * @param ctx
- * @param searchSceneName scene name where index will be looked for
- * @param searchActors known scene actors (typically from initial data or piped from the previous plugin)
- * @param scenesActors array of scenes and their actors as scraped from IAFD (one string per scene, with actors comma separated)
- * @returns The index of the best match (or -1 of no "good enough" match could be found).
- */
-function searchForScene(
-  ctx: MySceneContext,
-  searchSceneName: string,
-  searchActors: string[],
-  scenesActors: string[]
-): number {
-  const { $logger } = ctx;
-
-  // If there is only one scene in the iafd results, it is always considered a match.
-  if (scenesActors.length === 1) {
-    return 0;
-  }
-
-  const indexFromName: number = matchSceneFromName(ctx, searchSceneName);
-  $logger.debug(`Based on scene name matching, the scene index is: ${indexFromName}`);
-
-  // Finds the index of the best matching scene based on actor matching (largest intersection between pv & iafd actors wins)
-  const indexFromActors: number = matchSceneFromActors(searchActors, scenesActors);
-  $logger.debug(`Based on best actors matching, the scene index is: ${indexFromActors}`);
-
-  // Scene index matched on name/number takes precedence on actor match
-  return indexFromName > -1 ? indexFromName : indexFromActors;
-}
-
-/**
- * Tries to identify the scene index based on a number pattern in the scene's name.
- *
- * @param name the name to use for the match (assumed to be cleaned-up). It will not match if there are multiple numbers in the name (too ambiguous)
- * @returns the matched index (or -1 if no matches were possible)
- */
-function matchSceneFromName(ctx: MySceneContext, name: string): number {
-  let indexFromName: number = -1;
-
-  // The name must contain exactly one number between 0-99 for it to be considered a match.
-  const nameMatch = Array.from(
-    name.matchAll(
-      new RegExp(
-        ctx.args.sceneIndexMatchingRegex || "(.*)(Scene|S)\\W*(?<index>\\d{1,2})(.*)",
-        "gim"
-      )
-    )
-  );
-  if (nameMatch.length === 1) {
-    indexFromName = Number(nameMatch[0].groups?.index);
-    indexFromName = isNaN(indexFromName) ? -1 : indexFromName - 1;
-  }
-
-  return indexFromName;
-}
-
-/**
- * Tries to identify the scene index based on actors matching (largest intersection between pv & iafd actors wins)
- *
- * @param searchActors
- * @param scenesActors
- * @returns the matched index, -1 if no matches were found or -2 if more than one match was found (ambiguous)
- */
-function matchSceneFromActors(searchActors: string[], scenesActors: string[]): number {
-  // Actors from the initial scene's or piped data are required for the actor match
-  if (!searchActors || !searchActors.length) {
-    return -1;
-  }
-
-  let indexFromActors: number = -1;
-  let matchCount: number = 0;
-
-  scenesActors.forEach(function (item, i) {
-    const sceneActors = item.split(", ");
-
-    const isActorsMatch: boolean = searchActors.every(
-      (searchActor) =>
-        sceneActors.filter(
-          (sceneActor) =>
-            searchActor.localeCompare(sceneActor, undefined, { sensitivity: "base" }) === 0
-        ).length > 0
-    );
-
-    if (isActorsMatch) {
-      matchCount++;
-      indexFromActors = i;
-    }
-  });
-
-  // Fails if more than one match (ambiguous)
-  if (matchCount > 1) {
-    return -2;
-  }
-
-  return indexFromActors;
 }
 
 const handler: Plugin<MySceneContext, SceneOutput> = async (ctx) => {
@@ -192,6 +115,156 @@ const handler: Plugin<MySceneContext, SceneOutput> = async (ctx) => {
       return !whitelist.includes(lowercase(prop));
     }
     return blacklist.includes(lowercase(prop));
+  }
+
+  /**
+   * Tries to match the most relevant scene according to the plugin's initial or piped data
+   * (when IAFD returned a set of scenes like for movies).
+   *
+   * The matching is based on (either):
+   *  - the presence of an index in the scene's name (like "Scene 1", "S01",...)
+   *  - a match of one or more actors
+   *
+   * @param ctx
+   * @param searchSceneName scene name where index will be looked for
+   * @param searchActors known scene actors (typically from initial data or piped from the previous plugin)
+   * @param scenesActors array of scenes and their actors as scraped from IAFD (one string per scene, with actors comma separated)
+   * @returns The index of the best match (or -1 of no "good enough" match could be found).
+   */
+  function searchForScene(
+    ctx: MySceneContext,
+    searchSceneName: string,
+    searchActors: string[],
+    scenesActors: string[]
+  ): number {
+    const { $logger } = ctx;
+
+    // If there is only one scene in the iafd results, it is always considered a match.
+    if (scenesActors.length === 1) {
+      return 0;
+    }
+
+    const indexFromName: number = matchSceneFromName(ctx, searchSceneName);
+    $logger.info(`Based on scene name matching, the scene index is: ${indexFromName}`);
+
+    // Finds the index of the best matching scene based on actor matching (largest intersection between pv & iafd actors wins)
+    const indexFromActors: number = matchSceneFromActors(searchActors, scenesActors);
+    $logger.info(`Based on best actors matching, the scene index is: ${indexFromActors}`);
+
+    // Scene index matched on name/number takes precedence on actor match
+    if (indexFromName > -1 && indexFromName === indexFromActors) {
+      return indexFromName;
+    } else {
+      return indexFromName > -1 ? indexFromName : indexFromActors;
+    }
+    return -1;
+  }
+
+  /**
+   * Tries to identify the scene index based on a number pattern in the scene's name.
+   *
+   * @param name the name to use for the match (assumed to be cleaned-up). It will not match if there are multiple numbers in the name (too ambiguous)
+   * @returns the matched index (or -1 if no matches were possible)
+   */
+  function matchSceneFromName(ctx: MySceneContext, name: string): number {
+    return -1;
+    // let indexFromName: number = -1;
+
+    // // The name must contain exactly one number between 0-99 for it to be considered a match.
+    // const nameMatch = Array.from(
+    //   name.matchAll(
+    //     new RegExp(
+    //       ctx.args.sceneIndexMatchingRegex || "(.*)(Scene|S)\\W*(?<index>\\d{1,2})(.*)",
+    //       "gim"
+    //     )
+    //   )
+    // );
+    // if (nameMatch.length === 1) {
+    //   indexFromName = Number(nameMatch[0].groups?.index);
+    //   indexFromName = isNaN(indexFromName) ? -1 : indexFromName - 1;
+    // }
+
+    // return indexFromName;
+  }
+
+  function partialNameMatcher(site: string, pv: string): boolean {
+    if (site.localeCompare(pv, undefined, { sensitivity: "base" }) === 0) {
+      return true;
+    }
+
+    // // Attempts to match actor names from the whole title, regardless of a given scene...
+    // const actorLabels: string[] = $(`.castbox:contains('${site}') > p`).text().trim().split("<br>");
+    // let creditedAs: string | undefined;
+    // actorLabels.forEach((label) => {
+    //   if (label.toLocaleLowerCase().includes("credited:")) {
+    //     creditedAs = label.replace(/.*\(Credited: (.*)\).*/i, "$1");
+    //   }
+    // });
+    // if (creditedAs) {
+    //   if (creditedAs.localeCompare(pv, undefined, { sensitivity: "base" }) === 0) {
+    //     $logger.warn(`Credited as '${creditedAs}' matched to iafd name '${site}'`);
+    //     return true;
+    //   }
+    //   const metaphone = natural.Metaphone;
+    //   if (metaphone.compare(creditedAs, pv)) {
+    //     $logger.warn(`Phonetic credited as match between '${creditedAs}' and '${pv}'`);
+    //     return true;
+    //   }
+    // }
+
+    const metaphone = natural.Metaphone;
+    if (metaphone.compare(site, pv)) {
+      $logger.warn(`Phonetic match between '${site}' and '${pv}'`);
+      return true;
+    }
+
+    // if (pv.length > 3 && site.toLocaleLowerCase().includes(pv.toLocaleLowerCase())) {
+    //   return true;
+    // }
+
+    // if (site.length > 3 && pv.toLocaleLowerCase().includes(site.toLocaleLowerCase())) {
+    //   return true;
+    // }
+
+    return false;
+  }
+
+  /**
+   * Tries to identify the scene index based on actors matching (largest intersection between pv & iafd actors wins)
+   *
+   * @param searchActors
+   * @param scenesActors
+   * @returns the matched index, -1 if no matches were found or -2 if more than one match was found (ambiguous)
+   */
+  function matchSceneFromActors(searchActors: string[], scenesActors: string[]): number {
+    // Actors from the initial scene's or piped data are required for the actor match
+    if (!searchActors || !searchActors.length) {
+      return -1;
+    }
+
+    let indexFromActors: number = -1;
+    let matchCount: number = 0;
+
+    scenesActors.forEach(function (item, i) {
+      const sceneActors = item.split(", ");
+
+      const isActorsMatch: boolean = searchActors.every(
+        (searchActor) =>
+          sceneActors.filter((sceneActor) => partialNameMatcher(sceneActor, searchActor)).length > 0
+      );
+
+      if (isActorsMatch) {
+        matchCount++;
+        indexFromActors = i;
+      }
+    });
+
+    // Fails if more than one match (ambiguous)
+    if (matchCount > 1) {
+      return -2;
+    }
+
+    return indexFromActors;
   }
 
   function getMovieInternal(): string {
@@ -229,7 +302,9 @@ const handler: Plugin<MySceneContext, SceneOutput> = async (ctx) => {
       .replace(/\. (.*)$/, "")
       .trim();
 
-    scrapedName = args.keepInitialSceneNameForMovies ? data.name || sceneName : scrapedName;
+    scrapedName = args.keepInitialSceneNameForMovies
+      ? data.name || sceneName
+      : scrapedName || data.name || "";
     if (args.addMovieNameInSceneName && movie.length) {
       scrapedName = `${movie} - ${scrapedName}`;
     }
@@ -266,7 +341,11 @@ const handler: Plugin<MySceneContext, SceneOutput> = async (ctx) => {
       return {};
     }
 
-    const foundStudio = $("p.biodata > a[href*='/studio.rme']").text().trim();
+    let foundStudio = $("p.biodata > a[href*='/studio.rme']").text().trim();
+    if (!foundStudio) {
+      foundStudio = $("p.biodata > a[href*='/distrib.rme']").text().trim();
+    }
+
     $logger.debug(`Found studio: '${foundStudio}'`);
 
     return { studio: foundStudio };
@@ -337,6 +416,53 @@ const handler: Plugin<MySceneContext, SceneOutput> = async (ctx) => {
   // const html = (await $axios.get<string>(url)).data;
   const $ = $cheerio.load(html);
 
+  // // Load all actors in this movie (regardless of scene)
+  // const movieActors: string[] = [];
+  // $(`.castbox > p > a`).each(function (i, actor) {
+  //   movieActors.push($(actor).children().remove().end().text().trim());
+  // });
+  // // $logger.info(`Actors for ${searchName}: ${$formatMessage(movieActors)}`);
+
+  // searchActors.forEach(function (searchActor, i) {
+  //   if (searchActor.length > 3) {
+  //     movieActors.forEach(function (movieActor) {
+  //       // Multi-name actor: attempt phonetic match to correct search if needed
+  //       if (
+  //         searchActor.includes(" ") &&
+  //         searchActor.length > 4 &&
+  //         searchActor.toLocaleLowerCase() !== movieActor.toLocaleLowerCase()
+  //       ) {
+  //         const metaphone = natural.Metaphone;
+  //         if (metaphone.compare(searchActor, movieActor)) {
+  //           $logger.warn(`Phonetic conversion from '${searchActor}' to '${movieActor}'`);
+  //           searchActors[i] = movieActor;
+  //         }
+  //       } else {
+  //         // Lookup single names in searchActors to enrich them in full name is a match is found in all movie actors
+  //         if (
+  //           !searchActor.includes(" ") &&
+  //           searchActor.length > 3 &&
+  //           searchActor.toLocaleLowerCase() !== movieActor.toLocaleLowerCase()
+  //         ) {
+  //           // Normal include check
+  //           if (movieActor.toLocaleLowerCase().includes(searchActor.toLocaleLowerCase())) {
+  //             $logger.warn(`Normal include enrich from '${searchActor}' to '${movieActor}'`);
+  //             searchActors[i] = movieActor;
+  //           } else {
+  //             // Phonetic match on first word
+  //             const movieActorSingleName = movieActor.split(" ")[0];
+  //             const metaphone = natural.Metaphone;
+  //             if (metaphone.compare(searchActor, movieActorSingleName)) {
+  //               $logger.warn(`Phonetic enrich from '${searchActor}' to '${movieActor}'`);
+  //               searchActors[i] = movieActor;
+  //             }
+  //           }
+  //         }
+  //       }
+  //     });
+  //   }
+  // });
+
   const scenesDiv = $("#sceneinfo.panel.panel-default");
   const scenesBreakdown = $("li.w, li.g", scenesDiv).toArray();
   const scenesActors = scenesBreakdown.map((s) =>
@@ -363,19 +489,27 @@ const handler: Plugin<MySceneContext, SceneOutput> = async (ctx) => {
   );
 
   if (sceneIndex < 0) {
-    $logger.warn(`Unable to match a scene. Returning with empty results.`);
-    return {};
+    // $logger.warn(`Unable to match a scene. Returning movie details only.`);
+    $logger.warn(`Unable to match a scene. Returning nothing.`);
+    return {
+      // actors: searchActors,
+      // name: getMovieInternal(),
+      // ...getStudio(),
+      // ...getReleaseDate(),
+    };
   }
 
   let result: SceneOutput;
   if (sceneIndex >= scenesActors.length) {
     // IAFD does not reference all movie extras (like BTS, interviews,...).
     // For those, it is only possible to return the general movie attributes (no actors or labels)
+    $logger.warn(`Unable to match a scene. Returning nothing.`);
     result = {
-      ...getMovie(),
-      ...getName(),
-      ...getStudio(),
-      ...getReleaseDate(),
+      // ...getMovie(),
+      // ...getName(),
+      // // actors: ["Uncredited"],
+      // ...getStudio(),
+      // ...getReleaseDate(),
     };
   } else {
     result = {

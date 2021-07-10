@@ -20,22 +20,55 @@ describe("iafd", function () {
   });
 
   describe("Scene identification...", () => {
+    it("Should match single-scene result with just the scene name... (allows captcha)", async () => {
+      try {
+        const result = await runPlugin({
+          event: "sceneCreated",
+          $getMovies: async () => [],
+          $getActors: async () => [],
+          $getStudio: async () => {},
+          sceneName: "Sexy doctor takes advantage of male nurse",
+          args: {},
+        });
+        expect(result).to.be.an("object");
+        expect(result.name).to.equal("Sexy Doctor Takes Advantage Of Male Nurse");
+      } catch (error) {
+        expect(error.message).to.equal("captcha");
+      }
+    });
     it("Should match single-scene result with just the scene name...", async () => {
       const result = await runPlugin({
         event: "sceneCreated",
         $getMovies: async () => [],
         $getActors: async () => [],
+        $getStudio: async () => {},
         sceneName: "Sexy doctor takes advantage of male nurse",
         args: {},
       });
       expect(result).to.be.an("object");
       expect(result.name).to.equal("Sexy Doctor Takes Advantage Of Male Nurse");
     });
+    it("Should match from search results matched on studio...", async () => {
+      const result = await runPlugin({
+        event: "sceneCreated",
+        $getStudio: async () => {},
+        sceneName: "Unknown",
+        data: {
+          movie: "Raw 1",
+          studio: "Evil Angel",
+          actors: ["Cecilia Vega"],
+        },
+        args: { keepInitialSceneNameForMovies: false },
+      });
+      expect(result).to.be.an("object");
+      expect(result.name).to.equal("Scene 2");
+    });
     it("Should match multi-scene results with a movie name and a scene name containing an index...", async () => {
       const result = await runPlugin({
         event: "sceneCreated",
         $getMovies: async () => [{ name: "Anal Craving MILFs 8" }],
         $getActors: async () => [],
+        $getStudio: async () => {},
         sceneName: "S03",
         args: {},
       });
@@ -47,6 +80,7 @@ describe("iafd", function () {
         event: "sceneCreated",
         $getMovies: async () => [{ name: "Anal Craving MILFs 8" }],
         $getActors: async () => [{ name: "LaSirena69" }, { name: "Mark Wood" }],
+        $getStudio: async () => {},
         sceneName: "Scene Three",
         args: { keepInitialSceneNameForMovies: false },
       });
@@ -58,6 +92,7 @@ describe("iafd", function () {
         event: "sceneCreated",
         $getMovies: async () => [{ name: "Anal Craving MILFs 8" }],
         $getActors: async () => [],
+        $getStudio: async () => {},
         sceneName: "S01 filmed on the 4th of July",
       });
       expect(result).to.be.an("object");
@@ -70,6 +105,7 @@ describe("iafd", function () {
         event: "sceneCreated",
         $getMovies: async () => [],
         $getActors: async () => [],
+        $getStudio: async () => {},
         sceneName: "Anal Craving MILFs 8",
         args: {},
       });
@@ -81,6 +117,7 @@ describe("iafd", function () {
         event: "sceneCreated",
         $getMovies: async () => [],
         $getActors: async () => [],
+        $getStudio: async () => {},
         sceneName: "Nothing helping the match here...",
         data: { movie: "Anal Craving MILFs 8" },
         args: {},
@@ -91,6 +128,7 @@ describe("iafd", function () {
     it("Should NOT match multi-scene results when more than one scene matches the searched actor(s)...", async () => {
       const result = await runPlugin({
         event: "sceneCreated",
+        $getStudio: async () => {},
         sceneName: "Unknown",
         data: {
           movie: "Ultimate Fuck Toy: Kennedy Leigh",
@@ -108,6 +146,7 @@ describe("iafd", function () {
         event: "sceneCreated",
         $getMovies: async () => [],
         $getActors: async () => [],
+        $getStudio: async () => {},
         sceneName: "Sexy doctor takes advantage of male nurse",
         args: {},
       });
@@ -129,6 +168,7 @@ describe("iafd", function () {
     it("Should scrape all details from a multi-scene title...", async () => {
       const result = await runPlugin({
         event: "sceneCreated",
+        $getStudio: async () => {},
         sceneName: "Unknown",
         data: {
           movie: "Anal Craving MILFs 8",
@@ -158,6 +198,7 @@ describe("iafd", function () {
         sceneName: "Unknown",
         $getMovies: async () => [{ name: "Anal Craving MILFs 8" }],
         $getActors: async () => [{ name: "LaSirena69" }],
+        $getStudio: async () => {},
         args: {
           addMovieNameInSceneName: true,
           keepInitialSceneNameForMovies: false,
@@ -177,6 +218,7 @@ describe("iafd", function () {
       const result = await runPlugin({
         event: "sceneCreated",
         $getActors: async () => [],
+        $getStudio: async () => {},
         sceneName: "Scene 10",
         data: {
           movie: "Anal Craving MILFs 8",
