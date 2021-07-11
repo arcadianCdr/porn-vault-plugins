@@ -1,6 +1,6 @@
 {
   "name": "freeones",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "authors": ["boi123212321", "john4valor", "pizzajohnny", "leadwolf"],
   "description": "Scrape actress data from freeones.com",
   "events": ["actorCreated", "actorCustom"],
@@ -60,6 +60,13 @@
       "required": false,
       "default": "string",
       "description": "How to return the tattoos. Use 'array' if your custom field is a select or multi select"
+    },
+    {
+      "name": "fuzzyActorCheck",
+      "type": "Boolean",
+      "required": false,
+      "default": false,
+      "description": "If true, the plugin will confirm that the freeones' actor found (or one of its aliases) actually matches the searched actor name (with some tolerance using the Levenshtein algorithm). If there is no match, an error will be returned and the actor will not be scraped from an incorrect match."
     }
   ]
 }
