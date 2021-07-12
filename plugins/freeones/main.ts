@@ -165,7 +165,7 @@ const handler: Plugin<MyContext, ActorOutput> = async (ctx) => {
   if (args.fuzzyActorCheck) {
     // Attempts a fuzzy (levenshtein) match between searched and found actor (or aliases).
     const foundName: string = $(".h1").text().trim().slice(0, -4);
-    const found: string[] = getAlias().aliases ?? [];
+    const found: string[] = getAlias().aliases || [];
     found.push(foundName);
     if (!isFuzzyMatch(found, actorName)) {
       $throw(
@@ -182,7 +182,7 @@ const handler: Plugin<MyContext, ActorOutput> = async (ctx) => {
     );
     let finalScore = searched.length;
     found.forEach((item) => {
-      const score = levenshtein(searched, item);
+      const score = levenshtein(searched.replace(" ", ""), item.replace(" ", ""));
       if (score < finalScore) {
         finalScore = score;
       }

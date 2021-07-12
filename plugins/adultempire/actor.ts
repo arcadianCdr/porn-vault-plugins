@@ -1,16 +1,39 @@
 import $cheerio from "cheerio";
 
 import { ActorContext, ActorOutput } from "../../types/actor";
+import levenshtein from "../PromisedScene/levenshtein";
 
 interface MyContext extends ActorContext {
   args: {
+    fuzzyActorCheck?: boolean;
     dry?: boolean;
   };
 }
 
 export default async function (ctx: MyContext): Promise<ActorOutput> {
   // eslint-disable-next-line @typescript-eslint/unbound-method
-  const { args, $axios, $logger, $formatMessage, actorName, $createImage } = ctx;
+  const { args, $axios, $logger, $formatMessage, actorName, $createImage, $throw } = ctx;
+
+  function isFuzzyMatch(found: string[], searched): boolean {
+    $logger.debug(
+      `Attempting a fuzzy (levenshtein) match for ${searched} in ${$formatMessage(found)}`
+    );
+    let finalScore = searched.length;
+    found.forEach((item) => {
+      const score = levenshtein(searched.replace(" ", ""), item.replace(" ", ""));
+      if (score < finalScore) {
+        finalScore = score;
+      }
+    });
+
+    // Levenshtein tolerance varies with string length
+    if (finalScore < searched.length / 6) {
+      $logger.debug(`Positive levenshtein match with a score of : ${finalScore}.`);
+      return true;
+    }
+
+    return false;
+  }
 
   const name = actorName
     .replace(/#/g, "")
@@ -67,6 +90,20 @@ export default async function (ctx: MyContext): Promise<ActorOutput> {
         .replace("Alias: ", "")
         .split(",")
         .map((s) => s.trim());
+    }
+
+    if (args.fuzzyActorCheck) {
+      // Attempts a fuzzy (levenshtein) match between searched and found actor (or aliases).
+      const foundName: string = $("h1").text().trim();
+      const found: string[] = aliases;
+      found.push(foundName);
+      if (!isFuzzyMatch(found, actorName)) {
+        $throw(
+          `Stopped scraping. The adultempire actor name is not a good match (failed fuzzy (levenshtein) match attempt). found: ${$formatMessage(
+            found
+          )}, expected: '${actorName}'`
+        );
+      }
     }
 
     const result = {
