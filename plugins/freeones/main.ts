@@ -2,6 +2,7 @@ import { applyMetadata, Plugin, Context } from "../../types/plugin";
 import { ActorContext, ActorOutput } from "../../types/actor";
 
 import * as $cheerio from "cheerio";
+import levenshtein from "../PromisedScene/levenshtein";
 
 import info from "./info.json";
 
@@ -13,6 +14,7 @@ interface MyContext extends ActorContext {
     useImperial?: boolean;
     searchResultsSort?: "string";
     useAvatarAsThumbnail?: boolean;
+    fuzzyActorCheck?: boolean;
     piercingsType?: "string" | "array";
     tattoosType?: "string" | "array";
   };
@@ -159,6 +161,41 @@ const handler: Plugin<MyContext, ActorOutput> = async (ctx) => {
     return {}; // return for type compatibility
   }
   const $ = $cheerio.load(html || "");
+
+  if (args.fuzzyActorCheck) {
+    // Attempts a fuzzy (levenshtein) match between searched and found actor (or aliases).
+    const foundName: string = $(".h1").text().trim().slice(0, -4);
+    const found: string[] = getAlias().aliases || [];
+    found.push(foundName);
+    if (!isFuzzyMatch(found, actorName)) {
+      $throw(
+        `Stopped scraping. The freeones actor name is not a good match (failed fuzzy (levenshtein) match attempt). found: ${$formatMessage(
+          found
+        )}, expected: '${actorName}'`
+      );
+    }
+  }
+
+  function isFuzzyMatch(found: string[], searched): boolean {
+    $logger.debug(
+      `Attempting a fuzzy (levenshtein) match for ${searched} in ${$formatMessage(found)}`
+    );
+    let finalScore = searched.length;
+    found.forEach((item) => {
+      const score = levenshtein(searched.replace(" ", ""), item.replace(" ", ""));
+      if (score < finalScore) {
+        finalScore = score;
+      }
+    });
+
+    // Levenshtein tolerance varies with string length
+    if (finalScore < searched.length / 6) {
+      $logger.debug(`Positive levenshtein match with a score of : ${finalScore}.`);
+      return true;
+    }
+
+    return false;
+  }
 
   function getNationality(): Partial<{ nationality: string }> {
     if (isBlacklisted("nationality")) return {};

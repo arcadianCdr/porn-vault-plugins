@@ -2,12 +2,14 @@ import $cheerio from "cheerio";
 
 import { MovieContext, MovieOutput } from "../../types/movie";
 import { Context } from "../../types/plugin";
+import levenshtein from "../PromisedScene/levenshtein";
 
 interface MyContext extends MovieContext {
   args: {
     whitelist?: string[];
     blacklist?: string[];
     dry?: boolean;
+    fuzzyMovieCheck: boolean;
   };
 }
 
@@ -41,7 +43,28 @@ async function urlAvailable({ $axios }: MyContext, url: string) {
 
 export default async function (ctx: MyContext): Promise<MovieOutput> {
   // eslint-disable-next-line @typescript-eslint/unbound-method
-  const { args, $moment, $axios, $logger, $formatMessage, movieName, $createImage } = ctx;
+  const { args, $moment, $axios, $logger, $formatMessage, movieName, $createImage, $throw } = ctx;
+
+  function isFuzzyMatch(found: string[], searched): boolean {
+    $logger.debug(
+      `Attempting a fuzzy (levenshtein) match for ${searched} in ${$formatMessage(found)}`
+    );
+    let finalScore = searched.length;
+    found.forEach((item) => {
+      const score = levenshtein(searched.replace(" ", ""), item.replace(" ", ""));
+      if (score < finalScore) {
+        finalScore = score;
+      }
+    });
+
+    // Levenshtein tolerance varies with string length
+    if (finalScore < searched.length / 6) {
+      $logger.debug(`Positive levenshtein match with a score of : ${finalScore}.`);
+      return true;
+    }
+
+    return false;
+  }
 
   const blacklist = (args.blacklist || []).map(lowercase);
   if (!args.blacklist) $logger.verbose("No blacklist defined, returning everything...");
@@ -71,6 +94,24 @@ export default async function (ctx: MyContext): Promise<MovieOutput> {
     const movieUrl = url;
     const html = (await $axios.get<string>(movieUrl)).data;
     const $ = $cheerio.load(html);
+
+    if (args.fuzzyMovieCheck) {
+      // Attempts a fuzzy (levenshtein) match between searched and found actor (or aliases).
+      const foundName: string = $(`.title-rating-section .col-sm-6 h1`)
+        .text()
+        .replace(/[\t\n]+/g, " ")
+        .replace(/ {2,}/, " ")
+        .replace(/- On Sale!.*/i, "")
+        .trim();
+      const found: string[] = [foundName];
+      if (!isFuzzyMatch(found, name)) {
+        $throw(
+          `Stopped scraping. The adultempire movie name is not a good match (failed fuzzy (levenshtein) match attempt). found: ${$formatMessage(
+            found
+          )}, expected: '${name}'`
+        );
+      }
+    }
 
     let desc: string | undefined;
     if (!isBlacklisted("description")) {
