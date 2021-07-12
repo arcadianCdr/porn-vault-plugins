@@ -5,8 +5,14 @@ import { Context } from "../../types/plugin";
 
 interface MyContext extends MovieContext {
   args: {
+    whitelist?: string[];
+    blacklist?: string[];
     dry?: boolean;
   };
+}
+
+function lowercase(str: string): string {
+  return str.toLowerCase();
 }
 
 async function searchForMovie(
@@ -37,6 +43,22 @@ export default async function (ctx: MyContext): Promise<MovieOutput> {
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const { args, $moment, $axios, $logger, $formatMessage, movieName, $createImage } = ctx;
 
+  const blacklist = (args.blacklist || []).map(lowercase);
+  if (!args.blacklist) $logger.verbose("No blacklist defined, returning everything...");
+  if (blacklist.length) $logger.verbose(`Blacklist defined, will ignore: ${blacklist.join(", ")}`);
+
+  const whitelist = (args.whitelist || []).map(lowercase);
+  if (whitelist.length) {
+    $logger.verbose(`Whitelist defined, will only return: ${whitelist.join(", ")}...`);
+  }
+
+  function isBlacklisted(prop): boolean {
+    if (whitelist.length) {
+      return !whitelist.includes(lowercase(prop));
+    }
+    return blacklist.includes(lowercase(prop));
+  }
+
   const name = movieName
     .replace(/[#&]/g, "")
     .replace(/\s{2,}/g, " ")
@@ -50,24 +72,35 @@ export default async function (ctx: MyContext): Promise<MovieOutput> {
     const html = (await $axios.get<string>(movieUrl)).data;
     const $ = $cheerio.load(html);
 
-    const desc = $(".m-b-0.text-dark.synopsis").text();
+    let desc: string | undefined;
+    if (!isBlacklisted("description")) {
+      desc = $(".m-b-0.text-dark.synopsis").text();
+    }
+
+    let movieName: string | undefined;
+    if (!isBlacklisted("name")) {
+      movieName = $(`.title-rating-section .col-sm-6 h1`)
+        .text()
+        .replace(/[\t\n]+/g, " ")
+        .replace(/ {2,}/, " ")
+        .replace(/- On Sale!.*/i, "")
+        .trim();
+    }
+
     let release: number | undefined;
+    if (!isBlacklisted("releaseDate")) {
+      $(".col-sm-4.m-b-2 li").each(function (i, elm) {
+        const grabrvars = $(elm).text().split(":");
+        if (grabrvars[0].includes("Released")) {
+          release = $moment(grabrvars[1].trim().replace(" ", "-"), "MMM-DD-YYYY").valueOf();
+        }
+      });
+    }
 
-    const movieName = $(`.title-rating-section .col-sm-6 h1`)
-      .text()
-      .replace(/[\t\n]+/g, " ")
-      .replace(/ {2,}/, " ")
-      .replace(/- On Sale!.*/i, "")
-      .trim();
-
-    $(".col-sm-4.m-b-2 li").each(function (i, elm) {
-      const grabrvars = $(elm).text().split(":");
-      if (grabrvars[0].includes("Released")) {
-        release = $moment(grabrvars[1].trim().replace(" ", "-"), "MMM-DD-YYYY").valueOf();
-      }
-    });
-
-    const studioName = $(`.title-rating-section .item-info > a`).eq(0).text().trim();
+    let studioName: string | undefined;
+    if (!isBlacklisted("studio")) {
+      studioName = $(`.title-rating-section .item-info > a`).eq(0).text().trim();
+    }
 
     const frontCover = $("#front-cover img").toArray()[0];
     const frontCoverSrc = $(frontCover).attr("src") || "";

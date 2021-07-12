@@ -4,8 +4,14 @@ import { ActorContext, ActorOutput } from "../../types/actor";
 
 interface MyContext extends ActorContext {
   args: {
+    whitelist?: string[];
+    blacklist?: string[];
     dry?: boolean;
   };
+}
+
+function lowercase(str: string): string {
+  return str.toLowerCase();
 }
 
 export default async function (ctx: MyContext): Promise<ActorOutput> {
@@ -17,6 +23,22 @@ export default async function (ctx: MyContext): Promise<ActorOutput> {
     .replace(/\s{2,}/g, " ")
     .trim();
   $logger.info(`Scraping actor info for '${name}', dry mode: ${args?.dry || false}...`);
+
+  const blacklist = (args.blacklist || []).map(lowercase);
+  if (!args.blacklist) $logger.verbose("No blacklist defined, returning everything...");
+  if (blacklist.length) $logger.verbose(`Blacklist defined, will ignore: ${blacklist.join(", ")}`);
+
+  const whitelist = (args.whitelist || []).map(lowercase);
+  if (whitelist.length) {
+    $logger.verbose(`Whitelist defined, will only return: ${whitelist.join(", ")}...`);
+  }
+
+  function isBlacklisted(prop): boolean {
+    if (whitelist.length) {
+      return !whitelist.includes(lowercase(prop));
+    }
+    return blacklist.includes(lowercase(prop));
+  }
 
   const url = `https://www.adultempire.com/allsearch/search?q=${name}`;
   const html = (await $axios.get(url)).data;
@@ -52,21 +74,25 @@ export default async function (ctx: MyContext): Promise<ActorOutput> {
 
     let description;
 
-    const descEl = $("#content .row aside");
-    if (descEl) {
-      description = descEl.text().trim();
+    if (!isBlacklisted("description")) {
+      const descEl = $(".text-md");
+      if (descEl) {
+        description = descEl.children().remove("div").end().text().trim();
+      }
     }
 
     let aliases: string[] = [];
 
-    const aliasEl = $("#content .row .col-sm-5 .m-b-1");
+    if (!isBlacklisted("aliases")) {
+      const aliasEl = $("#content .row .col-sm-5 .m-b-1");
 
-    if (aliasEl) {
-      const text = aliasEl.text();
-      aliases = text
-        .replace("Alias: ", "")
-        .split(",")
-        .map((s) => s.trim());
+      if (aliasEl) {
+        const text = aliasEl.text();
+        aliases = text
+          .replace("Alias: ", "")
+          .split(",")
+          .map((s) => s.trim());
+      }
     }
 
     const result = {
