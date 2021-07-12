@@ -18,6 +18,13 @@
       "required": false,
       "default": false,
       "description": "If true, the plugin will confirm that the adultempire's actor found (or one of its aliases) actually matches the searched actor name (with some tolerance using the Levenshtein algorithm). If there is no match, an error will be returned and the actor will not be scraped from an incorrect match."
+    },
+    {
+      "name": "fuzzyMovieCheck",
+      "type": "Boolean",
+      "required": false,
+      "default": false,
+      "description": "If true, the plugin will confirm that the adultempire's movie found actually matches the searched actor name (with some tolerance using the Levenshtein algorithm). If there is no match, an error will be returned and the actor will not be scraped from an incorrect match."
     }
   ]
 }
