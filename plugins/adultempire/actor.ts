@@ -102,8 +102,6 @@ export default async function (ctx: MyContext): Promise<ActorOutput> {
       }
     }
 
-    let thumbnail: string | undefined;
-
     const images = $(`a.fancy`).toArray();
 
     let thumbnail: string | undefined;
