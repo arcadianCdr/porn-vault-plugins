@@ -75,6 +75,32 @@ export default async function (ctx: MyContext): Promise<ActorOutput> {
     const html = (await $axios.get<string>(actorUrl)).data;
     const $ = $cheerio.load(html);
 
+    let aliases: string[] = [];
+
+    const aliasEl = $("#content .row .col-sm-5 .m-b-1");
+
+    if (aliasEl) {
+      const text = aliasEl.text();
+      aliases = text
+        .replace("Alias: ", "")
+        .split(",")
+        .map((s) => s.trim());
+    }
+
+    if (args.fuzzyActorCheck) {
+      // Attempts a fuzzy (levenshtein) match between searched and found actor (or aliases).
+      const foundName: string = $("h1").text().trim();
+      const found: string[] = aliases;
+      found.push(foundName);
+      if (!isFuzzyMatch(found, actorName)) {
+        $throw(
+          `Stopped scraping. The adultempire actor name is not a good match (failed fuzzy (levenshtein) match attempt). found: ${$formatMessage(
+            found
+          )}, expected: '${actorName}'`
+        );
+      }
+    }
+
     let thumbnail: string | undefined;
 
     const images = $(`a.fancy`).toArray();
@@ -101,34 +127,6 @@ export default async function (ctx: MyContext): Promise<ActorOutput> {
       const descEl = $(".text-md");
       if (descEl) {
         description = descEl.children().remove("div").end().text().trim();
-      }
-    }
-
-    let aliases: string[] = [];
-
-    if (!isBlacklisted("aliases")) {
-      const aliasEl = $("#content .row .col-sm-5 .m-b-1");
-
-      if (aliasEl) {
-        const text = aliasEl.text();
-        aliases = text
-          .replace("Alias: ", "")
-          .split(",")
-          .map((s) => s.trim());
-      }
-    }
-
-    if (args.fuzzyActorCheck) {
-      // Attempts a fuzzy (levenshtein) match between searched and found actor (or aliases).
-      const foundName: string = $("h1").text().trim();
-      const found: string[] = aliases;
-      found.push(foundName);
-      if (!isFuzzyMatch(found, actorName)) {
-        $throw(
-          `Stopped scraping. The adultempire actor name is not a good match (failed fuzzy (levenshtein) match attempt). found: ${$formatMessage(
-            found
-          )}, expected: '${actorName}'`
-        );
       }
     }
 
