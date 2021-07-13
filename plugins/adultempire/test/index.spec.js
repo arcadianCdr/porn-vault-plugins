@@ -33,6 +33,16 @@ describe("adultempire", () => {
         )
       ).to.be.true;
     });
+    it("Should not fetch blacklisted properties", async () => {
+      const result = await runPlugin({
+        actorName: "Avi love",
+        args: {blacklist: ["aliases", "thumbnail", "hero", "description"]},
+      });
+      expect(result.thumbnail).to.be.undefined;
+      expect(result.hero).to.be.undefined;
+      expect(result.aliases).to.be.empty;
+      expect(result.description).to.be.undefined;
+    });
   });
 
   describe("Movies", () => {
@@ -56,6 +66,19 @@ describe("adultempire", () => {
       expect(date.getDate(), 28);
       expect(date.getMonth(), 7);
       expect(date.getFullYear(), 2019);
+    });
+    it("Should not fetch blacklisted properties", async () => {
+      const result = await runPlugin({
+        movieName: "tushy raw v5",
+        args: {blacklist: ["name", "frontCover", "backCover", "studio", "description", "releaseDate"]},
+      });
+      expect(result).to.be.an("object");
+      expect(result.name).to.be.undefined;
+      expect(result.frontCover).to.be.undefined;
+      expect(result.backCover).to.be.undefined;
+      expect(result.studio).to.be.undefined;
+      expect(result.description).to.be.undefined;
+      expect(result.releaseDate).to.be.undefined;
     });
 
     it("Should fetch covers & studio name from page 2", async () => {
