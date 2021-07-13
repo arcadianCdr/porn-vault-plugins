@@ -76,15 +76,16 @@ export default async function (ctx: MyContext): Promise<ActorOutput> {
     const $ = $cheerio.load(html);
 
     let aliases: string[] = [];
+    if (!isBlacklisted("aliases")) {
+      const aliasEl = $("#content .row .col-sm-5 .m-b-1");
 
-    const aliasEl = $("#content .row .col-sm-5 .m-b-1");
-
-    if (aliasEl) {
-      const text = aliasEl.text();
-      aliases = text
-        .replace("Alias: ", "")
-        .split(",")
-        .map((s) => s.trim());
+      if (aliasEl) {
+        const text = aliasEl.text();
+        aliases = text
+          .replace("Alias: ", "")
+          .split(",")
+          .map((s) => s.trim());
+      }
     }
 
     if (args.fuzzyActorCheck) {
@@ -105,24 +106,29 @@ export default async function (ctx: MyContext): Promise<ActorOutput> {
 
     const images = $(`a.fancy`).toArray();
 
-    const firstImageResult = images[0];
-    const thumbnailUrl = $(firstImageResult).attr("href");
+    let thumbnail: string | undefined;
+    let thumbnailUrl: string | undefined;
+    if (!isBlacklisted("thumbnail")) {
+      const firstImageResult = images[0];
+      thumbnailUrl = $(firstImageResult).attr("href");
 
-    if (thumbnailUrl) {
-      thumbnail = await $createImage(thumbnailUrl, `${actorName} (thumbnail)`);
+      if (thumbnailUrl) {
+        thumbnail = await $createImage(thumbnailUrl, `${actorName} (thumbnail)`);
+      }
     }
 
-    let hero;
+    let hero: string | undefined;
+    let heroUrl: string | undefined;
+    if (!isBlacklisted("hero")) {
+      const secondImageResult = images[1];
+      heroUrl = $(secondImageResult).attr("href");
 
-    const secondImageResult = images[1];
-    const heroUrl = $(secondImageResult).attr("href");
-
-    if (heroUrl) {
-      hero = await $createImage(heroUrl, `${actorName} (hero image)`);
+      if (heroUrl) {
+        hero = await $createImage(heroUrl, `${actorName} (hero image)`);
+      }
     }
 
     let description;
-
     if (!isBlacklisted("description")) {
       const descEl = $(".text-md");
       if (descEl) {

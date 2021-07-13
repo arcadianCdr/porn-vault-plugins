@@ -118,9 +118,9 @@ export default async function (ctx: MyContext): Promise<MovieOutput> {
       desc = $(".m-b-0.text-dark.synopsis").text();
     }
 
-    let movieName: string | undefined;
+    let movieNameAE: string | undefined;
     if (!isBlacklisted("name")) {
-      movieName = $(`.title-rating-section .col-sm-6 h1`)
+      movieNameAE = $(`.title-rating-section .col-sm-6 h1`)
         .text()
         .replace(/[\t\n]+/g, " ")
         .replace(/ {2,}/, " ")
@@ -154,7 +154,7 @@ export default async function (ctx: MyContext): Promise<MovieOutput> {
     if (args?.dry === true) {
       $logger.info(
         `Would have returned ${$formatMessage({
-          name: movieName,
+          name: movieNameAE,
           movieUrl,
           frontCoverSrc,
           backCoverSrc,
@@ -164,15 +164,18 @@ export default async function (ctx: MyContext): Promise<MovieOutput> {
         })}`
       );
     } else {
-      const frontCoverImg = await $createImage(frontCoverSrc, `${movieName} (front cover)`);
+      let frontCoverImg: string | undefined;
+      if (!isBlacklisted("frontCover")) {
+        frontCoverImg = await $createImage(frontCoverSrc, `${movieName} (front cover)`);
+      }
 
       let backCoverImg: string | undefined;
-      if (backCoverSrc) {
+      if (!isBlacklisted("backCover") && backCoverSrc) {
         backCoverImg = await $createImage(backCoverSrc, `${movieName} (back cover)`);
       }
 
       return {
-        name: movieName,
+        name: movieNameAE,
         frontCover: frontCoverImg,
         backCover: backCoverImg,
         description: desc,
