@@ -123,10 +123,13 @@ export default async function (ctx: MyContext): Promise<MovieOutput> {
         })}`
       );
     } else {
-      const frontCoverImg = await $createImage(frontCoverSrc, `${movieName} (front cover)`);
+      let frontCoverImg: string | undefined;
+      if (!isBlacklisted("frontCover")) {
+        frontCoverImg = await $createImage(frontCoverSrc, `${movieName} (front cover)`);
+      }
 
       let backCoverImg: string | undefined;
-      if (backCoverSrc) {
+      if (!isBlacklisted("backCover") && backCoverSrc) {
         backCoverImg = await $createImage(backCoverSrc, `${movieName} (back cover)`);
       }
 
